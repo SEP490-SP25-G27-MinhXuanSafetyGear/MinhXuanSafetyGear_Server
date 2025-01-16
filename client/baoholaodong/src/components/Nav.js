@@ -14,7 +14,7 @@ const navLinks = [
 const Nav = () => {
 	// Hook để lấy location (địa chỉ của trang hiện tại)
 	const location = useLocation();
-	
+
 	return (
 		<nav className="bg-red-600">
 			<div className="container mx-auto">
