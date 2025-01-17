@@ -150,3 +150,17 @@ CREATE TABLE BlogPosts (
     Status varchar(50) not null default 'Draft',       -- Trạng thái bài viết (Draft, Published)
 );
 GO
+-- taọ bảng xác thực tài khoản cho user
+CREATE TABLE AccountVerifications (
+    VerificationId int PRIMARY KEY IDENTITY(1,1),   -- Khoá chính cho xác minh
+    AccountId int NOT NULL,                          -- Mã tài khoản (khách hàng hoặc nhân viên)
+    AccountType nvarchar(50) NOT NULL CHECK (AccountType IN ('Customer', 'Employee')), -- Loại tài khoản (Customer hoặc Employee)
+    VerificationCode nvarchar(100) NOT NULL,         -- Mã xác minh
+    IsVerified bit NOT NULL DEFAULT 0,                -- Trạng thái xác minh (0: chưa xác minh, 1: đã xác minh)
+    VerificationDate datetime NULL,                   -- Thời gian xác minh
+    CreatedAt datetime NOT NULL DEFAULT GETDATE(),   -- Thời gian tạo yêu cầu xác minh
+    UpdatedAt datetime NULL,                          -- Thời gian cập nhật thông tin xác minh
+    CONSTRAINT FK_AccountVerifications_Customers FOREIGN KEY (AccountId) REFERENCES Customers(CustomerId) ON DELETE CASCADE, -- Khoá ngoại tới bảng Customers
+    CONSTRAINT FK_AccountVerifications_Employees FOREIGN KEY (AccountId) REFERENCES Employees(EmployeeId) ON DELETE CASCADE -- Khoá ngoại tới bảng Employees
+);
+GO

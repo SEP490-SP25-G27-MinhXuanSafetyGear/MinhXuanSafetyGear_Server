@@ -24,7 +24,7 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(Roles = "Admin")]
     [HttpPost("create-employee")]
-    public async Task<IActionResult> CreateUser([FromBody] NewEmployee newEmployee)
+    public async Task<IActionResult> CreateNewEmployee ([FromBody] NewEmployee newEmployee)
     {
         try
         {
@@ -43,7 +43,7 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(Roles = "Admin")]
     [HttpPut("update-employee")]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateEmployee updateEmployee)
+    public async Task<IActionResult> UpdateEmployee([FromBody] UpdateEmployee updateEmployee)
     {
         try
         {
@@ -86,6 +86,38 @@ public class UserController : ControllerBase
         {
             var employee = await _userService.GetEmployeeByIdAsync(employeeId);
             return Ok(employee);
+        }catch(Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    /// <summary>
+    /// Api for customer register
+    /// </summary>
+    /// <param name="newCustomer"></param>
+    /// <returns></returns>
+    [HttpPost("register-customer")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateNewCustomer([FromBody] NewCustomer newCustomer)
+    {
+        try
+        {
+            var customer = await _userService.CreateNewCustomerAsync(newCustomer);
+            return Ok(customer);
+        }catch(Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpGet("get-customer/page-{page}/pagesize-{pageSize}")]
+    public async Task<IActionResult> GetCustomerByPage([FromRoute] int page =1, [FromRoute] int pageSize =20)
+    {
+        try
+        {
+            var customers = await _userService.GetCustomerByPageAsync(page, pageSize);
+            return Ok(customers);
         }catch(Exception e)
         {
             return BadRequest(e.Message);
