@@ -1,43 +1,76 @@
 ﻿using BusinessObject.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessObject.Dao;
 
 public class OrderDao : IDao<Order>
 {
     private readonly MinhXuanDatabaseContext _context;
-    
+
     public OrderDao(MinhXuanDatabaseContext context)
     {
         _context = context;
     }
 
+    // Get Order by ID
     public async Task<Order?> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Orders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 
+    // Create a new Order
     public async Task<Order?> CreateAsync(Order entity)
     {
-        throw new NotImplementedException();
+        await _context.Orders.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return entity;
     }
 
+    // Update an existing Order
     public async Task<Order?> UpdateAsync(Order entity)
     {
-        throw new NotImplementedException();
+        var existingOrder = await _context.Orders.FindAsync(entity.OrderId);
+        if (existingOrder == null)
+        {
+            throw new ArgumentException("Order not found");
+        }
+
+        _context.Orders.Update(entity);
+        await _context.SaveChangesAsync();
+        return entity;
     }
 
+    // Delete an Order by ID
     public async Task<bool> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var order = await _context.Orders.FindAsync(id);
+        if (order == null)
+        {
+            return false;
+        }
+
+        _context.Orders.Remove(order);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
+    // Get all Orders
     public async Task<List<Order>?> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Orders
+            .AsNoTracking()
+            .ToListAsync();
     }
 
+    // Get a page of Orders (pagination)
     public async Task<List<Order>?> GetPageAsync(int page, int pageSize)
     {
-        throw new NotImplementedException();
+        return await _context.Orders
+            .AsNoTracking()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 }

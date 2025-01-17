@@ -32,8 +32,19 @@ public class EmployeeDao : IDao<Employee>
 
     public async Task<bool> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var employee = await _context.Employees.FindAsync(id);
+        if (employee == null)
+        {
+            return false;
+        }
+
+        _context.Employees.Remove(employee);
+
+        await _context.SaveChangesAsync();
+
+        return true; 
     }
+
 
     public async Task<List<Employee>?> GetAllAsync()
     {
@@ -49,5 +60,10 @@ public class EmployeeDao : IDao<Employee>
     {
         return await _context.Employees.FirstOrDefaultAsync(e => e.Email == email);
     }
-    
+    public async Task<Employee?> GetEmployeeByPhoneAsync(string phone)
+    {
+        return await _context.Employees
+            .FirstOrDefaultAsync(e => e.PhoneNumber == phone); 
+    }
+
 }

@@ -5,6 +5,7 @@ namespace BusinessLogicLayer.Services.Interface;
 
 public interface IUserService
 {
+    //Employee
     Task<EmployeeRequest?> EmployeeLoginByEmailAndPasswordAsync(FormLogin formLogin);
     Task<EmployeeRequest?> CreateNewEmployeeAsync(NewEmployee newEmployee);
     Task<List<EmployeeRequest>?> GetEmployeeByPageAsync(int page, int pageSize);
@@ -12,6 +13,7 @@ public interface IUserService
     Task<EmployeeRequest?> GetEmployeeByIdAsync(int employeeId);
     Task<EmployeeRequest?> UpdateEmployeeAsync(UpdateEmployee updateEmployee);
     
+    //Customer
     Task<CustomerRequest?> CreateNewCustomerAsync(NewCustomer newCustomer);
     Task<List<CustomerRequest>?> GetCustomerByPageAsync(int page, int pageSize);
     Task<CustomerRequest?> GetCustomerByEmailAsync(string email);

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Services.Interface;
+using BusinessObject.Entities;
+using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
 using Microsoft.Extensions.Logging;
 
@@ -11,11 +13,10 @@ public class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
     
-    public ProductService(IProductRepo productRepo, IMapper mapper, ILogger<ProductService> logger)
+    public ProductService(MinhXuanDatabaseContext _context, IMapper mapper, ILogger<ProductService> logger)
     {
-        _productRepo = productRepo;
+        _productRepo = new ProductRepo(_context);
         _mapper = mapper;
         _logger = logger;
     }
-    
 }
