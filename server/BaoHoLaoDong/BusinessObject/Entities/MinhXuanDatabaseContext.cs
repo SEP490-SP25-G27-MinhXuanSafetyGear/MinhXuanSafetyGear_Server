@@ -17,6 +17,8 @@ public partial class MinhXuanDatabaseContext : DbContext
     {
     }
 
+    public virtual DbSet<AccountVerification> AccountVerifications { get; set; }
+
     public virtual DbSet<BlogPost> BlogPosts { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -48,11 +50,29 @@ public partial class MinhXuanDatabaseContext : DbContext
             .UseSqlServer(conf.GetConnectionString("DbConnections"))
             .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Warning); // Chỉ log cảnh báo hoặc lỗi
     }
-
-
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AccountVerification>(entity =>
+        {
+            entity.HasKey(e => e.VerificationId).HasName("PK__AccountV__306D49074EC2C3A3");
+
+            entity.Property(e => e.AccountType).HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.VerificationCode).HasMaxLength(100);
+            entity.Property(e => e.VerificationDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.AccountVerifications)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_AccountVerifications_Customers");
+
+            entity.HasOne(d => d.AccountNavigation).WithMany(p => p.AccountVerifications)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_AccountVerifications_Employees");
+        });
+
         modelBuilder.Entity<BlogPost>(entity =>
         {
             entity.HasKey(e => e.PostId).HasName("PK__BlogPost__AA126018531C582E");

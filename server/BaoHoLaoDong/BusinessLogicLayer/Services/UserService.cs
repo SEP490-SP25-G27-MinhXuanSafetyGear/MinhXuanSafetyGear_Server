@@ -108,31 +108,46 @@ public class UserService : IUserService
 
     public async Task<EmployeeRequest?> GetEmployeeByIdAsync(int employeeId)
     {
-        throw new NotImplementedException();
+        var emp = await _userRepo.GetEmployeeByIdAsync(employeeId);
+        var empRequest = _mapper.Map<EmployeeRequest>(emp);
+        return empRequest;
     }
 
     public async Task<EmployeeRequest?> UpdateEmployeeAsync(UpdateEmployee updateEmployee)
     {
-        throw new NotImplementedException();
+        var emp = _mapper.Map<Employee>(updateEmployee);
+        var result = await _userRepo.UpdateEmployeeAsync(emp);
+        var empRequest = _mapper.Map<EmployeeRequest>(result);
+        return empRequest;
     }
 
     public async Task<CustomerRequest?> CreateNewCustomerAsync(NewCustomer newCustomer)
     {
-        throw new NotImplementedException();
+        var customer = _mapper.Map<Customer>(newCustomer);
+        var result = await _userRepo.CreateCustomerAsync(customer);
+        var customerRequest = _mapper.Map<CustomerRequest>(result);
+        return customerRequest;
     }
 
     public async Task<List<CustomerRequest>?> GetCustomerByPageAsync(int page, int pageSize)
     {
-        throw new NotImplementedException();
+        var customers = await _userRepo.GetCustomersPageAsync(page, pageSize);
+        var customerRequests = _mapper.Map<List<CustomerRequest>>(customers);
+        return customerRequests;
     }
 
     public async Task<CustomerRequest?> GetCustomerByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        var customer = await _userRepo.GetCustomerByEmailAsync(email);
+        var customerRequest = _mapper.Map<CustomerRequest>(customer);
+        return customerRequest;
     }
 
     public async Task<CustomerRequest?> UpdateCustomerAsync(UpdateCustomer updateCustomer)
     {
-        throw new NotImplementedException();
+        var customer = _mapper.Map<Customer>(updateCustomer);
+        var result = await _userRepo.UpdateCustomerAsync(customer);
+        var customerRequest = _mapper.Map<CustomerRequest>(result);
+        return customerRequest;
     }
 }

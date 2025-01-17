@@ -28,4 +28,6 @@ public partial class Employee
     public DateTime? UpdateAt { get; set; }
 
     public string Status { get; set; } = null!;
+
+    public virtual ICollection<AccountVerification> AccountVerifications { get; set; } = new List<AccountVerification>();
 }
