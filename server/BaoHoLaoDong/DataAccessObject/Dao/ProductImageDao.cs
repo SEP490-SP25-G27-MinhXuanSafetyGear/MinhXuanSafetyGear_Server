@@ -1,43 +1,76 @@
 ﻿using BusinessObject.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessObject.Dao;
 
 public class ProductImageDao : IDao<ProductImage>
 {
     private readonly MinhXuanDatabaseContext _context;
-    
+
     public ProductImageDao(MinhXuanDatabaseContext context)
     {
         _context = context;
     }
 
+    // Get ProductImage by ID
     public async Task<ProductImage?> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.ProductImages
+            .AsNoTracking()
+            .FirstOrDefaultAsync(pi => pi.ProductImageId == id);
     }
 
+    // Create a new ProductImage
     public async Task<ProductImage?> CreateAsync(ProductImage entity)
     {
-        throw new NotImplementedException();
+        await _context.ProductImages.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return entity;
     }
 
+    // Update an existing ProductImage
     public async Task<ProductImage?> UpdateAsync(ProductImage entity)
     {
-        throw new NotImplementedException();
+        var existingProductImage = await _context.ProductImages.FindAsync(entity.ProductImageId);
+        if (existingProductImage == null)
+        {
+            throw new ArgumentException("Product Image not found");
+        }
+
+        _context.ProductImages.Update(entity);
+        await _context.SaveChangesAsync();
+        return entity;
     }
 
+    // Delete a ProductImage by ID
     public async Task<bool> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var productImage = await _context.ProductImages.FindAsync(id);
+        if (productImage == null)
+        {
+            return false;
+        }
+
+        _context.ProductImages.Remove(productImage);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
+    // Get all ProductImages
     public async Task<List<ProductImage>?> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _context.ProductImages
+            .AsNoTracking()
+            .ToListAsync();
     }
 
+    // Get a page of ProductImages (pagination)
     public async Task<List<ProductImage>?> GetPageAsync(int page, int pageSize)
     {
-        throw new NotImplementedException();
+        return await _context.ProductImages
+            .AsNoTracking()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 }
