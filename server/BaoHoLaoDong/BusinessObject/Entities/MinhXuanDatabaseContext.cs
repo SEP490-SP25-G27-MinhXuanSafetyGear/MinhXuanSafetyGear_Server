@@ -50,6 +50,7 @@ public partial class MinhXuanDatabaseContext : DbContext
             .UseSqlServer(conf.GetConnectionString("DbConnections"))
             .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Warning); // Chỉ log cảnh báo hoặc lỗi
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountVerification>(entity =>
