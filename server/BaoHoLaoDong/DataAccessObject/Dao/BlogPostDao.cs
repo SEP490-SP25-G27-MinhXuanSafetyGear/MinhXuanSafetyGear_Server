@@ -31,13 +31,13 @@ public class BlogPostDao : IDao<BlogPost>
     // Update an existing BlogPost
     public async Task<BlogPost?> UpdateAsync(BlogPost entity)
     {
-        var existingBlogPost = await _context.BlogPosts.FindAsync(entity.PostId);
+        var existingBlogPost = await GetByIdAsync(entity.PostId);
         if (existingBlogPost == null)
         {
             throw new ArgumentException("Blog post not found");
         }
 
-        _context.BlogPosts.Update(entity);
+        _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return entity;
     }

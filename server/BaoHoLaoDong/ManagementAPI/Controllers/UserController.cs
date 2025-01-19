@@ -9,11 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Manager")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    public UserController(IUserService userService)
+    public UserController(IUserService userService )
     {
         _userService = userService;
     }
@@ -22,7 +21,6 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="newEmployee"></param>
     /// <returns></returns>
-    [Authorize(Roles = "Admin")]
     [HttpPost("create-employee")]
     public async Task<IActionResult> CreateNewEmployee ([FromBody] NewEmployee newEmployee)
     {
@@ -40,8 +38,7 @@ public class UserController : ControllerBase
     /// only admin can update employee
     /// </summary>
     /// <param name="updateEmployee"></param>
-    /// <returns></returns>
-    [Authorize(Roles = "Admin")]
+    /// <returns>Employee</returns>
     [HttpPut("update-employee")]
     public async Task<IActionResult> UpdateEmployee([FromBody] UpdateEmployee updateEmployee)
     {
@@ -78,7 +75,7 @@ public class UserController : ControllerBase
     /// admin and manager can get employee by id
     /// </summary>
     /// <param name="employeeId"></param>
-    /// <returns></returns>
+    /// <returns>customer</returns>
     [HttpGet("get-employee-by-id/{employeeId}")]
     public async Task<IActionResult> GetEmployeeById([FromRoute] int employeeId)
     {
@@ -96,7 +93,7 @@ public class UserController : ControllerBase
     /// Api for customer register
     /// </summary>
     /// <param name="newCustomer"></param>
-    /// <returns></returns>
+    /// <returns>return a new customer</returns>
     [HttpPost("register-customer")]
     [AllowAnonymous]
     public async Task<IActionResult> CreateNewCustomer([FromBody] NewCustomer newCustomer)
@@ -110,7 +107,12 @@ public class UserController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+    /// <summary>
+    /// Get customer by page
+    /// </summary>
+    /// <param name="page"></param>
+    /// <param name="pageSize"></param>
+    /// <returns>list customer</returns>
     [HttpGet("get-customer/page-{page}/pagesize-{pageSize}")]
     public async Task<IActionResult> GetCustomerByPage([FromRoute] int page =1, [FromRoute] int pageSize =20)
     {
@@ -123,4 +125,26 @@ public class UserController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    /// <summary>
+    /// send a new code
+    /// </summary>
+    /// <param name="email"></param>
+    /// <param name="accountType"></param>
+    /// <returns>bool</returns>
+    [HttpPost("send-new-code")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SendNewCodeVerify(string email,string accountType)
+    {
+        try
+        {
+            var result = await _userService.SendVerificationCodeBackAsync(email, accountType);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
 }

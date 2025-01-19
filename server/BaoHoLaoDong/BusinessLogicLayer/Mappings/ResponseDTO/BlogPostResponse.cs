@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogicLayer.Mappings.ResponseDTO;
 
-public class CustomerRequest
+public class BlogPostResponse
 {
     
 }

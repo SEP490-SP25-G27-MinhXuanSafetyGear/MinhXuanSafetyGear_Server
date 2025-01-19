@@ -56,6 +56,7 @@ GO
 CREATE TABLE Products (
     ProductId int primary key identity(1,1),     -- Khoá chính cho sản phẩm
     ProductName nvarchar(250) not null,           -- Tên sản phẩm
+	CategoryId int null,                          --- loại sản phẩm
     Description nvarchar(max) null,               -- Mô tả sản phẩm
     Quantity int not null,                         -- Số lượng sản phẩm có sẵn
     Price decimal(18,2) not null,                 -- Giá sản phẩm
@@ -63,6 +64,7 @@ CREATE TABLE Products (
     CreatedAt datetime not null default getdate(), -- Thời gian tạo sản phẩm
     UpdatedAt datetime null,                      -- Thời gian cập nhật sản phẩm
     Status bit not null default 1                 -- Trạng thái sản phẩm (1: Còn bán, 0: Ngừng bán)
+	CONSTRAINT FK_Products_Category FOREIGN KEY (CategoryId) REFERENCES Category(CategoryId) ON DELETE CASCADE
 );
 GO
 -- Tạo bảng ProductReviews

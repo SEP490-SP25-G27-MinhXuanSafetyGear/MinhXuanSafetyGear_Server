@@ -12,11 +12,13 @@ namespace DataAccessObject.Repository
     {
         private readonly CustomerDao _customerDao;
         private readonly EmployeeDao _employeeDao;
+        private readonly AccountVerificationDao _accountVerificationDao;
 
         public UserRepo(MinhXuanDatabaseContext context)
         {
             _customerDao = new CustomerDao(context);
             _employeeDao = new EmployeeDao(context);
+            _accountVerificationDao = new AccountVerificationDao(context);
         }
 
         #region Customer
@@ -43,8 +45,20 @@ namespace DataAccessObject.Repository
             {
                 throw new ArgumentException("Customer with this email already exists.");
             }
-
-            return await _customerDao.CreateAsync(customer);
+            customer.IsEmailVerified = false;
+            var newCustomer= await _customerDao.CreateAsync(customer);
+            if (customer != null)
+            {
+                await _accountVerificationDao.CreateAsync(new AccountVerification
+                {
+                    AccountId = newCustomer.CustomerId,
+                    VerificationCode = new Random().Next(100000, 999999).ToString(),
+                    AccountType = "Customer",
+                    IsVerified = false,
+                    VerificationDate = DateTime.Now.AddMinutes(5)
+                });
+            }
+            return newCustomer;
         }
 
         public async Task<Customer?> UpdateCustomerAsync(Customer customer)
@@ -67,6 +81,16 @@ namespace DataAccessObject.Repository
         {
             return await _customerDao.GetAllAsync();
         }
+
+        public async Task<AccountVerification?> CreateNewVefificationCodeAsync(int accountId, string typeAccount)
+        {
+            var accountVerification = await _accountVerificationDao.GetByAccountIdAsync(accountId, typeAccount);
+            if (accountVerification == null) return null;
+            accountVerification.VerificationCode = new Random().Next(100000, 999999).ToString();
+            accountVerification.VerificationDate = DateTime.Now.AddMinutes(5);
+            return await _accountVerificationDao.UpdateAsync(accountVerification);
+        }
+
         #endregion Customer
 
         #region Employee
@@ -98,14 +122,27 @@ namespace DataAccessObject.Repository
 
         public async Task<Employee?> UpdateEmployeeAsync(Employee employee)
         {
+            if (employee == null)
+            {
+                throw new ArgumentNullException(nameof(employee), "Employee object cannot be null.");
+            }
+
             var existingEmployee = await _employeeDao.GetByIdAsync(employee.EmployeeId);
             if (existingEmployee == null)
             {
                 throw new ArgumentException("Employee not found.");
             }
-
+            if (employee.Email != existingEmployee.Email)
+            {
+                var employeeWithEmail = await _employeeDao.GetEmployeeByEmailAsync(employee.Email);
+                if (employeeWithEmail != null)
+                {
+                    throw new Exception($"Email '{employee.Email}' is already in use.");
+                }
+            }
             return await _employeeDao.UpdateAsync(employee);
         }
+
 
         public async Task<List<Employee>?> GetEmployeesPageAsync(int page, int pageSize)
         {
@@ -116,6 +153,12 @@ namespace DataAccessObject.Repository
         {
             return await _employeeDao.GetAllAsync();
         }
+
+        public async Task<AccountVerification?> GetAccountVerificationByIdAndTypeAccountAsync(int id, string typeAccount)
+        {
+            return await _accountVerificationDao.GetByAccountIdAsync(id, typeAccount);
+        }
+
         #endregion Employee
     }
 }

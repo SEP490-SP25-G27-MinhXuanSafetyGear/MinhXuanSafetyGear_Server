@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogicLayer.Mappings.ResponseDTO;
 
-public class OrderRequest
+public class OrderDetailResponse
 {
     
 }

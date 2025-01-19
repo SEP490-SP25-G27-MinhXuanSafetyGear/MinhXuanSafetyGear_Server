@@ -80,12 +80,18 @@ namespace DataAccessObject.Repository
             {
                 throw new ArgumentException("Product not found.");
             }
+            product.UpdatedAt = DateTime.Now;
             return await _productDao.UpdateAsync(product);
         }
 
         public async Task<List<Product>?> GetAllProductsAsync()
         {
             return await _productDao.GetAllAsync();
+        }
+
+        public async Task<List<Product>?> GetProductPageAsync(int category, int page, int pageSize)
+        {
+            return await _productDao.GetPageAsync(category,page,pageSize);
         }
 
         #endregion Product
@@ -109,6 +115,8 @@ namespace DataAccessObject.Repository
             {
                 throw new ArgumentException("Product image not found.");
             }
+
+            productImage.UpdatedAt = DateTime.Now;
             return await _productImageDao.UpdateAsync(productImage);
         }
 
@@ -172,6 +180,11 @@ namespace DataAccessObject.Repository
         {
             var reviews = await _productReviewDao.GetByProductIdAsync(productId);
             return reviews.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        }
+
+        public async Task<int> CountProductByCategory(int category)
+        {
+            return await _productDao.CountProductByCategory(category);
         }
 
         #endregion ProductReview

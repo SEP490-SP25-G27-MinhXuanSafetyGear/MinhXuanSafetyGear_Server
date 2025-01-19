@@ -35,13 +35,7 @@ public class CategoryDao : IDao<Category>
     // Update an existing Category
     public async Task<Category?> UpdateAsync(Category entity)
     {
-        var existingCategory = await _context.Categories.FindAsync(entity.CategoryId);
-        if (existingCategory == null)
-        {
-            throw new ArgumentException("Category not found");
-        }
-
-        _context.Categories.Update(entity);
+        _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return entity;
     }
