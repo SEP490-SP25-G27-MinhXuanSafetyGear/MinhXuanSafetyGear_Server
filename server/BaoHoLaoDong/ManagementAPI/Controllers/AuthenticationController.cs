@@ -25,8 +25,15 @@ public class AuthenticationController : ControllerBase
         try
         {
             var user = await _userService.EmployeeLoginByEmailAndPasswordAsync(formLogin);
-            var token = _tokenService.GenerateJwtToken(user.Email, user.EmployeeId, user.Role);
-            return Ok(new {token = token});
+            if (user != null)
+            {
+                var token = _tokenService.GenerateJwtToken(user.Email, user.EmployeeId, user.Role);
+                return Ok(new {token = token});
+            }
+            else
+            {
+                return Ok("Login false");
+            }
         }catch(Exception e)
         {
             return BadRequest(e.Message);

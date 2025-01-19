@@ -14,6 +14,8 @@ public interface IProductRepo
     Task<Product?> GetProductByIdAsync(int productId);
     Task<Product?> UpdateProductAsync(Product product);
     Task<List<Product>?> GetAllProductsAsync();
+
+    Task<List<Product>?> GetProductPageAsync(int category, int page, int pageSize);
     // productimages methods
     Task<ProductImage?> CreateProductImageAsync(ProductImage productImage);
     Task<ProductImage?> GetProductImageByIdAsync(int productImageId);
@@ -27,4 +29,5 @@ public interface IProductRepo
     Task<bool> DeleteProductReviewAsync(int productReviewId);
     Task<List<ProductReview>?> GetProductReviewsAsync(int productId);
     Task<List<ProductReview>?> GetProductReviewsPageAsync(int productId, int page, int pageSize);
+    Task<int> CountProductByCategory(int category);
 }

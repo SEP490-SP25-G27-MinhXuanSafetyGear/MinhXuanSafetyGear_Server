@@ -9,6 +9,8 @@ public partial class Product
 
     public string ProductName { get; set; } = null!;
 
+    public int? CategoryId { get; set; }
+
     public string? Description { get; set; }
 
     public int Quantity { get; set; }
@@ -22,6 +24,8 @@ public partial class Product
     public DateTime? UpdatedAt { get; set; }
 
     public bool Status { get; set; }
+
+    public virtual Category? Category { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

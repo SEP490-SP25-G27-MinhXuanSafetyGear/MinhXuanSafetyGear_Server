@@ -1,6 +1,8 @@
-﻿namespace BusinessLogicLayer.Mappings.ResponseDTO;
+﻿using System;
 
-public class EmployeeRequest
+namespace BusinessLogicLayer.Mappings.ResponseDTO;
+
+public class EmployeeResponse
 {
     public int EmployeeId { get; set; }
 

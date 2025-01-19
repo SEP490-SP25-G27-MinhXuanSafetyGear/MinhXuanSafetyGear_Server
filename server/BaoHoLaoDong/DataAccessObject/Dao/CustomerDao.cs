@@ -31,13 +31,13 @@ namespace DataAccessObject.Dao
         // Update an existing customer
         public async Task<Customer?> UpdateAsync(Customer entity)
         {
-            var existingCustomer = await _context.Customers.FindAsync(entity.CustomerId);
+            var existingCustomer = await GetByIdAsync(entity.CustomerId);
             if (existingCustomer == null)
             {
                 throw new ArgumentException("Customer not found");
             }
 
-            _context.Customers.Update(entity);
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return entity;
         }

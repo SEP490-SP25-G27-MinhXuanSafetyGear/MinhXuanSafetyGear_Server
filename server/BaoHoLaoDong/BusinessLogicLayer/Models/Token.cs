@@ -1,4 +1,4 @@
-﻿namespace ManagementAPI;
+﻿namespace BusinessLogicLayer.Models;
 
 public class Token
 {

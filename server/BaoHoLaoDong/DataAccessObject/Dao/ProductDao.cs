@@ -16,6 +16,8 @@ public class ProductDao : IDao<Product>
     public async Task<Product?> GetByIdAsync(int id)
     {
         return await _context.Products
+            .Include(p=>p.Category)
+            .Include(p=>p.ProductImages)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.ProductId == id);
     }
@@ -36,13 +38,14 @@ public class ProductDao : IDao<Product>
     // Update an existing Product
     public async Task<Product?> UpdateAsync(Product entity)
     {
-        var existingProduct = await _context.Products.FindAsync(entity.ProductId);
+        var existingProduct = await _context.Products
+            .AsNoTracking().
+            FirstOrDefaultAsync(p=>p.ProductId == entity.ProductId);
         if (existingProduct == null)
         {
             throw new ArgumentException("Product not found");
         }
-
-        _context.Products.Update(entity);
+        _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return entity;
     }
@@ -65,6 +68,7 @@ public class ProductDao : IDao<Product>
     public async Task<List<Product>?> GetAllAsync()
     {
         return await _context.Products
+            .Include(p=>p.Category)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -74,8 +78,25 @@ public class ProductDao : IDao<Product>
     {
         return await _context.Products
             .AsNoTracking()
+            .Include(p=>p.Category)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+    }
+    public async Task<List<Product>?> GetPageAsync(int category, int page, int pageSize)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .Include(p => p.Category)
+            .Include(p=>p.ProductImages.OrderByDescending(p=>p.IsPrimary))
+            .Where(p => category == 0 || p.CategoryId == category) // Nếu category = 0 thì lấy tất cả, ngược lại lọc theo CategoryId
+            .Skip((page - 1) * pageSize) // Bỏ qua các sản phẩm của các trang trước
+            .Take(pageSize) // Lấy số lượng sản phẩm của trang hiện tại
+            .ToListAsync();
+    }
+
+    public async Task<int> CountProductByCategory(int category)
+    {
+        return await _context.Products.CountAsync(p => category == 0 || p.CategoryId == category);
     }
 }

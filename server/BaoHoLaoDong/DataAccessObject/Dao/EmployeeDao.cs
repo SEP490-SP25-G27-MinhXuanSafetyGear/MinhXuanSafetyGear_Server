@@ -25,6 +25,7 @@ public class EmployeeDao : IDao<Employee>
 
     public async Task<Employee?> UpdateAsync(Employee entity)
     {
+        entity.UpdateAt = DateTime.Now;
         _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return entity;

@@ -31,13 +31,13 @@ public class ProductImageDao : IDao<ProductImage>
     // Update an existing ProductImage
     public async Task<ProductImage?> UpdateAsync(ProductImage entity)
     {
-        var existingProductImage = await _context.ProductImages.FindAsync(entity.ProductImageId);
+        var existingProductImage = await GetByIdAsync(entity.ProductImageId);
         if (existingProductImage == null)
         {
             throw new ArgumentException("Product Image not found");
         }
 
-        _context.ProductImages.Update(entity);
+        _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return entity;
     }
