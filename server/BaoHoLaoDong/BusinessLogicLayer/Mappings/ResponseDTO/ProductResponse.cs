@@ -24,6 +24,6 @@ public class ProductResponse
     public DateTime? UpdatedAt { get; set; }
 
     public bool Status { get; set; }
-
+    public int Rate { get; set; }
     public List<ProductImageResponse> ProductImages { get; set; } = new List<ProductImageResponse>();
 }
