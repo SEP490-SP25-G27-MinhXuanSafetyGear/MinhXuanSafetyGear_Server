@@ -28,11 +28,20 @@ namespace BusinessLogicLayer.Mappings
 
             CreateMap<NewProduct, Product>();
             CreateMap<Product, ProductResponse>()
-                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.CategoryName));
+                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.CategoryName))
+                .ForMember(dest => dest.Rate, otp => otp.MapFrom(src => 
+                    src.ProductReviews.Any() 
+                        ? src.ProductReviews.Sum(p => p.Rating) / (double)src.ProductReviews.Count 
+                        : 0));
             CreateMap<ProductImage, ProductImageResponse>()
                 .ForMember(dest => dest.ImageUrl,
                     otp => otp.MapFrom(src => $"{applicationUrl}/images/product/{src.FileName}"));
             CreateMap<UpdateProduct, Product>();
+            CreateMap<NewBlogPost, BlogPost>();
+            CreateMap<BlogPost, BlogPostResponse>()
+                .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>$"{applicationUrl}/images/blog/{src.FileName}"));
+            CreateMap<UpdateBlogPost, BlogPost>()
+                .ForMember(dest => dest.FileName, opt => opt.Ignore()); // FileName sẽ được xử lý riêng
         }
     }
 }

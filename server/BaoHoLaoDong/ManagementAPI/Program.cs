@@ -65,12 +65,17 @@ builder.Services.AddAutoMapper(cfg =>
 
 
 #region services
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 // Add services from BusinessLogicLayer
 builder.Services.AddScoped<IUserService, UserService>();
 var imagePathProduct = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images","product");
 builder.Services.AddSingleton(imagePathProduct);
+
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+var imagePathBlogPost = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blog");
+builder.Services.AddSingleton(imagePathBlogPost);
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

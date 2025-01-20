@@ -89,6 +89,7 @@ public class ProductDao : IDao<Product>
             .AsNoTracking()
             .Include(p => p.Category)
             .Include(p=>p.ProductImages.OrderByDescending(p=>p.IsPrimary))
+            .Include(p=>p.ProductReviews)
             .Where(p => category == 0 || p.CategoryId == category) // Nếu category = 0 thì lấy tất cả, ngược lại lọc theo CategoryId
             .Skip((page - 1) * pageSize) // Bỏ qua các sản phẩm của các trang trước
             .Take(pageSize) // Lấy số lượng sản phẩm của trang hiện tại
