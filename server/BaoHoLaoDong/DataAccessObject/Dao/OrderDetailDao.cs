@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DataAccessObject.Dao;
 
@@ -28,6 +29,17 @@ public class OrderDetailDao : IDao<OrderDetail>
             .AsNoTracking()
             .ToListAsync();
     }
+    public async Task<List<OrderDetail>?> GetOrderDetailsByOrderIdAsync(int orderId, int page = 1, int pageSize = 20)
+    {
+        var query = _context.OrderDetails.AsQueryable();
+
+        query = query.Where(od => od.OrderId == orderId);
+
+        return await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
 
     // Create a new OrderDetail
     public async Task<OrderDetail?> CreateAsync(OrderDetail entity)
@@ -50,6 +62,26 @@ public class OrderDetailDao : IDao<OrderDetail>
         await _context.SaveChangesAsync();
         return entity;
     }
+    public async Task<OrderDetail?> UpdateOrderDetailAsync(int orderDetailId, OrderDetail orderDetailRequest)
+    {
+        var existingOrderDetail = await _context.OrderDetails
+            .FirstOrDefaultAsync(od => od.OrderDetailId == orderDetailId);
+
+        if (existingOrderDetail == null)
+        {
+            return null; 
+        }
+
+        existingOrderDetail.Quantity = orderDetailRequest.Quantity;
+        existingOrderDetail.ProductPrice = orderDetailRequest.ProductPrice;
+        existingOrderDetail.ProductDiscount = orderDetailRequest.ProductDiscount;
+
+        _context.OrderDetails.Update(existingOrderDetail);
+        await _context.SaveChangesAsync();
+
+        return existingOrderDetail; 
+    }
+
 
     // Delete an OrderDetail by ID
     public async Task<bool> DeleteAsync(int id)
@@ -82,4 +114,44 @@ public class OrderDetailDao : IDao<OrderDetail>
             .Take(pageSize)
             .ToListAsync();
     }
+
+    // Get total count of OrderDetails for pagination
+    public async Task<int> GetTotalCountAsync()
+    {
+        return await _context.OrderDetails.CountAsync();
+    }
+
+    // Get all Orders by page (pagination for orders)
+    public async Task<List<Order>?> GetOrdersByPageAsync(int page, int pageSize)
+    {
+        return await _context.Orders
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<List<OrderDetail>?> SearchOrderDetailsAsync(string searchTerm, int page = 1, int pageSize = 20)
+    {
+        return await _context.OrderDetails
+            .Where(od => EF.Functions.Like(od.Product.ProductName, $"%{searchTerm}%") || EF.Functions.Like(od.Order.Customer.FullName, $"%{searchTerm}%"))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<decimal> CalculateOrderTotalAsync(int orderId)
+    {
+        return await _context.OrderDetails
+            .Where(od => od.OrderId == orderId)
+            .SumAsync(od => od.Quantity * od.ProductPrice);
+    }
+    public async Task<List<OrderDetail>?> GetOrderDetailsByOrderIdAsync(int orderId)
+    {
+        return await _context.OrderDetails
+            .Where(od => od.OrderId == orderId)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
 }

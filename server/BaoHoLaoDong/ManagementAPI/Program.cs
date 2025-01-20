@@ -4,7 +4,10 @@ using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using DataAccessObject.Repository.Interface;
+using DataAccessObject.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,8 +50,13 @@ builder.Services.AddAuthorization(options =>
 });
 #endregion JWT
 
+
+
+
+
 // Add services to the container.
 builder.Services.AddControllers();
+  
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -104,6 +112,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+
 
 app.UseHttpsRedirection();
 

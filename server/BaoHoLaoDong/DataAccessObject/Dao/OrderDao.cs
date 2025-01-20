@@ -11,7 +11,10 @@ public class OrderDao : IDao<Order>
     {
         _context = context;
     }
-
+    public async Task<List<Order>> GetAllOrdersAsync()
+    {
+        return await _context.Orders.ToListAsync();
+    }
     // Get Order by ID
     public async Task<Order?> GetByIdAsync(int id)
     {
@@ -60,6 +63,9 @@ public class OrderDao : IDao<Order>
     public async Task<List<Order>?> GetAllAsync()
     {
         return await _context.Orders
+            .Include(order => order.Customer)
+            .Include(order=>order.OrderDetails)
+            .Include(order=>order.Receipts)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -72,5 +78,43 @@ public class OrderDao : IDao<Order>
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+    }
+    public async Task<List<Order>?> GetOrdersByCustomerIdAsync(int customerId, int page, int pageSize)
+    {
+        return await _context.Orders
+            .Where(order => order.CustomerId == customerId)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+    public async Task<List<Order>?> GetOrdersByPageAsync(int page, int pageSize)
+    {
+        return await _context.Orders
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+    public async Task<List<Order>?> SearchAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (startDate.HasValue && endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value && o.OrderDate <= endDate.Value);
+        }
+
+        if (!string.IsNullOrEmpty(customerName))
+        {
+            query = query.Where(o => o.Customer.FullName.Contains(customerName));
+        }
+        return await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAsync()
+    {
+        return await _context.Orders.CountAsync();
     }
 }
