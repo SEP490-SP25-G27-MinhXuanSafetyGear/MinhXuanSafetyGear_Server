@@ -28,7 +28,7 @@ public class AuthenticationController : ControllerBase
             if (user != null)
             {
                 var token = _tokenService.GenerateJwtToken(user.Email, user.EmployeeId, user.Role);
-                return Ok(new {token = token});
+                return Ok(new {token = token,role = user.Role});
             }
             else
             {
