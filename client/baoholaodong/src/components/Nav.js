@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-const navLinks = [
+const navLinkCustomers = [
 	{ label: "Trang chủ", href: "/" },
 	{ label: "Giới thiệu", href: "/about" },
 	{ label: "Sản phẩm", href: "/#" },
@@ -19,7 +19,7 @@ const Nav = () => {
 		<nav className="bg-red-600">
 			<div className="container mx-auto">
 				<ul className="flex justify-center space-x-4 text-white py-2">
-					{navLinks.map((link, index) => (
+					{navLinkCustomers.map((link, index) => (
 						<li key={index}>
 							<Link
 								className={`hover:underline ${
