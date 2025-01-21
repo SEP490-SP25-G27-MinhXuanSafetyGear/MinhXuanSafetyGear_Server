@@ -3,28 +3,32 @@
   "WorkspaceRootPath": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\businesslogiclayer\\mappings\\responsedto\\orderresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\mappings\\responsedto\\orderresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\businesslogiclayer\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\managementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\dataaccessobject\\repository\\orderrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\repository\\orderrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\businesslogiclayer\\mappings\\responsedto\\orderdetailresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\mappings\\responsedto\\orderdetailresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\businesslogiclayer\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\businesslogiclayer\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\businesslogiclayer\\mappings\\requestdto\\neworder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\mappings\\requestdto\\neworder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 118,
+          "SelectedChildIndex": 122,
           "Children": [
             {
               "$type": "Bookmark",
@@ -507,64 +511,77 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\ManagementAPI\\Program.cs",
+              "RelativeDocumentMoniker": "ManagementAPI\\Program.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\ManagementAPI\\Program.cs",
+              "RelativeToolTip": "ManagementAPI\\Program.cs",
+              "ViewState": "AQIAADsAAAAAAAAAAAAUwH8AAAAKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T02:23:27.364Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OrderRepo.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\OrderRepo.cs",
+              "RelativeDocumentMoniker": "DataAccessObject\\Repository\\OrderRepo.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\OrderRepo.cs",
+              "RelativeToolTip": "DataAccessObject\\Repository\\OrderRepo.cs",
+              "ViewState": "AQIAAAgAAAAAAAAAAAA5wCEAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T02:15:26.482Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "NewOrder.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\RequestDTO\\NewOrder.cs",
+              "RelativeDocumentMoniker": "BusinessLogicLayer\\Mappings\\RequestDTO\\NewOrder.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\RequestDTO\\NewOrder.cs",
+              "RelativeToolTip": "BusinessLogicLayer\\Mappings\\RequestDTO\\NewOrder.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAsAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T01:58:04.403Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "OrderService.cs",
               "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Services\\OrderService.cs",
               "RelativeDocumentMoniker": "BusinessLogicLayer\\Services\\OrderService.cs",
               "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Services\\OrderService.cs",
               "RelativeToolTip": "BusinessLogicLayer\\Services\\OrderService.cs",
-              "ViewState": "AQIAABIAAAAAAAAAAAAuwCsAAAA5AAAA",
+              "ViewState": "AQIAAEwAAAAAAAAAAAAIwG8AAAA5AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-20T09:23:58.221Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "OrderResponse.cs",
-              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderResponse.cs",
-              "RelativeDocumentMoniker": "BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderResponse.cs",
-              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderResponse.cs",
-              "RelativeToolTip": "BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderResponse.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAABcAAAA/AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-20T09:21:55.932Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "OrderDao.cs",
               "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
               "RelativeDocumentMoniker": "DataAccessObject\\Dao\\OrderDao.cs",
               "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
               "RelativeToolTip": "DataAccessObject\\Dao\\OrderDao.cs",
-              "ViewState": "AQIAAAUAAAAAAAAAAAAQwBcAAAAFAAAA",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAUwEEAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-20T05:22:09.66Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "OrderDetailResponse.cs",
-              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderDetailResponse.cs",
-              "RelativeDocumentMoniker": "BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderDetailResponse.cs",
-              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderDetailResponse.cs",
-              "RelativeToolTip": "BusinessLogicLayer\\Mappings\\ResponseDTO\\OrderDetailResponse.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-20T05:01:09.058Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "OrderController.cs",
               "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
               "RelativeDocumentMoniker": "ManagementAPI\\Controllers\\OrderController.cs",
               "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
               "RelativeToolTip": "ManagementAPI\\Controllers\\OrderController.cs",
-              "ViewState": "AQIAABMAAAAAAAAAAAAgwHoAAAAgAAAA",
+              "ViewState": "AQIAAA0AAAAAAAAAAAA1wB4AAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-20T04:46:36.76Z",
               "EditorCaption": ""
@@ -577,7 +594,7 @@
               "RelativeDocumentMoniker": "BusinessLogicLayer\\Mappings\\MappingProfile.cs",
               "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Mappings\\MappingProfile.cs",
               "RelativeToolTip": "BusinessLogicLayer\\Mappings\\MappingProfile.cs",
-              "ViewState": "AQIAABIAAAAAAAAAAAAUwCUAAAAAAAAA",
+              "ViewState": "AQIAABIAAAAAAAAAAAAUwB0AAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-20T04:29:53.424Z",
               "EditorCaption": ""

@@ -15,12 +15,11 @@ public class OrderResponse
     public bool IsEmailVerified { get; set; }
     public string PhoneNumber { get; set; }
     public string Address { get; set; }
-    public DateTime? DateOfBirth { get; set; }
+    public string DateOfBirth { get; set; }
     public bool Gender { get; set; }
     public DateTime CreatedAt { get; set; }
     public string ImageUrl { get; set; }
     public DateTime UpdateAt { get; set; }
-
     public List<OrderDetailResponse> OrderDetails { get; set; }
     public List<ReceiptResponse> Receipts { get; set; }
 }
