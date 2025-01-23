@@ -1,16 +1,16 @@
 ﻿using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
-using ManagementAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
-public class ProducController : ControllerBase
+public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    public ProducController(IProductService productService)
+    public ProductController(IProductService productService)
     {
         _productService = productService;
     }
@@ -87,20 +87,57 @@ public class ProducController : ControllerBase
         }
     }
     /// <summary>
-    /// Get product page
+    /// create new product variant
+    /// </summary>
+    /// <param name="newProductVariant"></param>
+    /// <returns></returns>
+    [HttpPost("create-product-variant")]
+    public async Task<IActionResult> CreateProductVariant([FromBody] NewProductVariant newProductVariant)
+    {
+        try
+        {
+            var product = await _productService.CreateNewProductVariantAsync(newProductVariant);
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpPut("update-product-variant")]
+    public async Task<IActionResult> UpdateProductVariant([FromBody] UpdateProductVariant updateProductVariant)
+    {
+        try
+        {
+            var product = await _productService.UpdateProductVariantAsync(updateProductVariant);
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    /// <summary>
+    /// Get product page {{base_url}}/api/product/get-product-page?category=1&page=1&pagesize=20&
     /// </summary>
     /// <param name="category"></param>
     /// <param name="page"></param>
     /// <param name="pagesize"></param>
     /// <returns>List productResponse</returns>
-    [HttpGet("get-product-page/{category}/{page}/{pagesize}")]
-    public async Task<IActionResult> GetProductPage([FromRoute] int category =0,[FromRoute] int page =1,int pagesize =20)
+    [EnableQuery]
+    [HttpGet("get-product-page")]
+    public async Task<IActionResult> GetProductPage([FromQuery] int category = 0, [FromQuery] int page = 1, [FromQuery] int pagesize = 20)
     {
         try
         {
-            var products = await _productService.GetProductByPage(category, page, pagesize);
-            int totalProduct = await _productService.CountProductByCategory(category);
-            var pageResult = new Page<ProductResponse>(products, page, pagesize,totalProduct);
+            var pageResult = await _productService.GetProductByPage(category, page, pagesize);
+            if (page < pageResult.TotalPages)
+            {
+                pageResult.NextUrlPage = $"{Request.Scheme}://{Request.Host}/api/product/get-product-page?category={category}&page={page + 1}&pagesize={pagesize}";
+            }else
+            {
+                pageResult.NextUrlPage = null;
+            }
             return Ok(pageResult);
         }
         catch (Exception ex)
@@ -108,6 +145,7 @@ public class ProducController : ControllerBase
             return BadRequest(ex);
         }
     }
+
     /// <summary>
     /// Update product
     /// </summary>

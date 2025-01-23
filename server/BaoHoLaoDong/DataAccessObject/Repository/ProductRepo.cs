@@ -9,49 +9,51 @@ namespace DataAccessObject.Repository
 {
     public class ProductRepo : IProductRepo
     {
-        private readonly CategoryDao _categoryDao;
+        private readonly ProductCategoryDao _productCategoryDao;
         private readonly ProductDao _productDao;
         private readonly ProductImageDao _productImageDao;
         private readonly ProductReviewDao _productReviewDao;
+        private readonly ProductVariantDao _productVariantDao;
 
         public ProductRepo(MinhXuanDatabaseContext context)
         {
-            _categoryDao = new CategoryDao(context);
+            _productCategoryDao = new ProductCategoryDao(context);
             _productDao = new ProductDao(context);
             _productImageDao = new ProductImageDao(context);
             _productReviewDao = new ProductReviewDao(context);
+            _productVariantDao = new ProductVariantDao(context);
         }
 
         #region Category
 
-        public async Task<Category?> CreateCategoryAsync(Category category)
+        public async Task<ProductCategory?> CreateCategoryAsync(ProductCategory category)
         {
-            var existingCategory = await _categoryDao.GetByNameAsync(category.CategoryName);
+            var existingCategory = await _productCategoryDao.GetByNameAsync(category.CategoryName);
             if (existingCategory != null)
             {
                 throw new ArgumentException("Category with this name already exists.");
             }
-            return await _categoryDao.CreateAsync(category);
+            return await _productCategoryDao.CreateAsync(category);
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(int categoryId)
+        public async Task<ProductCategory?> GetCategoryByIdAsync(int categoryId)
         {
-            return await _categoryDao.GetByIdAsync(categoryId);
+            return await _productCategoryDao.GetByIdAsync(categoryId);
         }
 
-        public async Task<Category?> UpdateCategoryAsync(Category category)
+        public async Task<ProductCategory?> UpdateCategoryAsync(ProductCategory category)
         {
-            var existingCategory = await _categoryDao.GetByIdAsync(category.CategoryId);
+            var existingCategory = await _productCategoryDao.GetByIdAsync(category.CategoryId);
             if (existingCategory == null)
             {
                 throw new ArgumentException("Category not found.");
             }
-            return await _categoryDao.UpdateAsync(category);
+            return await _productCategoryDao.UpdateAsync(category);
         }
 
-        public async Task<List<Category>?> GetAllCategoriesAsync()
+        public async Task<List<ProductCategory>?> GetAllCategoriesAsync()
         {
-            return await _categoryDao.GetAllAsync();
+            return await _productCategoryDao.GetAllAsync();
         }
 
         #endregion Category
@@ -185,6 +187,31 @@ namespace DataAccessObject.Repository
         public async Task<int> CountProductByCategory(int category)
         {
             return await _productDao.CountProductByCategory(category);
+        }
+
+        public async Task<ProductVariant?> CreateProductVariantAsync(ProductVariant productVariant)
+        {
+            return await _productVariantDao.CreateAsync(productVariant);
+        }
+
+        public async Task<List<ProductVariant>?> GetAllVariantsAsync(int productId)
+        {
+            return await _productVariantDao.GetByProductIdAsync(productId);
+        }
+
+        public async Task<ProductVariant?> GetProductVariantByIdAsync(int variantId)
+        {
+            return await _productVariantDao.GetByIdAsync(variantId);
+        }
+
+        public async Task<ProductVariant?> UpdateProductVariantAsync(ProductVariant productVariant)
+        {
+            var existingProductVariant = await _productVariantDao.GetByIdAsync(productVariant.VariantId);
+            if (existingProductVariant == null)
+            {
+                throw new ArgumentException("Product variant not found.");
+            }
+            return await _productVariantDao.UpdateAsync(productVariant);
         }
 
         #endregion ProductReview

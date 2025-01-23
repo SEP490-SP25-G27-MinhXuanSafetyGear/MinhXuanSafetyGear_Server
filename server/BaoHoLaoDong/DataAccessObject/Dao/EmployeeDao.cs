@@ -67,4 +67,8 @@ public class EmployeeDao : IDao<Employee>
             .FirstOrDefaultAsync(e => e.PhoneNumber == phone); 
     }
 
+    public async Task<int> CountAsync()
+    {
+        return await _context.Employees.CountAsync();
+    }
 }

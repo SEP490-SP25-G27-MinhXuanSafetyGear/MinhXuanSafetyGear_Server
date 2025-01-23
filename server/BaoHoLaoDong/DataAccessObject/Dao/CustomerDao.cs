@@ -85,5 +85,9 @@ namespace DataAccessObject.Dao
                 .FirstOrDefaultAsync(c => c.PhoneNumber == phone); // Find customer by phone number
         }
 
+        public async Task<int> CountAsync()
+        {
+            return await _context.Customers.CountAsync();
+        }
     }
 }

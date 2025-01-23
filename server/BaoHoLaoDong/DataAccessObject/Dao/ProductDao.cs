@@ -18,6 +18,8 @@ public class ProductDao : IDao<Product>
         return await _context.Products
             .Include(p=>p.Category)
             .Include(p=>p.ProductImages)
+            .Include(p=>p.ProductReviews)
+            .Include(p=>p.ProductVariants)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.ProductId == id);
     }
@@ -39,8 +41,12 @@ public class ProductDao : IDao<Product>
     public async Task<Product?> UpdateAsync(Product entity)
     {
         var existingProduct = await _context.Products
-            .AsNoTracking().
-            FirstOrDefaultAsync(p=>p.ProductId == entity.ProductId);
+            .AsNoTracking()
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .Include(p => p.ProductReviews)
+            .Include(p => p.ProductVariants)
+            .FirstOrDefaultAsync(p=>p.ProductId == entity.ProductId);
         if (existingProduct == null)
         {
             throw new ArgumentException("Product not found");
@@ -69,6 +75,9 @@ public class ProductDao : IDao<Product>
     {
         return await _context.Products
             .Include(p=>p.Category)
+            .Include(p=>p.ProductImages)
+            .Include(p=>p.ProductReviews)
+            .Include(p=>p.ProductVariants)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -79,6 +88,9 @@ public class ProductDao : IDao<Product>
         return await _context.Products
             .AsNoTracking()
             .Include(p=>p.Category)
+            .Include(p=>p.ProductImages)
+            .Include(p=>p.ProductReviews)
+            .Include(p=>p.ProductVariants)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -90,6 +102,7 @@ public class ProductDao : IDao<Product>
             .Include(p => p.Category)
             .Include(p=>p.ProductImages.OrderByDescending(p=>p.IsPrimary))
             .Include(p=>p.ProductReviews)
+            .Include(p=>p.ProductVariants)
             .Where(p => category == 0 || p.CategoryId == category) // Nếu category = 0 thì lấy tất cả, ngược lại lọc theo CategoryId
             .Skip((page - 1) * pageSize) // Bỏ qua các sản phẩm của các trang trước
             .Take(pageSize) // Lấy số lượng sản phẩm của trang hiện tại

@@ -7,9 +7,9 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
     {
         [Required]
         public string ProductName { get; set; } = null!;
-
+        [Required]
         public int? CategoryId { get; set; }
-
+        
         public string? Description { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
@@ -21,7 +21,7 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
         public decimal? Discount { get; set; }
 
         public bool Status { get; set; }
+        public IFormFile File { get; set; } = null!;
 
-        public IFormFile File { get; set; }
     }
 }

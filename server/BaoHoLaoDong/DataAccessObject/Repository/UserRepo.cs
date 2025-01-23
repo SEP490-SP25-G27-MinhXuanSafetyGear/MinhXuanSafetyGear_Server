@@ -159,6 +159,16 @@ namespace DataAccessObject.Repository
             return await _accountVerificationDao.GetByAccountIdAsync(id, typeAccount);
         }
 
+        public async Task<int> CountCustomers()
+        {
+            return await _customerDao.CountAsync();
+        }
+
+        public async Task<int> CountEmployees()
+        {
+            return await _employeeDao.CountAsync();
+        }
+
         #endregion Employee
     }
 }

@@ -8,7 +8,8 @@ using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
-using BCrypt.Net; // Thư viện để mã hóa mật khẩu
+using BCrypt.Net;
+using BusinessLogicLayer.Models; // Thư viện để mã hóa mật khẩu
 using Microsoft.Extensions.Logging; // Thư viện log
 
 namespace BusinessLogicLayer.Services;
@@ -90,14 +91,16 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<List<EmployeeResponse>?> GetEmployeeByPageAsync(int page, int pageSize)
+    public async Task<Page<EmployeeResponse>?> GetEmployeeByPageAsync(int page, int pageSize)
     {
         try
         {
             var emps = await _userRepo.GetEmployeesPageAsync(page, pageSize);
+            var totalEmp = await _userRepo.CountEmployees();
             var empRequests = _mapper.Map<List<EmployeeResponse>>(emps);
+            var pageResult = new Page<EmployeeResponse>(empRequests, page, pageSize, totalEmp);
             _logger.LogInformation("Get employee by page successfully");
-            return empRequests;
+            return pageResult;
         }catch(Exception ex)
         {
             _logger.LogError(ex, "An error occurred during get employee by page");
@@ -145,11 +148,13 @@ public class UserService : IUserService
         return customerRequest;
     }
 
-    public async Task<List<CustomerResponse>?> GetCustomerByPageAsync(int page, int pageSize)
+    public async Task<Page<CustomerResponse>?> GetCustomerByPageAsync(int page, int pageSize)
     {
         var customers = await _userRepo.GetCustomersPageAsync(page, pageSize);
+        var totalCustomer = await _userRepo.CountCustomers();
         var customerRequests = _mapper.Map<List<CustomerResponse>>(customers);
-        return customerRequests;
+        var pageResult = new Page<CustomerResponse>(customerRequests, page, pageSize, totalCustomer);
+        return pageResult;
     }
 
     public async Task<CustomerResponse?> GetCustomerByEmailAsync(string email)

@@ -30,4 +30,8 @@ public partial class Employee
     public string Status { get; set; } = null!;
 
     public virtual ICollection<AccountVerification> AccountVerifications { get; set; } = new List<AccountVerification>();
+
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual ICollection<OrderTracking> OrderTrackings { get; set; } = new List<OrderTracking>();
 }

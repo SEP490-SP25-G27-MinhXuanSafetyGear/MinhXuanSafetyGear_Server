@@ -5,6 +5,7 @@ using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +49,14 @@ builder.Services.AddAuthorization(options =>
 #endregion JWT
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddOData(opt =>
+        opt.Select() // Hỗ trợ $select
+            .Filter() // Hỗ trợ $filter
+            .OrderBy()
+            .Expand() // Hỗ trợ $expand
+            .SetMaxTop(100) // Giới hạn số bản ghi
+        );
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -69,13 +77,10 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 // Add services from BusinessLogicLayer
 builder.Services.AddScoped<IUserService, UserService>();
-var imagePathProduct = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images","product");
-builder.Services.AddSingleton(imagePathProduct);
-
+var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+builder.Services.AddSingleton(imageDirectory);
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-var imagePathBlogPost = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blog");
-builder.Services.AddSingleton(imagePathBlogPost);
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
