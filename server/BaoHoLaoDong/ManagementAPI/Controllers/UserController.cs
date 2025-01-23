@@ -58,13 +58,21 @@ public class UserController : ControllerBase
     /// <param name="page"></param>
     /// <param name="pageSize"></param>
     /// <returns></returns>
-    [HttpGet("get-employee/page-{page}/pagesize-{pageSize}")]
-    public async Task<IActionResult> GetEmployeeByPage([FromRoute] int page =1, [FromRoute] int pageSize =20)
+    [HttpGet("get-employee-page")]
+    public async Task<IActionResult> GetEmployeeByPage([FromQuery] int page =1, [FromQuery] int pageSize =20)
     {
         try
         {
-            var employees = await _userService.GetEmployeeByPageAsync(page, pageSize);
-            return Ok(employees);
+            var pageResult = await _userService.GetEmployeeByPageAsync(page, pageSize);
+            if (page < pageResult.TotalPages)
+            {
+                pageResult.NextUrlPage = $"{Request.Scheme}://{Request.Host}/api/user/get-employee-page?page={pageResult.CurrentPage+1}&pageSize={pageResult.PageSize}";
+            }
+            else
+            {
+                pageResult.NextUrlPage = null;
+            }
+            return Ok(pageResult);
         }catch(Exception e)
         {
             return BadRequest(e.Message);
@@ -113,13 +121,21 @@ public class UserController : ControllerBase
     /// <param name="page"></param>
     /// <param name="pageSize"></param>
     /// <returns>list customer</returns>
-    [HttpGet("get-customer/page-{page}/pagesize-{pageSize}")]
-    public async Task<IActionResult> GetCustomerByPage([FromRoute] int page =1, [FromRoute] int pageSize =20)
+    [HttpGet("get-customer-page")]
+    public async Task<IActionResult> GetCustomerByPage([FromQuery] int page =1, [FromQuery] int pageSize =20)
     {
         try
         {
-            var customers = await _userService.GetCustomerByPageAsync(page, pageSize);
-            return Ok(customers);
+            var pageResult = await _userService.GetCustomerByPageAsync(page, pageSize);
+            if (page < pageResult.TotalPages)
+            {
+                pageResult.NextUrlPage = $"{Request.Scheme}://{Request.Host}/api/user/get-customer-page?page={pageResult.CurrentPage+1}&pageSize={pageResult.PageSize}";
+            }
+            else
+            {
+                pageResult.NextUrlPage = null;
+            }
+            return Ok(pageResult);
         }catch(Exception e)
         {
             return BadRequest(e.Message);

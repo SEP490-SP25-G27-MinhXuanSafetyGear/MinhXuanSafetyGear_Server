@@ -1,4 +1,4 @@
-﻿namespace ManagementAPI.Models;
+﻿namespace BusinessLogicLayer.Models;
 
 public class Page<T>
 {
@@ -26,6 +26,8 @@ public class Page<T>
     /// Tổng số trang.
     /// </summary>
     public int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);
+    
+    public string NextUrlPage { get; set; }
 
     /// <summary>
     /// Constructor không tham số.

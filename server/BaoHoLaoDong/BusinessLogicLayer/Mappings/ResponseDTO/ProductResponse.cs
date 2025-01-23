@@ -3,9 +3,9 @@ namespace BusinessLogicLayer.Mappings.ResponseDTO;
 
 public class ProductResponse
 {
-    public int ProductId { get; set; }
+    public int Id { get; set; }
 
-    public string ProductName { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
     
@@ -26,4 +26,5 @@ public class ProductResponse
     public bool Status { get; set; }
     public int Rate { get; set; }
     public List<ProductImageResponse> ProductImages { get; set; } = new List<ProductImageResponse>();
+    public List<ProductVariantResponse> ProductVariants { get; set; } = new List<ProductVariantResponse>();
 }

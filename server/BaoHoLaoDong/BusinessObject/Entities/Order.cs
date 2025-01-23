@@ -21,5 +21,7 @@ public partial class Order
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
+    public virtual ICollection<OrderTracking> OrderTrackings { get; set; } = new List<OrderTracking>();
+
     public virtual ICollection<Receipt> Receipts { get; set; } = new List<Receipt>();
 }

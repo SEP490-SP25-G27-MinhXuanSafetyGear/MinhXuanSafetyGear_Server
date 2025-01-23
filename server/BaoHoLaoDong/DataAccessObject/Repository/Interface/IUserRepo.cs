@@ -22,4 +22,6 @@ public interface IUserRepo
     Task<List<Employee>?> GetEmployeesPageAsync(int page, int pageSize);
     Task<List<Employee>?> GetAllEmployeesAsync();
     Task<AccountVerification?> GetAccountVerificationByIdAndTypeAccountAsync(int id, string typeAccount);
+    Task<int> CountCustomers();
+    Task<int> CountEmployees();
 }

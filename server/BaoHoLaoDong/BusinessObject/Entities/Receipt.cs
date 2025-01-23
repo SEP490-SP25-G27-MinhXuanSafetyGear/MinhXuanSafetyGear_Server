@@ -23,7 +23,7 @@ public partial class Receipt
 
     public DateTime CreatedAt { get; set; }
 
-    public string Status { get; set; } = null!;
+    public DateTime? UpdatedAt { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 }

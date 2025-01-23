@@ -5,10 +5,10 @@ namespace DataAccessObject.Repository.Interface;
 public interface IProductRepo
 {
     // categories methods
-    Task<Category?> CreateCategoryAsync(Category category);
-    Task<Category?> GetCategoryByIdAsync(int categoryId);
-    Task<Category?> UpdateCategoryAsync(Category category);
-    Task<List<Category>?> GetAllCategoriesAsync();
+    Task<ProductCategory?> CreateCategoryAsync(ProductCategory category);
+    Task<ProductCategory?> GetCategoryByIdAsync(int categoryId);
+    Task<ProductCategory?> UpdateCategoryAsync(ProductCategory category);
+    Task<List<ProductCategory>?> GetAllCategoriesAsync();
     // products methods
     Task<Product?> CreateProductAsync(Product product);
     Task<Product?> GetProductByIdAsync(int productId);
@@ -30,4 +30,8 @@ public interface IProductRepo
     Task<List<ProductReview>?> GetProductReviewsAsync(int productId);
     Task<List<ProductReview>?> GetProductReviewsPageAsync(int productId, int page, int pageSize);
     Task<int> CountProductByCategory(int category);
+    Task<ProductVariant?> CreateProductVariantAsync(ProductVariant productVariant);
+    Task<List<ProductVariant>?> GetAllVariantsAsync(int productId);
+    Task<ProductVariant?> GetProductVariantByIdAsync(int variantId);
+    Task<ProductVariant?> UpdateProductVariantAsync(ProductVariant productVariant);
 }

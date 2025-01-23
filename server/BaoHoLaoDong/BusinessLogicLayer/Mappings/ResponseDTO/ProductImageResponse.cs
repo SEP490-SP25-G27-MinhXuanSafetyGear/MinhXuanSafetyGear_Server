@@ -2,7 +2,7 @@
 
 public class ProductImageResponse
 {
-    public int ProductImageId { get; set; }
+    public int Id { get; set; }
 
     public string FileName { get; set; } = null!;
 

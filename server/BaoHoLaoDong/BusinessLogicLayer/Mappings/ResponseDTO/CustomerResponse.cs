@@ -4,7 +4,7 @@ namespace BusinessLogicLayer.Mappings.ResponseDTO;
 
 public class CustomerResponse
 {
-    public int CustomerId { get; set; }
+    public int Id { get; set; }
 
     public string FullName { get; set; } = null!;
 

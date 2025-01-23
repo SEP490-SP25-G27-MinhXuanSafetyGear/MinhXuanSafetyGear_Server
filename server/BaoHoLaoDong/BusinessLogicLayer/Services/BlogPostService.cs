@@ -12,13 +12,13 @@ namespace BusinessLogicLayer.Services;
 public class BlogPostService : IBlogPostService
 {
     private readonly IBlogPostRepo _blogPostRepo;
-    private readonly string _imagePathBlogPost;
+    private readonly string _imagePathBlog;
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
-    public BlogPostService(MinhXuanDatabaseContext context,string imagePathBlogPost,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(MinhXuanDatabaseContext context,string imagePathBlog,IMapper mapper,ILogger<BlogPostService> logger)
     {
         _blogPostRepo = new BlogPostRepo(context);
-        _imagePathBlogPost = imagePathBlogPost;
+        _imagePathBlog = imagePathBlog;
         _mapper = mapper;
         _logger = logger;
     }
@@ -31,7 +31,7 @@ public class BlogPostService : IBlogPostService
             if (file != null && file.Length>0)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var pathImage = Path.Combine(_imagePathBlogPost, fileName);
+                var pathImage = Path.Combine(_imagePathBlog, fileName);
                 using (var stream = new FileStream(pathImage,FileMode.Create))
                 { 
                     await file.CopyToAsync(stream);
@@ -74,7 +74,7 @@ public class BlogPostService : IBlogPostService
             if (file != null && file.Length > 0)
             {
                 var fileName = blogPostExit.FileName;
-                var pathImage = Path.Combine(_imagePathBlogPost, fileName);
+                var pathImage = Path.Combine(_imagePathBlog, fileName);
                 using (var stream = new FileStream(pathImage,FileMode.Create))
                 { 
                     await file.CopyToAsync(stream);
@@ -97,7 +97,7 @@ public class BlogPostService : IBlogPostService
         {
             var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(id);
             var fileName = blogPostExit.FileName;
-            var pathImage = Path.Combine(_imagePathBlogPost, fileName);
+            var pathImage = Path.Combine(_imagePathBlog, fileName);
             var result = await _blogPostRepo.DeleteBlogPostAsync(id);
             if (File.Exists(pathImage) && result)
             {

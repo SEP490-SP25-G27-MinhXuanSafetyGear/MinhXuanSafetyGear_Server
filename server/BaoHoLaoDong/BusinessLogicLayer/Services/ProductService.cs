@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+﻿
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
 
 namespace BusinessLogicLayer.Services;
 
@@ -22,32 +17,33 @@ public class ProductService : IProductService
     private readonly IMapper _mapper;
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
-    private readonly string _imageDirectoryProduct;
+    private readonly string _imageDirectory;
 
     public ProductService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<ProductService> logger,
-        string imageDirectoryProduct)
+        string imageDirectory)
     {
         _productRepo = new ProductRepo(context);
         _mapper = mapper;
         _logger = logger;
-        _imageDirectoryProduct = imageDirectoryProduct;
+        _imageDirectory = imageDirectory;
     }
 
     private async Task<string?> SaveImageAsync(IFormFile file)
     {
         try
         {
-            if (!Directory.Exists(_imageDirectoryProduct))
+            if (!Directory.Exists(_imageDirectory))
             {
-                Directory.CreateDirectory(_imageDirectoryProduct);
+                Directory.CreateDirectory(_imageDirectory);
             }
 
             var uniqueFileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(_imageDirectoryProduct, uniqueFileName);
+            var filePath = Path.Combine(_imageDirectory, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
+                _logger.LogInformation(_imageDirectory);
             }
 
             return uniqueFileName;
@@ -61,7 +57,7 @@ public class ProductService : IProductService
 
     public async Task<CategoryResponse?> CreateNewCategory(NewCategory newCategory)
     {
-        var category = _mapper.Map<Category>(newCategory);
+        var category = _mapper.Map<ProductCategory>(newCategory);
         category = await _productRepo.CreateCategoryAsync(category);
         return _mapper.Map<CategoryResponse>(category);
     }
@@ -72,10 +68,13 @@ public class ProductService : IProductService
         return _mapper.Map<List<CategoryResponse>>(categories);
     }
 
-    public async Task<List<ProductResponse>?> GetProductByPage(int category = 0, int page = 1, int pageSize = 20)
+    public async Task<Page<ProductResponse>?> GetProductByPage(int category = 0, int page = 1, int pageSize = 20)
     {
         var products = await _productRepo.GetProductPageAsync(category, page, pageSize);
-        return _mapper.Map<List<ProductResponse>>(products);
+        var totalProduct = await _productRepo.CountProductByCategory(category);
+        var productsResponse = _mapper.Map<List<ProductResponse>>(products);
+        var pageResult = new Page<ProductResponse>(productsResponse, page, pageSize, totalProduct);
+        return pageResult;
     }
 
     public async Task<CategoryResponse?> UpdateCategoryAsync(UpdateCategory updateCategory)
@@ -203,7 +202,7 @@ public class ProductService : IProductService
             {
                 var result =await _productRepo.DeleteProductImageAsync(id);
                 var fileName = productImageExit.FileName;
-                var oldFilePath = Path.Combine(_imageDirectoryProduct, fileName);
+                var oldFilePath = Path.Combine(_imageDirectory, fileName);
                 if (File.Exists(oldFilePath) && result)
                 {
                     File.Delete(oldFilePath);
@@ -246,6 +245,59 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             _logger.LogError(ex,"Error create new image");
+            throw;
+        }
+    }
+
+    public async Task<ProductResponse?> CreateNewProductVariantAsync(NewProductVariant newProductVariant)
+    {
+        try
+        {
+            var productId = newProductVariant.ProductId;
+            var product = await _productRepo.GetProductByIdAsync(productId);
+            if (product == null)
+            {
+                throw new Exception("Product not found.");
+            }
+            var productVariant = _mapper.Map<ProductVariant>(newProductVariant);
+            productVariant = await _productRepo.CreateProductVariantAsync(productVariant);
+            var listProductVariant =  await _productRepo.GetAllVariantsAsync(productId);
+            int totalQuantity = listProductVariant.Where(p=>p.Status).Sum(v => v.Quantity);
+            product.Quantity = totalQuantity;
+            product = await _productRepo.UpdateProductAsync(product);
+            return _mapper.Map<ProductResponse>(product);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating new product variant.");
+            throw;
+        }
+    }
+
+    public async Task<ProductResponse?> UpdateProductVariantAsync(UpdateProductVariant updateProductVariant)
+    {
+        try
+        {
+            var productVariant = await _productRepo.GetProductVariantByIdAsync(updateProductVariant.VariantId);
+            if (productVariant == null)
+            {
+                throw new Exception("Product variant not found.");
+            }
+
+            _mapper.Map(updateProductVariant, productVariant);
+            productVariant = await _productRepo.UpdateProductVariantAsync(productVariant);
+            var productId = productVariant.ProductId;
+            var product = await _productRepo.GetProductByIdAsync(productId);
+            var listProductVariant = await _productRepo.GetAllVariantsAsync(productId);
+            int totalQuantity = listProductVariant.Where(p=>p.Status).Sum(v => v.Quantity);
+            product.Quantity = totalQuantity;
+            await _productRepo.UpdateProductAsync(product);
+            var newProduct = await _productRepo.GetProductByIdAsync(productId);
+            return _mapper.Map<ProductResponse>(newProduct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product variant with ID: {VariantId}", updateProductVariant.VariantId);
             throw;
         }
     }
