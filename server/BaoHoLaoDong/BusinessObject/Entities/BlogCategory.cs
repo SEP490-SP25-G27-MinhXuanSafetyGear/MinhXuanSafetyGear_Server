@@ -14,4 +14,6 @@ public partial class BlogCategory
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public virtual ICollection<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
 }

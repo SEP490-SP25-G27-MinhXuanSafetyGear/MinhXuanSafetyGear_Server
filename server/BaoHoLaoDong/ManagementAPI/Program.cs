@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
+var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
 
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
@@ -96,14 +98,15 @@ builder.Services.AddScoped<TokenService>(provier =>
 
 
 
-// Cấu hình CORS cho phép tất cả
+// Cấu hình CORS 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddDefaultPolicy(policy =>
     {
-        builder.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        policy.WithOrigins(clientUrl) // Địa chỉ frontend React
+            .AllowAnyHeader() // Cho phép mọi header
+            .AllowAnyMethod() // Cho phép mọi method (GET, POST, v.v.)
+            .AllowCredentials(); // Cho phép gửi cookies hoặc thông tin xác thực
     });
 });
 var app = builder.Build();
@@ -117,10 +120,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll"); // Thêm middleware CORS vào pipeline xử lý HTTP
+app.UseCors(); // Thêm middleware CORS vào pipeline xử lý HTTP
 app.UseAuthentication(); 
 app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();
-
 app.Run();

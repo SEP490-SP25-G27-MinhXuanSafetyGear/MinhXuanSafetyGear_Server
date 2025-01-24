@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7LAQ5VjOXtE=",
+  "dgSpecHash": "kLQ2WrwogfY=",
   "success": true,
-  "projectFilePath": "E:\\SEP490\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\ManagementAPI\\ManagementAPI.csproj",
+  "projectFilePath": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\ManagementAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\LINH\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\LINH\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",

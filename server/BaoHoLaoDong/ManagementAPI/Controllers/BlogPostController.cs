@@ -13,6 +13,56 @@ public class BlogPostController : ControllerBase
         _blogPostService = blogPostService;
     }
     /// <summary>
+    /// get blog categories
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("get-blog-categories")]
+    public async Task<IActionResult> GetBlogCategories()
+    {
+        try
+        {
+            var blogCategories = await _blogPostService.GetBlogCategoriesAsync();
+            return Ok(blogCategories);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    /// <summary>
+    /// update blog category
+    /// </summary>
+    /// <param name="blogCategoryRequest"></param>
+    /// <returns></returns>
+    [HttpPost("create-blog-category")] 
+    public async Task<IActionResult> CreateBlogCategory([FromBody] NewBlogCategory blogCategoryRequest)
+    {
+        try
+        {
+            var blogCategory = await _blogPostService.CreateBlogCategoryAsync(blogCategoryRequest);
+            return Ok(blogCategory);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    [HttpPut("update-blog-category")]
+    public async Task<IActionResult> UpdateBlogCategory([FromBody] UpdateBlogCategory updateBlogCategory)
+    {
+        try
+        {
+            var blogCategory = await _blogPostService.UpdateBlogCategoryAsync(updateBlogCategory);
+            return Ok(blogCategory);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    /// <summary>
     /// create new blog post
     /// </summary>
     /// <param name="newBlogPost"></param>
@@ -36,12 +86,12 @@ public class BlogPostController : ControllerBase
     /// <param name="page"></param>
     /// <param name="pagesize"></param>
     /// <returns></returns>
-    [HttpGet("get-blog-page/{page}/{pagesize}")]
-    public async Task<IActionResult> GetBlogPostPage([FromRoute] int page, [FromRoute]int pagesize)
+    [HttpGet("get-blog-page")]
+    public async Task<IActionResult> GetBlogPostPage([FromQuery] int categoryId,[FromQuery] int page, [FromQuery]int size)
     {
         try
         {
-            var blogs = await _blogPostService.GetBlogPostByPageAsync(page, pagesize);
+            var blogs = await _blogPostService.GetBlogPostByPageAsync(categoryId,page, size);
             return Ok(blogs);
         }
         catch (Exception ex)

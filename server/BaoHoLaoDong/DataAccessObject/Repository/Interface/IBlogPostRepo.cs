@@ -9,6 +9,10 @@ namespace DataAccessObject.Repository.Interface
         Task<BlogPost?> UpdateBlogPostAsync(BlogPost blogPost);
         Task<bool> DeleteBlogPostAsync(int id);
         Task<List<BlogPost>?> GetAllBlogPostsAsync();
-        Task<List<BlogPost>?> GetBlogPostsPageAsync(int page, int pageSize);
+        Task<List<BlogPost>?> GetBlogPostsPageAsync(int categoryId,int page, int pageSize);
+        Task<List<BlogCategory>?> GetBlogCategoriesAsync();
+        Task<BlogCategory?> CreateBlogCategoryAsync(BlogCategory blogCategory);
+        Task<BlogCategory?> GetBlogCategoryByIdAsync(int id);
+        Task<BlogCategory?> UpdateBlogCategoryAsync(BlogCategory? blogCategory);
     }
 }

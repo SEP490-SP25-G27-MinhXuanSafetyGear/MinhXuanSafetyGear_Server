@@ -1,7 +1,7 @@
 ﻿-- Tạo cơ sở dữ liệu
 use master;
 go
-Create DATABASE MinhXuanDatabase;
+CREATE DATABASE MinhXuanDatabase;
 GO
 USE MinhXuanDatabase;
 GO
@@ -173,12 +173,15 @@ GO
 CREATE TABLE BlogPosts (
     PostId int primary key identity(1,1),             -- Khoá chính cho bài viết
     Title nvarchar(255) not null,                      -- Tiêu đề bài viết
+	CategoryId int null,                               -- laoij bài viết
     Content nvarchar(max) not null,                    -- Nội dung bài viết
     CreatedAt datetime not null default getdate(),     -- Thời gian tạo bài viết
     UpdatedAt datetime null,                           -- Thời gian cập nhật bài viết
 	FileName nvarchar(250) null,                       -- Tên file cuar ảnh
 	ImageURL nvarchar(max) null,                       -- URL của hình ảnh bài viết
     Status varchar(50) not null default 'Draft',       -- Trạng thái bài viết (Draft, Published)
+    CONSTRAINT FK_BlogPosts_BlogCategories FOREIGN KEY (CategoryId) REFERENCES BlogCategories(CategoryId) ON DELETE CASCADE -- Khoá ngoại tới bảng Orders
+
 );
 GO
 
@@ -227,3 +230,20 @@ CREATE TABLE OrderTrackings (
 );
 GO
 
+-- Thêm dữ liệu vào bảng ProductCategories
+INSERT INTO ProductCategories (CategoryName, Description)
+VALUES 
+    (N'Thiết bị bảo hộ cá nhân', N'Bao gồm các sản phẩm như mũ bảo hộ, găng tay chống hóa chất, và kính bảo hộ.'),
+    (N'Quần áo bảo hộ lao động', N'Cung cấp quần áo bảo hộ chuyên dụng, chống cháy, chống hóa chất.'),
+    (N'Giày bảo hộ lao động', N'Các loại giày bảo hộ chống trơn trượt, chống đinh và chịu nhiệt.'),
+    (N'Dụng cụ an toàn điện', N'Găng tay cách điện, thảm cách điện và các thiết bị hỗ trợ làm việc với điện.'),
+    (N'Dụng cụ thoát hiểm', N'Thang dây thoát hiểm, mặt nạ chống khói và các dụng cụ khẩn cấp.');
+
+-- Thêm dữ liệu vào bảng BlogCategories
+INSERT INTO BlogCategories (CategoryName, Description)
+VALUES 
+    (N'Hướng dẫn sử dụng thiết bị bảo hộ', N'Các bước hướng dẫn chi tiết để sử dụng đúng cách thiết bị bảo hộ lao động.'),
+    (N'Lựa chọn quần áo bảo hộ phù hợp', N'Những lưu ý khi chọn mua quần áo bảo hộ lao động cho từng ngành nghề.'),
+    (N'Đánh giá giày bảo hộ', N'So sánh các loại giày bảo hộ từ các thương hiệu uy tín.'),
+    (N'Mẹo đảm bảo an toàn khi làm việc', N'Những lời khuyên để đảm bảo an toàn khi làm việc trong môi trường nguy hiểm.'),
+    (N'Cập nhật tiêu chuẩn an toàn lao động', N'Thông tin mới nhất về các tiêu chuẩn an toàn lao động trong nước và quốc tế.');

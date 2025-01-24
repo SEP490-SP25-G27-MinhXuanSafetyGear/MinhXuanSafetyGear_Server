@@ -49,11 +49,11 @@ public class BlogPostService : IBlogPostService
         }
     }
 
-    public async Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int page = 0, int pageSize = 5)
+    public async Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
     {
         try
         {
-            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(page, pageSize);
+            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId,page, pageSize);
             blogs = blogs.OrderByDescending(b => b.CreatedAt).ToList();
             return _mapper.Map<List<BlogPostResponse>>(blogs);
         }
@@ -109,6 +109,52 @@ public class BlogPostService : IBlogPostService
         catch (Exception ex)
         {
             _logger.LogError(ex,"Error while delete blog");
+            throw;
+        }
+    }
+
+    public async Task<List<BlogCategoryResponse>?> GetBlogCategoriesAsync()
+    {
+        try
+        {
+            var blogCategories = await _blogPostRepo.GetBlogCategoriesAsync();
+            return _mapper.Map<List<BlogCategoryResponse>>(blogCategories);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,"Error while get blog categories");
+            throw;
+        }
+    }
+
+    public async Task<BlogCategoryResponse?> CreateBlogCategoryAsync(NewBlogCategory blogCategoryRequest)
+    {
+        try
+        {
+            var blogCategory = _mapper.Map<BlogCategory>(blogCategoryRequest);
+            blogCategory = await _blogPostRepo.CreateBlogCategoryAsync(blogCategory);
+            return _mapper.Map<BlogCategoryResponse>(blogCategory);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while create blog category");
+            throw;
+        }
+    }
+
+    public async Task<BlogCategoryResponse?> UpdateBlogCategoryAsync(UpdateBlogCategory updateBlogCategory)
+    {
+        try
+        {
+            var blogCategory = await _blogPostRepo.GetBlogCategoryByIdAsync(updateBlogCategory.Id);
+            _mapper.Map(updateBlogCategory, blogCategory);
+            blogCategory = await _blogPostRepo.UpdateBlogCategoryAsync(blogCategory);
+            blogCategory.UpdatedAt = DateTime.Now;
+            return _mapper.Map<BlogCategoryResponse>(blogCategory);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while update blog category");
             throw;
         }
     }
