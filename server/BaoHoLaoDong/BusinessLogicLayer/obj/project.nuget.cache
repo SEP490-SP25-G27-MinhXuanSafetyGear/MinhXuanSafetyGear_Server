@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kStUo+fIikI=",
+  "dgSpecHash": "+f/1eXUrRjw=",
   "success": true,
-  "projectFilePath": "E:\\SEP490\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\BusinessLogicLayer\\BusinessLogicLayer.csproj",
+  "projectFilePath": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\BusinessLogicLayer\\BusinessLogicLayer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\LINH\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\LINH\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",

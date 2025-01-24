@@ -67,8 +67,13 @@ public class BlogPostDao : IDao<BlogPost>
     // Get a page of BlogPosts (pagination)
     public async Task<List<BlogPost>?> GetPageAsync(int page, int pageSize)
     {
+      throw new NotImplementedException();
+    }   
+    public async Task<List<BlogPost>?> GetPageAsync(int categoryId,int page, int pageSize)
+    {
         return await _context.BlogPosts
             .AsNoTracking()
+            .Where(p=> categoryId==0|| p.CategoryId == categoryId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
