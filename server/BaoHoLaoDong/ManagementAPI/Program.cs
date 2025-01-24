@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
-
+builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
 var jwtConfig = builder.Configuration.GetSection("Jwt");
@@ -125,4 +125,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();
+if (app.Environment.IsDevelopment()!)
+{
+    var process = new System.Diagnostics.Process
+    {
+        StartInfo = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = $"{baseUrl}/swagger",
+            UseShellExecute = true
+        }
+    };
+    process.Start();
+}
 app.Run();
