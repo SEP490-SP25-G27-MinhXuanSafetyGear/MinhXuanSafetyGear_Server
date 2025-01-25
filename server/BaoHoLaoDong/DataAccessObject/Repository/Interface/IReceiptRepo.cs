@@ -2,13 +2,13 @@
 
 namespace DataAccessObject.Repository.Interface
 {
-    public interface IReceiptRepo
+    public interface IInvoiceRepo
     {
-        Task<Receipt?> GetReceiptByIdAsync(int id);
-        Task<Receipt?> CreateReceiptAsync(Receipt receipt);
-        Task<Receipt?> UpdateReceiptAsync(Receipt receipt);
+        Task<Invoice?> GetReceiptByIdAsync(int id);
+        Task<Invoice?> CreateReceiptAsync(Invoice invoice);
+        Task<Invoice?> UpdateReceiptAsync(Invoice invoice);
         Task<bool> DeleteReceiptAsync(int id);
-        Task<List<Receipt>?> GetAllReceiptsAsync();
-        Task<List<Receipt>?> GetReceiptsPageAsync(int page, int pageSize);
+        Task<List<Invoice>?> GetAllReceiptsAsync();
+        Task<List<Invoice>?> GetReceiptsPageAsync(int page, int pageSize);
     }
 }

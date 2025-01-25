@@ -6,16 +6,27 @@ namespace DataAccessObject.Dao;
 public class OrderDao : IDao<Order>
 {
     private readonly MinhXuanDatabaseContext _context;
-
     public OrderDao(MinhXuanDatabaseContext context)
     {
         _context = context;
     }
 
-    // Get Order by ID
+    public async Task<List<Order>> GetAllOrdersAsync()
+    {
+        return await _context.Orders
+            .Include(x => x.Customer)
+            .Include(x => x.OrderDetails)
+            .Include(x => x.Invoices)
+            .ToListAsync();
+    }
+
     public async Task<Order?> GetByIdAsync(int id)
     {
         return await _context.Orders
+
+            .Include(x => x.Customer)
+            .Include(x => x.OrderDetails)
+            .Include(x => x.Invoices)
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
@@ -60,6 +71,10 @@ public class OrderDao : IDao<Order>
     public async Task<List<Order>?> GetAllAsync()
     {
         return await _context.Orders
+
+            .Include(order => order.Customer)
+            .Include(order => order.OrderDetails)
+            .Include(order => order.Invoices)
             .AsNoTracking()
             .ToListAsync();
     }

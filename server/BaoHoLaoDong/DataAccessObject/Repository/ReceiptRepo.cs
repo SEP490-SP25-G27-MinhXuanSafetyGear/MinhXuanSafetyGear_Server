@@ -4,43 +4,43 @@ using DataAccessObject.Dao;
 
 namespace DataAccessObject.Repository
 {
-    public class ReceiptRepo : IReceiptRepo
+    public class InvoceRepo : IInvoiceRepo
     {
-        private readonly ReceiptDao _receiptDao;
+        private readonly InvoiceDao _invoiceDao;
 
-        public ReceiptRepo(MinhXuanDatabaseContext context)
+        public InvoceRepo(MinhXuanDatabaseContext context)
         {
-            _receiptDao = new ReceiptDao(context);
+            _invoiceDao = new InvoiceDao(context);
         }
 
-        public async Task<Receipt?> GetReceiptByIdAsync(int id)
+        public async Task<Invoice?> GetReceiptByIdAsync(int id)
         {
-            return await _receiptDao.GetByIdAsync(id);
+            return await _invoiceDao.GetByIdAsync(id);
         }
 
-        public async Task<Receipt?> CreateReceiptAsync(Receipt receipt)
+        public async Task<Invoice?> CreateReceiptAsync(Invoice invoice)
         {
-            return await _receiptDao.CreateAsync(receipt);
+            return await _invoiceDao.CreateAsync(invoice);
         }
 
-        public async Task<Receipt?> UpdateReceiptAsync(Receipt receipt)
+        public async Task<Invoice?> UpdateReceiptAsync(Invoice invoice)
         {
-            return await _receiptDao.UpdateAsync(receipt);
+            return await _invoiceDao.UpdateAsync(invoice);
         }
 
         public async Task<bool> DeleteReceiptAsync(int id)
         {
-            return await _receiptDao.DeleteAsync(id);
+            return await _invoiceDao.DeleteAsync(id);
         }
 
-        public async Task<List<Receipt>?> GetAllReceiptsAsync()
+        public async Task<List<Invoice>?> GetAllReceiptsAsync()
         {
-            return await _receiptDao.GetAllAsync();
+            return await _invoiceDao.GetAllAsync();
         }
 
-        public async Task<List<Receipt>?> GetReceiptsPageAsync(int page, int pageSize)
+        public async Task<List<Invoice>?> GetReceiptsPageAsync(int page, int pageSize)
         {
-            return await _receiptDao.GetPageAsync(page, pageSize);
+            return await _invoiceDao.GetPageAsync(page, pageSize);
         }
     }
 }
