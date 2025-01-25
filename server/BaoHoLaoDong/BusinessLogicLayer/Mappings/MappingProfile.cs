@@ -49,9 +49,6 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<NewBlogPost, BlogPost>();
             CreateMap<BlogPost, BlogPostResponse>()
                 .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>$"{applicationUrl}/images/{src.FileName}"));
-            CreateMap<BlogCategory,BlogCategoryResponse>()
-                .ForMember(d=>d.Id,otp=>otp.MapFrom(s=>s.CategoryId))
-                .ForMember(d=>d.Name,otp=>otp.MapFrom(s=>s.CategoryName));
             CreateMap<UpdateBlogPost, BlogPost>()
                 .ForMember(dest => dest.FileName, opt => opt.Ignore()); // FileName sẽ được xử lý riêng
         }
