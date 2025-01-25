@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace BusinessObject.Entities;
 
-public partial class ProductCategory
+public partial class BlogCategory
 {
-    public int CategoryId { get; set; }
+    public int CategoryBlogId { get; set; }
 
     public string CategoryName { get; set; } = null!;
 
     public string? Description { get; set; }
 
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+    public virtual ICollection<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
 }

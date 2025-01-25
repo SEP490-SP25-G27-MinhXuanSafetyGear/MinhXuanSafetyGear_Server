@@ -17,7 +17,7 @@ public class InvoiceDao : IDao<Invoice>
     {
         return await _context.Invoices
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.ReceiptId == id);
+            .FirstOrDefaultAsync(r => r.InvoiceId == id);
     }
 
     // Create a new Receipt
@@ -31,7 +31,7 @@ public class InvoiceDao : IDao<Invoice>
     // Update an existing Receipt
     public async Task<Invoice?> UpdateAsync(Invoice entity)
     {
-        var existingReceipt = await _context.Invoices.FindAsync(entity.ReceiptId);
+        var existingReceipt = await _context.Invoices.FindAsync(entity.InvoiceId);
         if (existingReceipt == null)
         {
             throw new ArgumentException("Receipt not found");

@@ -5,11 +5,11 @@ namespace BusinessObject.Entities;
 
 public partial class Invoice
 {
-    public int ReceiptId { get; set; }
+    public int InvoiceId { get; set; }
 
     public int OrderId { get; set; }
 
-    public string ReceiptNumber { get; set; } = null!;
+    public string InvoiceNumber { get; set; } = null!;
 
     public decimal Amount { get; set; }
 
