@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace BusinessObject.Entities;
 
@@ -16,7 +14,6 @@ public partial class MinhXuanDatabaseContext : DbContext
         : base(options)
     {
     }
-
     public virtual DbSet<AccountVerification> AccountVerifications { get; set; }
 
     public virtual DbSet<BlogCategory> BlogCategories { get; set; }
@@ -27,13 +24,11 @@ public partial class MinhXuanDatabaseContext : DbContext
 
     public virtual DbSet<Employee> Employees { get; set; }
 
-    public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
-
-    public virtual DbSet<OrderTracking> OrderTrackings { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
@@ -45,24 +40,15 @@ public partial class MinhXuanDatabaseContext : DbContext
 
     public virtual DbSet<ProductVariant> ProductVariants { get; set; }
 
-    public virtual DbSet<Receipt> Receipts { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-        IConfigurationRoot conf = builder.Build();
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("server=localhost;database=MinhXuanDatabase;Integrated Security=True; TrustServerCertificate=true");
 
-        optionsBuilder
-            .UseSqlServer(conf.GetConnectionString("DbConnections"))
-            .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Warning); // Chỉ log cảnh báo hoặc lỗi
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountVerification>(entity =>
         {
-            entity.HasKey(e => e.VerificationId).HasName("PK__AccountV__306D49076F717DF9");
+            entity.HasKey(e => e.VerificationId).HasName("PK__AccountV__306D4907C9D18FD5");
 
             entity.Property(e => e.AccountType).HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
@@ -80,24 +66,17 @@ public partial class MinhXuanDatabaseContext : DbContext
                 .HasForeignKey(d => d.AccountId)
                 .HasConstraintName("FK_AccountVerifications_Employees");
         });
-
         modelBuilder.Entity<BlogCategory>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__BlogCate__19093A0BF9F8E52F");
-
-            entity.HasIndex(e => e.CategoryName, "UQ__BlogCate__8517B2E03648353C").IsUnique();
+            entity.HasKey(e => e.CategoryBlogId).HasName("PK__BlogCate__D724E44F08EB69FE");
 
             entity.Property(e => e.CategoryName).HasMaxLength(100);
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Description).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
         });
 
         modelBuilder.Entity<BlogPost>(entity =>
         {
-            entity.HasKey(e => e.PostId).HasName("PK__BlogPost__AA12601869292738");
+            entity.HasKey(e => e.PostId).HasName("PK__BlogPost__AA126018CCAC8E2C");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -110,15 +89,20 @@ public partial class MinhXuanDatabaseContext : DbContext
                 .HasDefaultValue("Draft");
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.CategoryBlog).WithMany(p => p.BlogPosts)
+                .HasForeignKey(d => d.CategoryBlogId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_BlogPosts_BlogCategories");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64D87A5D1967");
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64D84269AFCA");
 
-            entity.HasIndex(e => e.Email, "UQ__Customer__A9D105348FB7D6EE").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Customer__A9D1053481C6D73E").IsUnique();
 
-            entity.Property(e => e.Address).HasMaxLength(255);
+            entity.Property(e => e.Address).HasMaxLength(400);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -136,11 +120,11 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__7AD04F1167D75ED2");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__7AD04F11C0DB68A3");
 
-            entity.HasIndex(e => e.Email, "UQ__Employee__A9D105341900595D").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Employee__A9D105349BC19331").IsUnique();
 
-            entity.Property(e => e.Address).HasMaxLength(255);
+            entity.Property(e => e.Address).HasMaxLength(400);
             entity.Property(e => e.CreateAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -152,41 +136,40 @@ public partial class MinhXuanDatabaseContext : DbContext
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(10)
                 .IsUnicode(false);
-            entity.Property(e => e.Role).HasMaxLength(100);
+            entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.Status)
                 .HasMaxLength(100)
                 .HasDefaultValue("Active");
             entity.Property(e => e.UpdateAt).HasColumnType("datetime");
         });
 
-        modelBuilder.Entity<Notification>(entity =>
+        modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E1246718281");
+            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB51F126A7F");
 
+            entity.HasIndex(e => e.InvoiceNumber, "UQ__Invoices__D776E98102ED0B59").IsUnique();
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.NotificationType).HasMaxLength(50);
-            entity.Property(e => e.RecipientType).HasMaxLength(50);
+            entity.Property(e => e.InvoiceNumber).HasMaxLength(50);
+            entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+            entity.Property(e => e.PaymentStatus).HasMaxLength(50);
+            entity.Property(e => e.QrcodeData).HasColumnName("QRCodeData");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasDefaultValue("Active");
-            entity.Property(e => e.Title).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                .HasDefaultValue("Paid");
 
-            entity.HasOne(d => d.Recipient).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.RecipientId)
-                .HasConstraintName("FK_Notifications_Customers");
-
-            entity.HasOne(d => d.RecipientNavigation).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.RecipientId)
-                .HasConstraintName("FK_Notifications_Employees");
+            entity.HasOne(d => d.Order).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK_Receipts_Orders");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCF56A192DD");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCF9856ED25");
 
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
@@ -205,7 +188,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.OrderDetailId).HasName("PK__OrderDet__D3B9D36C65165327");
+            entity.HasKey(e => e.OrderDetailId).HasName("PK__OrderDet__D3B9D36C98B75009");
 
             entity.Property(e => e.Color).HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
@@ -228,34 +211,14 @@ public partial class MinhXuanDatabaseContext : DbContext
                 .HasConstraintName("FK_OrderDetails_Products");
         });
 
-        modelBuilder.Entity<OrderTracking>(entity =>
-        {
-            entity.HasKey(e => e.TrackingId).HasName("PK__OrderTra__3C19EDF12E2AC22E");
-
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Status).HasMaxLength(100);
-            entity.Property(e => e.UpdateDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.Order).WithMany(p => p.OrderTrackings)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK_OrderTrackings_Orders");
-
-            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.OrderTrackings)
-                .HasForeignKey(d => d.UpdatedBy)
-                .HasConstraintName("FK_OrderTracking_Employees");
-        });
-
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CDB1DF5EB7");
+            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CDF0950348");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(1200);
             entity.Property(e => e.Discount)
                 .HasDefaultValue(0.00m)
                 .HasColumnType("decimal(5, 2)");
@@ -272,23 +235,21 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductCategory>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__ProductC__19093A0B0EB52947");
+            entity.HasKey(e => e.CategoryId).HasName("PK__ProductC__19093A0B5EB18D1D");
 
             entity.Property(e => e.CategoryName).HasMaxLength(100);
-            entity.Property(e => e.CreateAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(500);
-            entity.Property(e => e.UpdateAt).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
-            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B86823ADC3");
+            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B86BF08D25");
 
-            entity.HasIndex(e => new { e.ProductId, e.IsPrimary }, "UQ__ProductI__0A467E673AEC9ED8").IsUnique();
+            entity.ToTable("ProductImage");
 
-            entity.HasIndex(e => e.FileName, "UQ__ProductI__589E6EEC944E90A1").IsUnique();
+            entity.HasIndex(e => new { e.ProductId, e.IsPrimary }, "UQ__ProductI__0A467E67DC0BD942").IsUnique();
+
+            entity.HasIndex(e => e.FileName, "UQ__ProductI__589E6EEC2214AB0F").IsUnique();
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -301,12 +262,12 @@ public partial class MinhXuanDatabaseContext : DbContext
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK_ProductImages_Product");
+                .HasConstraintName("FK_ProductImage_Product");
         });
 
         modelBuilder.Entity<ProductReview>(entity =>
         {
-            entity.HasKey(e => e.ReviewId).HasName("PK__ProductR__74BC79CEED940547");
+            entity.HasKey(e => e.ReviewId).HasName("PK__ProductR__74BC79CE92158AEA");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -324,7 +285,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductVariant>(entity =>
         {
-            entity.HasKey(e => e.VariantId).HasName("PK__ProductV__0EA23384B42C1886");
+            entity.HasKey(e => e.VariantId).HasName("PK__ProductV__0EA23384DD19F1FA");
 
             entity.Property(e => e.Color).HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
@@ -341,28 +302,6 @@ public partial class MinhXuanDatabaseContext : DbContext
             entity.HasOne(d => d.Product).WithMany(p => p.ProductVariants)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK_ProductVariants_Products");
-        });
-
-        modelBuilder.Entity<Receipt>(entity =>
-        {
-            entity.HasKey(e => e.ReceiptId).HasName("PK__Receipts__CC08C420CC153B58");
-
-            entity.HasIndex(e => e.ReceiptNumber, "UQ__Receipts__C08AFDABF659742A").IsUnique();
-
-            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.PaymentMethod).HasMaxLength(50);
-            entity.Property(e => e.ReceiptNumber).HasMaxLength(50);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            entity.Property(e => e.VnPayPaymentTime).HasColumnType("datetime");
-            entity.Property(e => e.VnPayTransactionCode).HasMaxLength(100);
-            entity.Property(e => e.VnPayTransactionStatus).HasMaxLength(50);
-
-            entity.HasOne(d => d.Order).WithMany(p => p.Receipts)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK_Receipts_Orders");
         });
 
         OnModelCreatingPartial(modelBuilder);

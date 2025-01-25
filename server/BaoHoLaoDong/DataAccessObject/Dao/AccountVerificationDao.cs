@@ -10,7 +10,7 @@ public class AccountVerificationDao : IDao<AccountVerification>
     {
         _context = context;
     }
-    
+
     public async Task<AccountVerification?> GetByIdAsync(int id)
     {
         throw new NotImplementedException();
@@ -44,7 +44,7 @@ public class AccountVerificationDao : IDao<AccountVerification>
     {
         throw new NotImplementedException();
     }
-    
+
     public async Task<AccountVerification?> GetByAccountIdAsync(int accountId, string accountType)
     {
         return await _context.AccountVerifications

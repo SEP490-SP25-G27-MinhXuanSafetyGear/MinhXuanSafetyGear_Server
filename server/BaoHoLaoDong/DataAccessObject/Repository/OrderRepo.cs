@@ -49,6 +49,50 @@ namespace DataAccessObject.Repository
             return await _orderDao.GetPageAsync(page, pageSize);
         }
 
+        public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
+        {
+            var order = await _orderDao.GetByIdAsync(orderId);
+            if (order == null)
+            {
+                return false;
+            }
+
+            order.Status = status;
+            return await _orderDao.UpdateAsync(order) != null;
+        }
+
+        public async Task<List<Order>?> GetOrdersByCustomerIdAsync(int customerId, int page, int pageSize)
+        {
+            return await _orderDao.GetOrdersByCustomerIdAsync(customerId, page, pageSize);
+        }
+
+        public async Task<List<Order>?> GetOrdersByPageAsync(int page, int pageSize)
+        {
+            return await _orderDao.GetOrdersByPageAsync(page, pageSize);
+        }
+
+        public async Task<List<Order>?> SearchAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
+        {
+            return await _orderDao.SearchAsync(startDate, endDate, customerName, page, pageSize);
+        }
+
+        public async Task<bool> CancelOrderAsync(int orderId)
+        {
+            var order = await _orderDao.GetByIdAsync(orderId);
+            if (order == null || order.Status == "Cancelled" || order.Status == "Shipped")
+            {
+                return false;
+            }
+
+            order.Status = "Cancelled";
+            return await _orderDao.UpdateAsync(order) != null;
+        }
+
+        public async Task<int> CountOrdersAsync()
+        {
+            return await _orderDao.CountAsync();
+        }
+
         #endregion Order 
 
         #region OrderDetail 
@@ -63,9 +107,9 @@ namespace DataAccessObject.Repository
             return await _orderDetailDao.CreateAsync(orderDetail);
         }
 
-        public async Task<OrderDetail?> UpdateOrderDetailAsync(OrderDetail orderDetail)
+        public async Task<OrderDetail?> UpdateOrderDetailAsync(int orderId, OrderDetail orderDetail)
         {
-            return await _orderDetailDao.UpdateAsync(orderDetail);
+            return await _orderDetailDao.UpdateOrderDetailAsync(orderId, orderDetail);
         }
 
         public async Task<bool> DeleteOrderDetailAsync(int orderDetailId)
@@ -73,10 +117,43 @@ namespace DataAccessObject.Repository
             return await _orderDetailDao.DeleteAsync(orderDetailId);
         }
 
-        public async Task<List<OrderDetail>?> GetOrderDetailsByOrderIdAsync(int orderId)
+        public async Task<List<OrderDetail>?> GetOrderDetailsByOrderIdAsync(int orderId, int page = 1, int pageSize = 20)
         {
-            return await _orderDetailDao.GetByOrderIdAsync(orderId);
+            return await _orderDetailDao.GetOrderDetailsByOrderIdAsync(orderId, page, pageSize);
         }
+
+        public async Task<List<OrderDetail>?> SearchOrderDetailsAsync(string searchTerm, int page, int pageSize)
+        {
+            return await _orderDetailDao.SearchOrderDetailsAsync(searchTerm, page, pageSize);
+        }
+
+        public async Task<decimal> CalculateOrderDetailTotalAsync(int orderDetailId)
+        {
+            var orderDetail = await _orderDetailDao.GetByIdAsync(orderDetailId);
+            if (orderDetail == null)
+            {
+                return 0;
+            }
+
+            return orderDetail.Quantity * orderDetail.ProductPrice;
+        }
+
+        public Task<List<OrderDetail>?> GetOrderDetailsPageAsync(int orderId, int page, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        //public async Task<int> CountOrderDetailsByOrderIdAsync(int orderId)
+        //{
+        //    return await _orderDetailDao.CountAsync(orderId);
+        //}
 
         #endregion OrderDetail 
     }

@@ -4,26 +4,26 @@ using DataAccessObject.Dao;
 
 namespace DataAccessObject.Repository
 {
-    public class ReceiptRepo : IReceiptRepo
+    public class InvoiceRepo : IInvoiceRepo
     {
-        private readonly ReceiptDao _receiptDao;
+        private readonly InvoiceDao _receiptDao;
 
-        public ReceiptRepo(MinhXuanDatabaseContext context)
+        public InvoiceRepo(MinhXuanDatabaseContext context)
         {
-            _receiptDao = new ReceiptDao(context);
+            _receiptDao = new InvoiceDao(context);
         }
 
-        public async Task<Receipt?> GetReceiptByIdAsync(int id)
+        public async Task<Invoice?> GetReceiptByIdAsync(int id)
         {
             return await _receiptDao.GetByIdAsync(id);
         }
 
-        public async Task<Receipt?> CreateReceiptAsync(Receipt receipt)
+        public async Task<Invoice?> CreateReceiptAsync(Invoice receipt)
         {
             return await _receiptDao.CreateAsync(receipt);
         }
 
-        public async Task<Receipt?> UpdateReceiptAsync(Receipt receipt)
+        public async Task<Invoice?> UpdateReceiptAsync(Invoice receipt)
         {
             return await _receiptDao.UpdateAsync(receipt);
         }
@@ -33,12 +33,12 @@ namespace DataAccessObject.Repository
             return await _receiptDao.DeleteAsync(id);
         }
 
-        public async Task<List<Receipt>?> GetAllReceiptsAsync()
+        public async Task<List<Invoice>?> GetAllReceiptsAsync()
         {
             return await _receiptDao.GetAllAsync();
         }
 
-        public async Task<List<Receipt>?> GetReceiptsPageAsync(int page, int pageSize)
+        public async Task<List<Invoice>?> GetReceiptsPageAsync(int page, int pageSize)
         {
             return await _receiptDao.GetPageAsync(page, pageSize);
         }
