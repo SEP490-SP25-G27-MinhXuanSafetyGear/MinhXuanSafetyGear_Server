@@ -73,7 +73,6 @@ public class BlogPostDao : IDao<BlogPost>
     {
         return await _context.BlogPosts
             .AsNoTracking()
-            .Where(p=> categoryId==0|| p.CategoryId == categoryId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

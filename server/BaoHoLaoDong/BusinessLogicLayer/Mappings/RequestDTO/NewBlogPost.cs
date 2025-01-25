@@ -12,7 +12,5 @@ public class NewBlogPost
     public string Content { get; set; } = null!;
     [Required]
     public string Status { get; set; } = null!;
-    [Required]
-    public int CategoryId { get; set; }
     public IFormFile? File { get; set; }
 }

@@ -71,7 +71,7 @@ public class ProductService : IProductService
 
     public async Task<CategoryResponse?> CreateNewCategory(NewCategory newCategory)
     {
-        var category = _mapper.Map<ProductCategory>(newCategory);
+        var category = _mapper.Map<Category>(newCategory);
         category = await _productRepo.CreateCategoryAsync(category);
         return _mapper.Map<CategoryResponse>(category);
     }

@@ -22,9 +22,9 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId));
             CreateMap<UpdateEmployee, Employee>();
-            CreateMap<NewCategory, ProductCategory>();
-            CreateMap<ProductCategory, CategoryResponse>();
-            CreateMap<UpdateCategory, ProductCategory>();
+            CreateMap<NewCategory, Category>();
+            CreateMap<Category, CategoryResponse>();
+            CreateMap<UpdateCategory, Category>();
             CreateMap<NewProductVariant, ProductVariant>()
                 .ForMember(dest => dest.VariantId, opt => opt.Ignore()) // Ignore VariantId, as it will be auto-generated
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Set CreatedAt
@@ -47,13 +47,6 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<UpdateProduct, Product>();
             CreateMap<UpdateProductVariant, ProductVariant>();
             CreateMap<NewBlogPost, BlogPost>();
-            CreateMap<NewBlogCategory, BlogCategory>()
-                .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))
-                .ForMember(d=>d.Description,otp=>otp.MapFrom(s=>s.Description));
-            CreateMap<UpdateBlogCategory,BlogCategory>()
-                .ForMember(d=>d.CategoryId,otp=>otp.MapFrom(s=>s.Id))
-                .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))
-                .ForMember(d=>d.Description,otp=>otp.MapFrom(s=>s.Description));
             CreateMap<BlogPost, BlogPostResponse>()
                 .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>$"{applicationUrl}/images/{src.FileName}"));
             CreateMap<BlogCategory,BlogCategoryResponse>()

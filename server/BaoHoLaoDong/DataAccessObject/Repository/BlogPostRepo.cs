@@ -7,12 +7,10 @@ namespace DataAccessObject.Repository
     public class BlogPostRepo : IBlogPostRepo
     {
         private readonly BlogPostDao _blogPostDao;
-        private readonly BlogCategoryDao _blogCategoryDao;
 
         public BlogPostRepo(MinhXuanDatabaseContext context)
         {
             _blogPostDao = new BlogPostDao(context);
-            _blogCategoryDao = new BlogCategoryDao(context);
         }
 
         public async Task<BlogPost?> GetBlogPostByIdAsync(int id)
@@ -44,25 +42,6 @@ namespace DataAccessObject.Repository
         {
             return await _blogPostDao.GetPageAsync( categoryId,page, pageSize);
         }
-
-        public async Task<List<BlogCategory>?> GetBlogCategoriesAsync()
-        {
-            return await _blogCategoryDao.GetAllAsync();
-        }
-
-        public async Task<BlogCategory?> CreateBlogCategoryAsync(BlogCategory blogCategory)
-        {
-            return await _blogCategoryDao.CreateAsync(blogCategory);
-        }
-
-        public async Task<BlogCategory?> GetBlogCategoryByIdAsync(int id)
-        {
-            return await _blogCategoryDao.GetByIdAsync(id);
-        }
-
-        public async Task<BlogCategory?> UpdateBlogCategoryAsync(BlogCategory? blogCategory)
-        {
-            return await _blogCategoryDao.UpdateAsync(blogCategory);
-        }
+        
     }
 }
