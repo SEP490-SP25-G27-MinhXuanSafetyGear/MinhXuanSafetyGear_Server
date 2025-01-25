@@ -22,9 +22,9 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId));
             CreateMap<UpdateEmployee, Employee>();
-            CreateMap<NewCategory, ProductCategory>();
-            CreateMap<ProductCategory, CategoryResponse>();
-            CreateMap<UpdateCategory, ProductCategory>();
+            CreateMap<NewCategory, Category>();
+            CreateMap<Category, CategoryResponse>();
+            CreateMap<UpdateCategory, Category>();
             CreateMap<NewProductVariant, ProductVariant>()
                 .ForMember(dest => dest.VariantId, opt => opt.Ignore()) // Ignore VariantId, as it will be auto-generated
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Set CreatedAt

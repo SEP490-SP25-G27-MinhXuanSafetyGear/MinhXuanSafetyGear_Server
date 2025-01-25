@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessObject.Dao;
 
-public class ProductCategoryDao : IDao<ProductCategory>
+public class ProductCategoryDao : IDao<Category>
 {
     private readonly MinhXuanDatabaseContext _context;
 
@@ -13,27 +13,27 @@ public class ProductCategoryDao : IDao<ProductCategory>
     }
 
     // Get Category by ID
-    public async Task<ProductCategory?> GetByIdAsync(int id)
+    public async Task<Category?> GetByIdAsync(int id)
     {
-        return await _context.ProductCategories
+        return await _context.Categories
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.CategoryId == id);
     }
-    public async Task<ProductCategory?> GetByNameAsync(string categoryName)
+    public async Task<Category?> GetByNameAsync(string categoryName)
     {
-        return await _context.ProductCategories
+        return await _context.Categories
                              .FirstOrDefaultAsync(c => c.CategoryName.Equals(categoryName));
     }
     // Create a new Category
-    public async Task<ProductCategory?> CreateAsync(ProductCategory entity)
+    public async Task<Category?> CreateAsync(Category entity)
     {
-        await _context.ProductCategories.AddAsync(entity);
+        await _context.Categories.AddAsync(entity);
         await _context.SaveChangesAsync();
         return entity;
     }
 
     // Update an existing Category
-    public async Task<ProductCategory?> UpdateAsync(ProductCategory entity)
+    public async Task<Category?> UpdateAsync(Category entity)
     {
         _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
@@ -43,29 +43,29 @@ public class ProductCategoryDao : IDao<ProductCategory>
     // Delete a Category by ID
     public async Task<bool> DeleteAsync(int id)
     {
-        var category = await _context.ProductCategories.FindAsync(id);
+        var category = await _context.Categories.FindAsync(id);
         if (category == null)
         {
             return false;
         }
 
-        _context.ProductCategories.Remove(category);
+        _context.Categories.Remove(category);
         await _context.SaveChangesAsync();
         return true;
     }
 
     // Get all Categories
-    public async Task<List<ProductCategory>?> GetAllAsync()
+    public async Task<List<Category>?> GetAllAsync()
     {
-        return await _context.ProductCategories
+        return await _context.Categories
             .AsNoTracking()
             .ToListAsync();
     }
 
     // Get a page of Categories (pagination)
-    public async Task<List<ProductCategory>?> GetPageAsync(int page, int pageSize)
+    public async Task<List<Category>?> GetPageAsync(int page, int pageSize)
     {
-        return await _context.ProductCategories
+        return await _context.Categories
             .AsNoTracking()
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

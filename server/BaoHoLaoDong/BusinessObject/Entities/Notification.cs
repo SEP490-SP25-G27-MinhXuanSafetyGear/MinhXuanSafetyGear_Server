@@ -9,9 +9,7 @@ public partial class Notification
 
     public string Title { get; set; } = null!;
 
-    public string Content { get; set; } = null!;
-
-    public string NotificationType { get; set; } = null!;
+    public string Message { get; set; } = null!;
 
     public int RecipientId { get; set; }
 

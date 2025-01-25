@@ -12,6 +12,8 @@ public class BlogPostController : ControllerBase
     {
         _blogPostService = blogPostService;
     }
+   
+  
     /// <summary>
     /// create new blog post
     /// </summary>
@@ -36,12 +38,12 @@ public class BlogPostController : ControllerBase
     /// <param name="page"></param>
     /// <param name="pagesize"></param>
     /// <returns></returns>
-    [HttpGet("get-blog-page/{page}/{pagesize}")]
-    public async Task<IActionResult> GetBlogPostPage([FromRoute] int page, [FromRoute]int pagesize)
+    [HttpGet("get-blog-page")]
+    public async Task<IActionResult> GetBlogPostPage([FromQuery] int categoryId,[FromQuery] int page, [FromQuery]int size)
     {
         try
         {
-            var blogs = await _blogPostService.GetBlogPostByPageAsync(page, pagesize);
+            var blogs = await _blogPostService.GetBlogPostByPageAsync(categoryId,page, size);
             return Ok(blogs);
         }
         catch (Exception ex)

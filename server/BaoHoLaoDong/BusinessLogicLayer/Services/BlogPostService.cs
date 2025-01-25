@@ -49,11 +49,11 @@ public class BlogPostService : IBlogPostService
         }
     }
 
-    public async Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int page = 0, int pageSize = 5)
+    public async Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
     {
         try
         {
-            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(page, pageSize);
+            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId,page, pageSize);
             blogs = blogs.OrderByDescending(b => b.CreatedAt).ToList();
             return _mapper.Map<List<BlogPostResponse>>(blogs);
         }
@@ -112,4 +112,9 @@ public class BlogPostService : IBlogPostService
             throw;
         }
     }
+
+
+
+
+
 }
