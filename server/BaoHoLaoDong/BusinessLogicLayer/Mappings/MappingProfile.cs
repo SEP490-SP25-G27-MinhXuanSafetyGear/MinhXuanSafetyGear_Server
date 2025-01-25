@@ -22,9 +22,9 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId));
             CreateMap<UpdateEmployee, Employee>();
-            CreateMap<NewCategory, ProductCategory>();
-            CreateMap<ProductCategory, CategoryResponse>();
-            CreateMap<UpdateCategory, ProductCategory>();
+            CreateMap<NewCategory, Category>();
+            CreateMap<Category, CategoryResponse>();
+            CreateMap<UpdateCategory, Category>();
             CreateMap<NewProductVariant, ProductVariant>()
                 .ForMember(dest => dest.VariantId, opt => opt.Ignore()) // Ignore VariantId, as it will be auto-generated
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Set CreatedAt
@@ -49,6 +49,9 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<NewBlogPost, BlogPost>();
             CreateMap<BlogPost, BlogPostResponse>()
                 .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>$"{applicationUrl}/images/{src.FileName}"));
+            CreateMap<BlogCategory,BlogCategoryResponse>()
+                .ForMember(d=>d.Id,otp=>otp.MapFrom(s=>s.CategoryId))
+                .ForMember(d=>d.Name,otp=>otp.MapFrom(s=>s.CategoryName));
             CreateMap<UpdateBlogPost, BlogPost>()
                 .ForMember(dest => dest.FileName, opt => opt.Ignore()); // FileName sẽ được xử lý riêng
         }

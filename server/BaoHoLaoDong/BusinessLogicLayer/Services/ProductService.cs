@@ -28,7 +28,16 @@ public class ProductService : IProductService
         _imageDirectory = imageDirectory;
     }
 
-    private async Task<string?> SaveImageAsync(IFormFile file)
+    // Method to generate unique filename using product name and GUID
+    private string GenerateFileNameWithGuid(string productName, string originalFileName)
+    {
+        var fileExtension = Path.GetExtension(originalFileName);
+        var cleanProductName = productName.Replace(" ", "_");  // Optional: Clean the name (remove spaces, etc.)
+        return $"{cleanProductName}_{Guid.NewGuid()}{fileExtension}";
+    }
+
+    // Method to save image file and return its file name
+    private async Task<string?> SaveImageAsync(IFormFile file, string? productName = null)
     {
         try
         {
@@ -37,16 +46,19 @@ public class ProductService : IProductService
                 Directory.CreateDirectory(_imageDirectory);
             }
 
-            var uniqueFileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(_imageDirectory, uniqueFileName);
+            var fileName = productName != null
+                ? GenerateFileNameWithGuid(productName, file.FileName)  // Generate a unique file name based on product name
+                : Guid.NewGuid() + Path.GetExtension(file.FileName);    // Generate a GUID-based file name
+
+            var filePath = Path.Combine(_imageDirectory, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
-                _logger.LogInformation(_imageDirectory);
+                _logger.LogInformation($"Image saved to {_imageDirectory}");
             }
 
-            return uniqueFileName;
+            return fileName;
         }
         catch (Exception ex)
         {
@@ -55,9 +67,11 @@ public class ProductService : IProductService
         }
     }
 
+
+
     public async Task<CategoryResponse?> CreateNewCategory(NewCategory newCategory)
     {
-        var category = _mapper.Map<ProductCategory>(newCategory);
+        var category = _mapper.Map<Category>(newCategory);
         category = await _productRepo.CreateCategoryAsync(category);
         return _mapper.Map<CategoryResponse>(category);
     }
@@ -108,7 +122,7 @@ public class ProductService : IProductService
             var file = newProduct.File;
             if (file != null && file.Length > 0)
             {
-                var fileName = await SaveImageAsync(file);
+                var fileName = await SaveImageAsync(file, product.ProductName);
                 if (fileName == null)
                 {
                     throw new Exception("Failed to save product image. Product creation rolled back.");
@@ -158,40 +172,85 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<bool?> UpdateProductImageAsync(UpdateProductImage updateProductImage)
+  public async Task<bool?> UpdateProductImageAsync(UpdateProductImage updateProductImage)
+{
+    IFormFile file = null;
+    string? oldPath = null;
+    string? fileName = null;
+    try
     {
-        try
+        // Get the existing product image by its ID
+        var productImage = await _productRepo.GetProductImageByIdAsync(updateProductImage.ProductImageId);
+        if (productImage == null)
         {
-            var productImage = await _productRepo.GetProductImageByIdAsync(updateProductImage.ProductImageId);
-            if (productImage == null)
-            {
-                return false;
-            }
-
-            var file = updateProductImage.File;
-            if (file != null && file.Length > 0)
-            {
-                var fileName = await SaveImageAsync(file);
-                if (fileName == null)
-                {
-                    throw new Exception("Failed to save new product image.");
-                }
-
-                productImage.FileName = fileName;
-                productImage.IsPrimary = updateProductImage.IsPrimary;
-                var result = await _productRepo.UpdateProductImageAsync(productImage);
-                return result != null;
-            }
-
+            _logger.LogWarning("Product image with ID: {ProductImageId} not found.", updateProductImage.ProductImageId);
             return false;
         }
-        catch (Exception ex)
+
+        file = updateProductImage.File;
+
+        // Construct the path for the existing image to be deleted later
+        oldPath = Path.Combine(_imageDirectory, productImage.FileName);
+
+        // Check if a new file is uploaded
+        if (file != null && file.Length > 0)
         {
-            _logger.LogError(ex, "Error updating product image with ID: {ProductImageId}",
-                updateProductImage.ProductImageId);
-            throw;
+            // Save the new image and get the new file name
+            fileName = await SaveImageAsync(file, productImage.Product.ProductName);
+            if (fileName == null)
+            {
+                throw new Exception("Failed to save new product image.");
+            }
+
+            // Update the product image details with the new file name
+            productImage.FileName = fileName;
+            productImage.IsPrimary = updateProductImage.IsPrimary;
+
+            // Update the product image in the repository
+            var result = await _productRepo.UpdateProductImageAsync(productImage);
+            if (result != null)
+            {
+                // Delete the old image if it exists
+                if (!string.IsNullOrEmpty(oldPath) && File.Exists(oldPath))
+                {
+                    try
+                    {
+                        File.Delete(oldPath);
+                        _logger.LogInformation("Old image file deleted: {OldImagePath}", oldPath);
+                    }
+                    catch (Exception deleteEx)
+                    {
+                        _logger.LogError(deleteEx, "Failed to delete old image file: {OldImagePath}", oldPath);
+                    }
+                }
+
+                return true;
+            }
         }
+
+        return false;
     }
+    catch (Exception ex)
+    {
+        // Handle unexpected errors
+        _logger.LogError(ex, "Error updating product image with ID: {ProductImageId}", updateProductImage.ProductImageId);
+        // If an error occurs, delete the newly uploaded image if it was partially saved
+        if (!string.IsNullOrEmpty(fileName))
+        {
+            try
+            {
+                File.Delete(Path.Combine(_imageDirectory, fileName));
+                _logger.LogInformation("Deleted partially uploaded image: {NewImagePath}", Path.Combine(_imageDirectory, fileName));
+            }
+            catch (Exception deleteEx)
+            {
+                _logger.LogError(deleteEx, "Failed to delete partially uploaded image: {NewImagePath}", Path.Combine(_imageDirectory, fileName));
+            }
+        }
+        throw; 
+    }
+}
+
 
     public async Task<bool?> DeleteImageAsync(int id)
     {

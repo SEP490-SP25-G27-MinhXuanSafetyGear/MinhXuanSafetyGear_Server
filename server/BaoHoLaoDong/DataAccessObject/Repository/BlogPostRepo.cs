@@ -38,9 +38,10 @@ namespace DataAccessObject.Repository
             return await _blogPostDao.GetAllAsync();
         }
 
-        public async Task<List<BlogPost>?> GetBlogPostsPageAsync(int page, int pageSize)
+        public async Task<List<BlogPost>?> GetBlogPostsPageAsync(int categoryId,int page, int pageSize)
         {
-            return await _blogPostDao.GetPageAsync(page, pageSize);
+            return await _blogPostDao.GetPageAsync( categoryId,page, pageSize);
         }
+        
     }
 }

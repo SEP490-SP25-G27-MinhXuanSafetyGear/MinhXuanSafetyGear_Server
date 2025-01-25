@@ -17,6 +17,7 @@ public class ProductImageDao : IDao<ProductImage>
     {
         return await _context.ProductImages
             .AsNoTracking()
+            .Include(p=>p.Product)
             .FirstOrDefaultAsync(pi => pi.ProductImageId == id);
     }
 
