@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\dataaccessobject\\dao\\invoicedao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\dao\\invoicedao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\dataaccessobject\\repository\\interface\\iuserrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\repository\\interface\\iuserrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear\\server\\baoholaodong\\dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -495,27 +495,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "OrderDao.cs",
-              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
-              "RelativeDocumentMoniker": "DataAccessObject\\Dao\\OrderDao.cs",
-              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
-              "RelativeToolTip": "DataAccessObject\\Dao\\OrderDao.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
+              "Title": "InvoiceDao.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\InvoiceDao.cs",
+              "RelativeDocumentMoniker": "DataAccessObject\\Dao\\InvoiceDao.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\InvoiceDao.cs",
+              "RelativeToolTip": "DataAccessObject\\Dao\\InvoiceDao.cs",
+              "ViewState": "AQIAACsAAAAAAAAAAAAkwCMAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-25T07:36:56.88Z",
+              "WhenOpened": "2025-01-25T07:42:09.962Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "IUserRepo.cs",
-              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\Interface\\IUserRepo.cs",
-              "RelativeDocumentMoniker": "DataAccessObject\\Repository\\Interface\\IUserRepo.cs",
-              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\Interface\\IUserRepo.cs",
-              "RelativeToolTip": "DataAccessObject\\Repository\\Interface\\IUserRepo.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAA7AAAA",
+              "Title": "OrderDao.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
+              "RelativeDocumentMoniker": "DataAccessObject\\Dao\\OrderDao.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
+              "RelativeToolTip": "DataAccessObject\\Dao\\OrderDao.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAUAAAAZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-17T11:43:00.366Z",
+              "WhenOpened": "2025-01-25T07:36:56.88Z",
               "EditorCaption": ""
             }
           ]

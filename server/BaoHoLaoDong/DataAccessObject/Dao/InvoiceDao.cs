@@ -34,7 +34,7 @@ public class InvoiceDao : IDao<Invoice>
         var existingReceipt = await _context.Invoices.FindAsync(entity.ReceiptId);
         if (existingReceipt == null)
         {
-            throw new ArgumentException("Receipt not found");
+            throw new ArgumentException("Invoice not found");
         }
 
         _context.Invoices.Update(entity);
