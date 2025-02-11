@@ -4,8 +4,10 @@ using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,9 +63,10 @@ builder.Services.AddControllers()
         );
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddSignalR();
 // Add database context
-builder.Services.AddDbContext<MinhXuanDatabaseContext>();
+var connectionString = builder.Configuration.GetConnectionString("DbConnections");
+builder.Services.AddDbContext<MinhXuanDatabaseContext>(options=>options.UseSqlServer(connectionString));
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -81,6 +84,7 @@ builder.Logging.AddConsole();
 builder.Services.AddScoped<IUserService, UserService>();
 var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
 builder.Services.AddSingleton(imageDirectory);
+builder.Services.AddScoped<IFileService,FileService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
@@ -137,4 +141,6 @@ if (app.Environment.IsDevelopment()!)
     };
     process.Start();
 }
+
+app.MapHub<ProductHub>("/productHub");
 app.Run();

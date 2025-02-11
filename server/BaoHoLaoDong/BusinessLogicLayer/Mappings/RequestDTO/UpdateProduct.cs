@@ -6,15 +6,17 @@ namespace BusinessLogicLayer.Mappings.RequestDTO;
 public class UpdateProduct
 {
     [Required]
-    public int ProductId { get; set; }
+    public int Id { get; set; }
     [Required]
     [StringLength(100, MinimumLength = 3)]
-    public string ProductName { get; set; } = null!;
+    public string Name { get; set; } = null!;
     [Required]
     public int? CategoryId { get; set; }
 
     public string? Description { get; set; }
-    
+    public string? Material { get; set; }
+
+    public string? Origin { get; set; }
     [Range(0, int.MaxValue, ErrorMessage = "Quantity must be non-negative.")]
     public int Quantity { get; set; }
 
@@ -25,5 +27,4 @@ public class UpdateProduct
     public decimal? Discount { get; set; }
 
     public bool Status { get; set; }
-
 }

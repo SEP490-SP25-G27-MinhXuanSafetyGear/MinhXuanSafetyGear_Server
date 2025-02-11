@@ -22,29 +22,48 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId));
             CreateMap<UpdateEmployee, Employee>();
-            CreateMap<NewCategory, Category>();
-            CreateMap<Category, CategoryResponse>();
-            CreateMap<UpdateCategory, Category>();
+            CreateMap<NewProductCategory, ProductCategory>();
+            CreateMap<ProductCategory, CategoryResponse>();
+            CreateMap<UpdateProductCategory, ProductCategory>();
             CreateMap<NewProductVariant, ProductVariant>()
                 .ForMember(dest => dest.VariantId, opt => opt.Ignore()) // Ignore VariantId, as it will be auto-generated
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Set CreatedAt
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Optional, will remain null
                 .ForMember(dest => dest.Product, opt => opt.Ignore());  // Ignore navigation property
-            CreateMap<NewProduct, Product>();
+            CreateMap<NewProduct, Product>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material))
+                .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src.Origin))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants))
+                .ForMember(dest => dest.Category, opt => opt.Ignore());
+
             CreateMap<Product, ProductResponse>()
-                .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.ProductId))
-                .ForMember(dest=>dest.Name,otp=>otp.MapFrom(src=>src.ProductName))
-                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.CategoryName))
-                .ForMember(dest => dest.Rate, otp => otp.MapFrom(src => 
-                    src.ProductReviews.Any() 
-                        ? src.ProductReviews.Sum(p => p.Rating) / (double)src.ProductReviews.Count 
-                        : 0));
+                .ForMember(dest => dest.Id, otp => otp.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.Name, otp => otp.MapFrom(src => src.ProductName))
+                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.CategoryName));
             CreateMap<ProductVariant, ProductVariantResponse>();
             CreateMap<ProductImage, ProductImageResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.ProductImageId))
-                .ForMember(dest => dest.ImageUrl,
+                .ForMember(dest => dest.Image,
                     otp => otp.MapFrom(src => $"{applicationUrl}/images/{src.FileName}"));
-            CreateMap<UpdateProduct, Product>();
+            CreateMap<UpdateProduct, Product>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material))
+                .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src.Origin))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<UpdateProductVariant, ProductVariant>();
             CreateMap<NewBlogPost, BlogPost>();
             CreateMap<BlogPost, BlogPostResponse>()
@@ -52,8 +71,16 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<UpdateBlogPost, BlogPost>()
                 .ForMember(dest => dest.FileName, opt => opt.Ignore()); // FileName sẽ được xử lý riêng
 
-
-
+            CreateMap<NewBlogCategory, BlogCategory>()
+                .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))
+                .ForMember(d=>d.Description,otp=>otp.MapFrom(s=>s.Description));
+            CreateMap<UpdateBlogCategory,BlogCategory>()
+                .ForMember(d=>d.CategoryBlogId,otp=>otp.MapFrom(s=>s.Id))
+                .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))
+                .ForMember(d=>d.Description,otp=>otp.MapFrom(s=>s.Description));
+            CreateMap<BlogCategory,BlogCategoryResponse>()
+                .ForMember(d=>d.Id,otp=>otp.MapFrom(s=>s.CategoryBlogId))
+                .ForMember(d=>d.Name,otp=>otp.MapFrom(s=>s.CategoryName));
 
             //Order
             CreateMap<Order, OrderResponse>()

@@ -82,9 +82,9 @@ namespace DataAccessObject.Repository
             return await _customerDao.GetAllAsync();
         }
 
-        public async Task<AccountVerification?> CreateNewVefificationCodeAsync(int accountId, string typeAccount)
+        public async Task<AccountVerification?> CreateNewVefificationCodeAsync(int accountId)
         {
-            var accountVerification = await _accountVerificationDao.GetByAccountIdAsync(accountId, typeAccount);
+            var accountVerification = await _accountVerificationDao.GetByAccountIdAsync(accountId);
             if (accountVerification == null) return null;
             accountVerification.VerificationCode = new Random().Next(100000, 999999).ToString();
             accountVerification.VerificationDate = DateTime.Now.AddMinutes(5);
@@ -154,9 +154,9 @@ namespace DataAccessObject.Repository
             return await _employeeDao.GetAllAsync();
         }
 
-        public async Task<AccountVerification?> GetAccountVerificationByIdAndTypeAccountAsync(int id, string typeAccount)
+        public async Task<AccountVerification?> GetAccountVerificationByIdAndTypeAccountAsync(int id)
         {
-            return await _accountVerificationDao.GetByAccountIdAsync(id, typeAccount);
+            return await _accountVerificationDao.GetByAccountIdAsync(id);
         }
 
         public async Task<int> CountCustomers()
