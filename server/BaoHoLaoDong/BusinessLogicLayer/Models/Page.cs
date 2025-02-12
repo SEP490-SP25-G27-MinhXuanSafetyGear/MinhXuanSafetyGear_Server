@@ -23,11 +23,9 @@ public class Page<T>
     public int TotalItems { get; set; }
 
     /// <summary>
-    /// Tổng số trang.
+    /// Trang kế tiếp (nếu có), nếu không có thì bằng 0.
     /// </summary>
-    public int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);
-    
-    public string NextUrlPage { get; set; }
+    public int NextPage { get; set; }
 
     /// <summary>
     /// Constructor không tham số.
@@ -43,9 +41,12 @@ public class Page<T>
     /// <param name="totalItems">Tổng số mục.</param>
     public Page(List<T>? items, int currentPage, int pageSize, int totalItems)
     {
-        Items = items;
+        Items = items ?? new List<T>();
         CurrentPage = currentPage;
         PageSize = pageSize;
         TotalItems = totalItems;
+
+        // Nếu trang hiện tại là trang cuối cùng thì không có NextPage
+        NextPage = (currentPage * pageSize >= totalItems) ? 0 : currentPage + 1;
     }
 }

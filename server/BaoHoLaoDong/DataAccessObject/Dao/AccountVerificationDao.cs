@@ -45,10 +45,10 @@ public class AccountVerificationDao : IDao<AccountVerification>
         throw new NotImplementedException();
     }
 
-    public async Task<AccountVerification?> GetByAccountIdAsync(int accountId, string accountType)
+    public async Task<AccountVerification?> GetByAccountIdAsync(int accountId)
     {
         return await _context.AccountVerifications
-            .Where(x => x.AccountId == accountId && x.AccountType == accountType)
+            .Where(x => x.AccountId == accountId )
             .FirstOrDefaultAsync();
     }
 }

@@ -1,8 +1,12 @@
-﻿using BusinessLogicLayer.Mappings.RequestDTO;
+﻿using AutoMapper;
+using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
+using BusinessObject.Entities;
+using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ManagementAPI.Controllers;
 [ApiController]
@@ -10,21 +14,26 @@ namespace ManagementAPI.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    public ProductController(IProductService productService)
+    private readonly IHubContext<ProductHub> _productHub;
+    private readonly IMapper _mapper;
+    public ProductController(IProductService productService,IHubContext<ProductHub> productHub ,IMapper mapper)
     {
         _productService = productService;
+        _productHub = productHub;
+        _mapper = mapper;
     }
     /// <summary>
     /// Crate new category
     /// </summary>
-    /// <param name="category"></param>
+    /// <param name="productCategory"></param>
     /// <returns>CategoryRequest</returns>
     [HttpPost("create-category")]
-    public async Task<IActionResult> CreateNewCategory([FromBody] NewCategory category)
+    public async Task<IActionResult> CreateNewCategory([FromBody] NewProductCategory productCategory)
     {
         try
         {
-            var result = await _productService.CreateNewCategory(category);
+            var result = await _productService.CreateNewCategory(productCategory);
+            await _productHub.Clients.All.SendAsync("ProductCategoryAdded");
             return Ok(result);
         }
         catch (Exception ex)
@@ -52,14 +61,18 @@ public class ProductController : ControllerBase
     /// <summary>
     /// update category
     /// </summary>
-    /// <param name="category"></param>
+    /// <param name="productCategory"></param>
     /// <returns>CategoryResponse</returns>
     [HttpPut("update-category")]
-    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategory category)
+    public async Task<IActionResult> UpdateCategory([FromBody] UpdateProductCategory productCategory)
     {
         try
         {
-            var result = await _productService.UpdateCategoryAsync(category);
+            var result = await _productService.UpdateCategoryAsync(productCategory);
+            if (result!=null)
+            {
+                _productHub.Clients.All.SendAsync("ProductCategoryUpdated", productCategory.CategoryId);
+            }
             return Ok(result);
         }
         catch (Exception ex)
@@ -74,11 +87,12 @@ public class ProductController : ControllerBase
     /// <param name="newProduct"></param>
     /// <returns></returns>
     [HttpPost("create-product")]
-    public async Task<IActionResult> CreateProduct( NewProduct newProduct)
+    public async Task<IActionResult> CreateProduct( [FromForm] NewProduct newProduct)
     {
         try
         {
             var product = await _productService.CreateNewProductAsync(newProduct);
+            _productHub.Clients.All.SendAsync("ProductAdded", newProduct);
             return Ok(product);
         }
         catch (Exception ex)
@@ -131,13 +145,6 @@ public class ProductController : ControllerBase
         try
         {
             var pageResult = await _productService.GetProductByPage(category, page, pagesize);
-            if (page < pageResult.TotalPages)
-            {
-                pageResult.NextUrlPage = $"{Request.Scheme}://{Request.Host}/api/product/get-product-page?category={category}&page={page + 1}&pagesize={pagesize}";
-            }else
-            {
-                pageResult.NextUrlPage = null;
-            }
             return Ok(pageResult);
         }
         catch (Exception ex)
@@ -157,6 +164,24 @@ public class ProductController : ControllerBase
         try
         {
             var product = await _productService.UpdateProductAsync(updateProduct);
+            if (product != null)
+            {
+                await _productHub.Clients.All.SendAsync("ProductUpdated", product.Id);
+            }
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("get-product-by-id/{id}")]
+    public async Task<IActionResult> GetProductById([FromRoute] int id)
+    {
+        try
+        {
+            var product = await _productService.GetProductByIdAsync(id);
             return Ok(product);
         }
         catch (Exception ex)
@@ -175,6 +200,7 @@ public class ProductController : ControllerBase
         try
         {
             var result = await _productService.UpdateProductImageAsync(updateProductImage);
+            await _productHub.Clients.All.SendAsync("ProductUpdated", updateProductImage.ProductImageId);
             return Ok(result);
         }
         catch (Exception ex)
@@ -182,7 +208,24 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+    /// <summary>
+    /// search product
+    /// </summary>
+    /// <param name="title"></param>
+    /// <returns></returns>
+    [HttpGet("search-product")]
+    public async Task<IActionResult> SearchProduct([FromQuery] string title)
+    {
+        try
+        {
+            var result = await _productService.SearchProductAsync(title);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
+    }
     [HttpPost("create-image")]
     public async Task<IActionResult> CreateImage([FromForm] NewProductImage productImage)
     {

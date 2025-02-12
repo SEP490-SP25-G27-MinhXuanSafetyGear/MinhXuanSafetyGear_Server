@@ -9,8 +9,11 @@ public class ProductResponse
 
     public string? Description { get; set; }
     
-    public int? CategoryId { get; set; }
+    public string? Material { get; set; }
 
+    public string? Origin { get; set; }
+    
+    public int? CategoryId { get; set; }
     public string CategoryName { get; set; } =string.Empty;
     
     public int Quantity { get; set; }
@@ -24,7 +27,12 @@ public class ProductResponse
     public DateTime? UpdatedAt { get; set; }
 
     public bool Status { get; set; }
-    public int Rate { get; set; }
+    
+    public int AverageRating { get; set; }
+    
     public List<ProductImageResponse> ProductImages { get; set; } = new List<ProductImageResponse>();
+    
     public List<ProductVariantResponse> ProductVariants { get; set; } = new List<ProductVariantResponse>();
+    
+
 }

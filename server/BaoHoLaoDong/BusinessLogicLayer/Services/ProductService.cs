@@ -1,4 +1,5 @@
 ﻿
+using System.Text.RegularExpressions;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
@@ -18,60 +19,21 @@ public class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
     private readonly string _imageDirectory;
-
+    private readonly IFileService _fileService;
     public ProductService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<ProductService> logger,
-        string imageDirectory)
+        string imageDirectory,IFileService fileService)
     {
         _productRepo = new ProductRepo(context);
         _mapper = mapper;
         _logger = logger;
         _imageDirectory = imageDirectory;
-    }
-
-    // Method to generate unique filename using product name and GUID
-    private string GenerateFileNameWithGuid(string productName, string originalFileName)
-    {
-        var fileExtension = Path.GetExtension(originalFileName);
-        var cleanProductName = productName.Replace(" ", "_");  // Optional: Clean the name (remove spaces, etc.)
-        return $"{cleanProductName}_{Guid.NewGuid()}{fileExtension}";
-    }
-
-    // Method to save image file and return its file name
-    private async Task<string?> SaveImageAsync(IFormFile file, string? productName = null)
-    {
-        try
-        {
-            if (!Directory.Exists(_imageDirectory))
-            {
-                Directory.CreateDirectory(_imageDirectory);
-            }
-
-            var fileName = productName != null
-                ? GenerateFileNameWithGuid(productName, file.FileName)  // Generate a unique file name based on product name
-                : Guid.NewGuid() + Path.GetExtension(file.FileName);    // Generate a GUID-based file name
-
-            var filePath = Path.Combine(_imageDirectory, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-                _logger.LogInformation($"Image saved to {_imageDirectory}");
-            }
-
-            return fileName;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving image.");
-            return null;
-        }
+        _fileService = fileService;
     }
 
 
-
-    public async Task<CategoryResponse?> CreateNewCategory(NewCategory newCategory)
+    public async Task<CategoryResponse?> CreateNewCategory(NewProductCategory newProductCategory)
     {
-        var category = _mapper.Map<Category>(newCategory);
+        var category = _mapper.Map<ProductCategory>(newProductCategory);
         category = await _productRepo.CreateCategoryAsync(category);
         return _mapper.Map<CategoryResponse>(category);
     }
@@ -88,26 +50,27 @@ public class ProductService : IProductService
         var totalProduct = await _productRepo.CountProductByCategory(category);
         var productsResponse = _mapper.Map<List<ProductResponse>>(products);
         var pageResult = new Page<ProductResponse>(productsResponse, page, pageSize, totalProduct);
+        _logger.LogInformation("getproducts",pageResult);
         return pageResult;
     }
 
-    public async Task<CategoryResponse?> UpdateCategoryAsync(UpdateCategory updateCategory)
+    public async Task<CategoryResponse?> UpdateCategoryAsync(UpdateProductCategory updateProductCategory)
     {
         try
         {
-            var category = await _productRepo.GetCategoryByIdAsync(updateCategory.CategoryId);
+            var category = await _productRepo.GetCategoryByIdAsync(updateProductCategory.CategoryId);
             if (category == null)
             {
                 throw new Exception("Category not found.");
             }
 
-            _mapper.Map(updateCategory, category);
+            _mapper.Map(updateProductCategory, category);
             category = await _productRepo.UpdateCategoryAsync(category);
             return _mapper.Map<CategoryResponse>(category);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating category with ID: {CategoryId}", updateCategory.CategoryId);
+            _logger.LogError(ex, "Error updating category with ID: {CategoryId}", updateProductCategory.CategoryId);
             throw;
         }
     }
@@ -118,25 +81,25 @@ public class ProductService : IProductService
         {
             var product = _mapper.Map<Product>(newProduct);
             product = await _productRepo.CreateProductAsync(product);
-
-            var file = newProduct.File;
-            if (file != null && file.Length > 0)
+            var files = newProduct.Files;
+            if (files != null && files.Count > 0)
             {
-                var fileName = await SaveImageAsync(file, product.ProductName);
-                if (fileName == null)
+                foreach (var file in files)
                 {
-                    throw new Exception("Failed to save product image. Product creation rolled back.");
+                    var fileName = await _fileService.SaveImageAsync(file);
+                    if (fileName != null)
+                    {
+                        var productImage = new ProductImage()
+                        {
+                            ProductId = product.ProductId,
+                            FileName = fileName,
+                            IsPrimary = (files.IndexOf(file) == 0)?true:false
+                        };
+                        await _productRepo.CreateProductImageAsync(productImage);
+                    }
                 }
-
-                product.ProductImages.Add(new ProductImage
-                {
-                    FileName = fileName,
-                    IsPrimary = true,
-                });
-
-                product = await _productRepo.UpdateProductAsync(product);
             }
-
+            product = await _productRepo.GetProductByIdAsync(product.ProductId);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -155,7 +118,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var product = await _productRepo.GetProductByIdAsync(updateProduct.ProductId);
+            var product = await _productRepo.GetProductByIdAsync(updateProduct.Id);
             if (product == null)
             {
                 throw new Exception("Product not found.");
@@ -163,18 +126,19 @@ public class ProductService : IProductService
 
             _mapper.Map(updateProduct, product);
             product = await _productRepo.UpdateProductAsync(product);
+            _logger.LogInformation("Update product success");
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating product with ID: {ProductId}", updateProduct.ProductId);
+            _logger.LogError(ex, "Error updating product with ID: {ProductId}", updateProduct.Id);
             throw;
         }
     }
 
   public async Task<bool?> UpdateProductImageAsync(UpdateProductImage updateProductImage)
 {
-    IFormFile file = null;
+    IFormFile? file = null;
     string? oldPath = null;
     string? fileName = null;
     try
@@ -196,7 +160,7 @@ public class ProductService : IProductService
         if (file != null && file.Length > 0)
         {
             // Save the new image and get the new file name
-            fileName = await SaveImageAsync(file, productImage.Product.ProductName);
+            fileName = await _fileService.SaveImageAsync(file);
             if (fileName == null)
             {
                 throw new Exception("Failed to save new product image.");
@@ -287,7 +251,7 @@ public class ProductService : IProductService
             var file = productImage.File;
             if (file != null && file.Length > 0)
             {
-                var fileName = await SaveImageAsync(file);
+                var fileName = await _fileService.SaveImageAsync(file);
                 var newProductImage = new ProductImage()
                 {
                     ProductId = productExit.ProductId,
@@ -296,9 +260,9 @@ public class ProductService : IProductService
 
                 };
                 newProductImage = await _productRepo.CreateProductImageAsync(newProductImage);
+                _logger.LogInformation(newProductImage.ProductImageId.ToString());
                 return true;
             }
-
             return false;
         }
         catch (Exception ex)
@@ -320,10 +284,7 @@ public class ProductService : IProductService
             }
             var productVariant = _mapper.Map<ProductVariant>(newProductVariant);
             productVariant = await _productRepo.CreateProductVariantAsync(productVariant);
-            var listProductVariant =  await _productRepo.GetAllVariantsAsync(productId);
-            int totalQuantity = listProductVariant.Where(p=>p.Status).Sum(v => v.Quantity);
-            product.Quantity = totalQuantity;
-            product = await _productRepo.UpdateProductAsync(product);
+            product = await _productRepo.GetProductByIdAsync(productId);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -337,7 +298,9 @@ public class ProductService : IProductService
     {
         try
         {
-            var productVariant = await _productRepo.GetProductVariantByIdAsync(updateProductVariant.VariantId);
+            var productId = updateProductVariant.ProductId;
+            var variantId = updateProductVariant.VariantId;
+            var productVariant = await _productRepo.GetProductVariantByIdAsync(variantId);
             if (productVariant == null)
             {
                 throw new Exception("Product variant not found.");
@@ -345,18 +308,69 @@ public class ProductService : IProductService
 
             _mapper.Map(updateProductVariant, productVariant);
             productVariant = await _productRepo.UpdateProductVariantAsync(productVariant);
-            var productId = productVariant.ProductId;
             var product = await _productRepo.GetProductByIdAsync(productId);
-            var listProductVariant = await _productRepo.GetAllVariantsAsync(productId);
-            int totalQuantity = listProductVariant.Where(p=>p.Status).Sum(v => v.Quantity);
-            product.Quantity = totalQuantity;
-            await _productRepo.UpdateProductAsync(product);
-            var newProduct = await _productRepo.GetProductByIdAsync(productId);
-            return _mapper.Map<ProductResponse>(newProduct);
+            return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating product variant with ID: {VariantId}", updateProductVariant.VariantId);
+            throw;
+        }
+    }
+    public static string RemoveDiacritics(string text)
+    {
+        string[] vietnameseSigns = new string[]
+        {
+            "aáàảãạăắằẳẵặâấầẩẫậ", "AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬ",
+            "dđ", "DĐ",
+            "eéèẻẽẹêếềểễệ", "EÉÈẺẼẸÊẾỀỂỄỆ",
+            "iíìỉĩị", "IÍÌỈĨỊ",
+            "oóòỏõọôốồổỗộơớờởỡợ", "OÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ",
+            "uúùủũụưứừửữự", "UÚÙỦŨỤƯỨỪỬỮỰ",
+            "yýỳỷỹỵ", "YÝỲỶỸỴ"
+        };
+
+        foreach (var sign in vietnameseSigns)
+        {
+            foreach (var c in sign.Substring(1))
+            {
+                text = text.Replace(c, sign[0]);
+            }
+        }
+        return text;
+    }
+
+    public async Task<List<ProductResponse>?> SearchProductAsync(string title)
+    {
+        try
+        {
+            title = RemoveDiacritics(Regex.Replace(title.Trim().ToLower(), @"\s+", " "));
+
+            var products = await _productRepo.GetAllProductsAsync() ?? new List<Product>();
+
+            var filteredProducts = products
+                .Where(p => RemoveDiacritics(p.ProductName.ToLower()).Contains(title))
+                .ToList();
+
+            return _mapper.Map<List<ProductResponse>>(filteredProducts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while searching products with title: {Title}", title);
+            return new List<ProductResponse>();
+        }
+    }
+
+    public async Task<ProductResponse?> GetProductByIdAsync(int id)
+    {
+        try
+        {
+            var product = await _productRepo.GetProductByIdAsync(id);
+            return _mapper.Map<ProductResponse>(product);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while get product by id");
             throw;
         }
     }

@@ -22,6 +22,4 @@ public partial class AccountVerification
     public DateTime? UpdatedAt { get; set; }
 
     public virtual Customer Account { get; set; } = null!;
-
-    public virtual Employee AccountNavigation { get; set; } = null!;
 }

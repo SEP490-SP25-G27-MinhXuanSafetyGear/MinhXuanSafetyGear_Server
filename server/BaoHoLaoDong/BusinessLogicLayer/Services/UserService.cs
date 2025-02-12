@@ -138,7 +138,7 @@ public class UserService : IUserService
         var customer = _mapper.Map<Customer>(newCustomer);
         customer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newCustomer.Password);
         var result = await _userRepo.CreateCustomerAsync(customer);
-        var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId, "Customer");
+        var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
         if (accountVerification != null)
         {
             var resultMail =
@@ -173,26 +173,13 @@ public class UserService : IUserService
     }
 
 
-    public async Task<bool> SendVerificationCodeBackAsync(string email, string typeAccount)
+    public async Task<bool> SendVerificationCodeBackAsync(string email)
     {
-        if (typeAccount == "Customer")
-        {
-            var customer = await _userRepo.GetCustomerByEmailAsync(email);
-            if (customer == null)return false;
-            var accountVerication = await _userRepo.CreateNewVefificationCodeAsync(customer.CustomerId, typeAccount);
-            var sendMailresult = await 
-                _mailService.SendVerificationEmailAsync(customer.Email, accountVerication.VerificationCode);
-            return sendMailresult;
-        }
-        else if(typeAccount == "Employee")
-        {
-            var employee = await _userRepo.GetEmployeeByEmailAsync(email);
-            if (employee == null)return false;
-            var accountVerication = await _userRepo.CreateNewVefificationCodeAsync(employee.EmployeeId, typeAccount);
-            var sendMailresult = await 
-                _mailService.SendVerificationEmailAsync(employee.Email, accountVerication.VerificationCode);
-            return sendMailresult;
-        }
-        throw new Exception("Account not found");
+        var customer = await _userRepo.GetCustomerByEmailAsync(email);
+        if (customer == null)return false;
+        var accountVerication = await _userRepo.CreateNewVefificationCodeAsync(customer.CustomerId);
+        var sendMailresult = await 
+            _mailService.SendVerificationEmailAsync(customer.Email, accountVerication.VerificationCode);
+        return sendMailresult;
     }
 }

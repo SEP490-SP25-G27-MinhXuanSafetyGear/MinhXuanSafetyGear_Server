@@ -29,9 +29,11 @@ public partial class Customer
 
     public DateTime? UpdateAt { get; set; }
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     public virtual ICollection<AccountVerification> AccountVerifications { get; set; } = new List<AccountVerification>();
+
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 }

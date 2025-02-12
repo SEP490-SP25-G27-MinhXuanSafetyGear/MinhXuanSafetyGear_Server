@@ -64,14 +64,6 @@ public class UserController : ControllerBase
         try
         {
             var pageResult = await _userService.GetEmployeeByPageAsync(page, pageSize);
-            if (page < pageResult.TotalPages)
-            {
-                pageResult.NextUrlPage = $"{Request.Scheme}://{Request.Host}/api/user/get-employee-page?page={pageResult.CurrentPage+1}&pageSize={pageResult.PageSize}";
-            }
-            else
-            {
-                pageResult.NextUrlPage = null;
-            }
             return Ok(pageResult);
         }catch(Exception e)
         {
@@ -127,14 +119,6 @@ public class UserController : ControllerBase
         try
         {
             var pageResult = await _userService.GetCustomerByPageAsync(page, pageSize);
-            if (page < pageResult.TotalPages)
-            {
-                pageResult.NextUrlPage = $"{Request.Scheme}://{Request.Host}/api/user/get-customer-page?page={pageResult.CurrentPage+1}&pageSize={pageResult.PageSize}";
-            }
-            else
-            {
-                pageResult.NextUrlPage = null;
-            }
             return Ok(pageResult);
         }catch(Exception e)
         {
@@ -154,7 +138,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var result = await _userService.SendVerificationCodeBackAsync(email, accountType);
+            var result = await _userService.SendVerificationCodeBackAsync(email);
             return Ok(result);
         }
         catch (Exception ex)

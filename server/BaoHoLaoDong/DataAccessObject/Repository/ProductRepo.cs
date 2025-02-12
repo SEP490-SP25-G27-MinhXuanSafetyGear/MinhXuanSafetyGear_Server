@@ -26,7 +26,7 @@ namespace DataAccessObject.Repository
 
         #region Category
 
-        public async Task<Category?> CreateCategoryAsync(Category category)
+        public async Task<ProductCategory?> CreateCategoryAsync(ProductCategory category)
         {
             var existingCategory = await _productCategoryDao.GetByNameAsync(category.CategoryName);
             if (existingCategory != null)
@@ -36,12 +36,12 @@ namespace DataAccessObject.Repository
             return await _productCategoryDao.CreateAsync(category);
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(int categoryId)
+        public async Task<ProductCategory?> GetCategoryByIdAsync(int categoryId)
         {
             return await _productCategoryDao.GetByIdAsync(categoryId);
         }
 
-        public async Task<Category?> UpdateCategoryAsync(Category category)
+        public async Task<ProductCategory?> UpdateCategoryAsync(ProductCategory category)
         {
             var existingCategory = await _productCategoryDao.GetByIdAsync(category.CategoryId);
             if (existingCategory == null)
@@ -51,9 +51,9 @@ namespace DataAccessObject.Repository
             return await _productCategoryDao.UpdateAsync(category);
         }
 
-        public async Task<List<Category>?> GetAllCategoriesAsync()
+        public async Task<List<ProductCategory>?> GetAllCategoriesAsync()
         {
-            return await _productCategoryDao.GetAllAsync();
+            return await _productCategoryDao.GetAllAsync() ?? new List<ProductCategory>();
         }
 
         #endregion Category
