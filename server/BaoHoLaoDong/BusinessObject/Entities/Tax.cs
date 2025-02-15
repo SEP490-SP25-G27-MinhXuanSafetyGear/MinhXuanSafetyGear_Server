@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 namespace BusinessObject.Entities;
 
-public partial class ProductCategory
+public partial class Tax
 {
-    public int CategoryId { get; set; }
+    public int TaxId { get; set; }
 
-    public string CategoryName { get; set; } = null!;
+    public string TaxName { get; set; } = null!;
+
+    public decimal TaxRate { get; set; }
 
     public string? Description { get; set; }
 

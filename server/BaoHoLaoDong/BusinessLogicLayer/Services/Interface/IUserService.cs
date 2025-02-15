@@ -28,8 +28,10 @@ public interface IUserService
     /// <param name="newCustomer"></param>
     /// <returns></returns>
     Task<CustomerResponse?> CreateNewCustomerAsync(NewCustomer newCustomer);
+    Task<CustomerResponse?> CustomerLoginByEmailAndPasswordAsync(FormLogin formLogin);
     Task<Page<CustomerResponse>?> GetCustomerByPageAsync(int page, int pageSize);
     Task<CustomerResponse?> GetCustomerByEmailAsync(string email);
     Task<CustomerResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer);
     Task<bool> SendVerificationCodeBackAsync(string email);
+    Task<CustomerResponse?> ConfirmEmailCustomerAsync(string email, string code);
 }

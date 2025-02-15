@@ -25,6 +25,7 @@ public class UpdateProduct
 
     [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100.")]
     public decimal? Discount { get; set; }
+    public string? QualityCertificate { get; set; }
 
     public bool Status { get; set; }
 }

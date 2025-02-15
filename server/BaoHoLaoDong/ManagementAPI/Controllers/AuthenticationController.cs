@@ -24,16 +24,19 @@ public class AuthenticationController : ControllerBase
     {
         try
         {
-            var user = await _userService.EmployeeLoginByEmailAndPasswordAsync(formLogin);
-            if (user != null)
+            var employee = await _userService.EmployeeLoginByEmailAndPasswordAsync(formLogin);
+            var customer = await _userService.CustomerLoginByEmailAndPasswordAsync(formLogin);
+            if (employee != null)
             {
-                var token = _tokenService.GenerateJwtToken(user.Email, user.EmployeeId, user.Role);
-                return Ok(new {token = token,role = user.Role});
+                var token = _tokenService.GenerateJwtToken(employee.Email, employee.EmployeeId, employee.Role);
+                return Ok(new {token = token,email =employee.Email, role = employee.Role,userId = employee.EmployeeId});
             }
-            else
+            if(customer != null)
             {
-                return Ok("Login false");
+                var token = _tokenService.GenerateJwtToken(customer.Email, customer.Id, "Customer");
+                return Ok(new {token = token,email =customer.Email, role = "Customer",userId = customer.Id});
             }
+            return Ok("Login false");
         }catch(Exception e)
         {
             return BadRequest(e.Message);

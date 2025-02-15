@@ -9,7 +9,8 @@ using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
 using BCrypt.Net;
-using BusinessLogicLayer.Models; // Thư viện để mã hóa mật khẩu
+using BusinessLogicLayer.Models;
+using Microsoft.Extensions.Configuration; // Thư viện để mã hóa mật khẩu
 using Microsoft.Extensions.Logging; // Thư viện log
 
 namespace BusinessLogicLayer.Services;
@@ -20,9 +21,8 @@ public class UserService : IUserService
     private readonly IMailService _mailService;
     private readonly IMapper _mapper;
     private readonly ILogger<UserService> _logger;
-
     // Inject ILogger vào constructor
-    public UserService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<UserService> logger,IMailService mailService)
+    public UserService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
     {
         _userRepo = new UserRepo(context);
         _mapper = mapper;
@@ -148,6 +148,43 @@ public class UserService : IUserService
         return customerRequest;
     }
 
+    public async Task<CustomerResponse?> CustomerLoginByEmailAndPasswordAsync(FormLogin formLogin)
+    {
+        _logger.LogInformation("Starting login process for email: {Email}", formLogin.Email);
+
+        var email = formLogin.Email;
+        var password = formLogin.Password;
+
+        try
+        {
+            var customer = await _userRepo.GetCustomerByEmailAsync(email);
+            if (customer == null)
+            {
+                _logger.LogWarning("Login failed for email {Email}: Customer not found", email);
+                return null;
+            }
+
+            if (customer.IsEmailVerified == false)
+            {
+                throw new Exception("Email is not verified");
+            }
+            if (BCrypt.Net.BCrypt.Verify(password, customer.PasswordHash))
+            {
+                _logger.LogInformation("Login successful for email {Email}", email);
+                var cusResponst = _mapper.Map<CustomerResponse>(customer);
+                return cusResponst;
+            }
+
+            _logger.LogWarning("Login failed for email {Email}: Incorrect password", email);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during login process for email {Email}", email);
+            throw;
+        }
+    }
+
     public async Task<Page<CustomerResponse>?> GetCustomerByPageAsync(int page, int pageSize)
     {
         var customers = await _userRepo.GetCustomersPageAsync(page, pageSize);
@@ -182,4 +219,32 @@ public class UserService : IUserService
             _mailService.SendVerificationEmailAsync(customer.Email, accountVerication.VerificationCode);
         return sendMailresult;
     }
+
+    public async Task<CustomerResponse?> ConfirmEmailCustomerAsync(string email, string code)
+    {
+        try
+        {
+            var customer = await _userRepo.GetCustomerByEmailAsync(email);
+            if (customer == null) return null;
+
+            var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
+            if (accountVerification == null) return null;
+
+            // Kiểm tra mã xác thực có đúng và có hết hạn chưa
+            if (accountVerification.VerificationCode != code)
+                return null;
+
+            // Xác thực thành công, cập nhật trạng thái tài khoản
+            var result = await _userRepo.ConfirmEmailCustomerSuccessAsync(customer.CustomerId);
+            customer.IsEmailVerified = true;
+            var customerRequest= await _userRepo.UpdateCustomerAsync(customer);
+            return _mapper.Map<CustomerResponse>(customerRequest);   
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during email confirmation");
+            throw new Exception("An error occurred during email confirmation", ex);
+        }
+    }
+
 }

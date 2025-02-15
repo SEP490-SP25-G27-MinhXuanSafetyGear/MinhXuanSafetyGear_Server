@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ManagementAPI.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
 public class ProductController : ControllerBase
@@ -16,17 +17,17 @@ public class ProductController : ControllerBase
     private readonly IProductService _productService;
     private readonly IHubContext<ProductHub> _productHub;
     private readonly IMapper _mapper;
-    public ProductController(IProductService productService,IHubContext<ProductHub> productHub ,IMapper mapper)
+
+    public ProductController(IProductService productService, IHubContext<ProductHub> productHub, IMapper mapper)
     {
         _productService = productService;
         _productHub = productHub;
         _mapper = mapper;
     }
+
     /// <summary>
-    /// Crate new category
+    /// Tạo danh mục sản phẩm mới
     /// </summary>
-    /// <param name="productCategory"></param>
-    /// <returns>CategoryRequest</returns>
     [HttpPost("create-category")]
     public async Task<IActionResult> CreateNewCategory([FromBody] NewProductCategory productCategory)
     {
@@ -41,37 +42,36 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
-    /// get all category
+    /// Lấy danh sách tất cả danh mục sản phẩm
     /// </summary>
-    /// <returns>List CategoryRequest</returns>
     [HttpGet("getall-category")]
-    public async Task<IActionResult> GetALlCategory()
+    public async Task<IActionResult> GetAllCategory()
     {
         try
         {
-            var categorys = await _productService.GetAllCategory();
-            return Ok(categorys);
+            var categories = await _productService.GetAllCategory();
+            return Ok(categories);
         }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
-    /// update category
+    /// Cập nhật danh mục sản phẩm
     /// </summary>
-    /// <param name="productCategory"></param>
-    /// <returns>CategoryResponse</returns>
     [HttpPut("update-category")]
     public async Task<IActionResult> UpdateCategory([FromBody] UpdateProductCategory productCategory)
     {
         try
         {
             var result = await _productService.UpdateCategoryAsync(productCategory);
-            if (result!=null)
+            if (result != null)
             {
-                _productHub.Clients.All.SendAsync("ProductCategoryUpdated", productCategory.CategoryId);
+                await _productHub.Clients.All.SendAsync("ProductCategoryUpdated", productCategory.CategoryId);
             }
             return Ok(result);
         }
@@ -82,17 +82,15 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Create new product
+    /// Tạo sản phẩm mới
     /// </summary>
-    /// <param name="newProduct"></param>
-    /// <returns></returns>
     [HttpPost("create-product")]
-    public async Task<IActionResult> CreateProduct( [FromForm] NewProduct newProduct)
+    public async Task<IActionResult> CreateProduct([FromForm] NewProduct newProduct)
     {
         try
         {
             var product = await _productService.CreateNewProductAsync(newProduct);
-            _productHub.Clients.All.SendAsync("ProductAdded", newProduct);
+            await _productHub.Clients.All.SendAsync("ProductAdded", newProduct);
             return Ok(product);
         }
         catch (Exception ex)
@@ -100,11 +98,10 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
-    /// create new product variant
+    /// Tạo biến thể sản phẩm mới
     /// </summary>
-    /// <param name="newProductVariant"></param>
-    /// <returns></returns>
     [HttpPost("create-product-variant")]
     public async Task<IActionResult> CreateProductVariant([FromBody] NewProductVariant newProductVariant)
     {
@@ -118,12 +115,17 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    /// <summary>
+    /// Cập nhật biến thể sản phẩm
+    /// </summary>
     [HttpPut("update-product-variant")]
     public async Task<IActionResult> UpdateProductVariant([FromBody] UpdateProductVariant updateProductVariant)
     {
         try
         {
             var product = await _productService.UpdateProductVariantAsync(updateProductVariant);
+            await _productHub.Clients.All.SendAsync("ProductUpdated", product);
             return Ok(product);
         }
         catch (Exception ex)
@@ -131,13 +133,10 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
-    /// Get product page {{base_url}}/api/product/get-product-page?category=1&page=1&pagesize=20&
+    /// Lấy danh sách sản phẩm theo trang
     /// </summary>
-    /// <param name="category"></param>
-    /// <param name="page"></param>
-    /// <param name="pagesize"></param>
-    /// <returns>List productResponse</returns>
     [EnableQuery]
     [HttpGet("get-product-page")]
     public async Task<IActionResult> GetProductPage([FromQuery] int category = 0, [FromQuery] int page = 1, [FromQuery] int pagesize = 20)
@@ -154,10 +153,8 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Update product
+    /// Cập nhật thông tin sản phẩm
     /// </summary>
-    /// <param name="updateProduct"></param>
-    /// <returns>Productresponse</returns>
     [HttpPut("update-product")]
     public async Task<IActionResult> UpdateProduct([FromBody] UpdateProduct updateProduct)
     {
@@ -166,7 +163,7 @@ public class ProductController : ControllerBase
             var product = await _productService.UpdateProductAsync(updateProduct);
             if (product != null)
             {
-                await _productHub.Clients.All.SendAsync("ProductUpdated", product.Id);
+                await _productHub.Clients.All.SendAsync("ProductUpdated", product);
             }
             return Ok(product);
         }
@@ -176,6 +173,9 @@ public class ProductController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Lấy thông tin sản phẩm theo ID
+    /// </summary>
     [HttpGet("get-product-by-id/{id}")]
     public async Task<IActionResult> GetProductById([FromRoute] int id)
     {
@@ -189,18 +189,17 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
-    /// Update image product
+    /// Cập nhật hình ảnh sản phẩm
     /// </summary>
-    /// <param name="updateProductImage"></param>
-    /// <returns>bool</returns>
     [HttpPut("update-image")]
     public async Task<IActionResult> UpdateImage([FromForm] UpdateProductImage updateProductImage)
     {
         try
         {
             var result = await _productService.UpdateProductImageAsync(updateProductImage);
-            await _productHub.Clients.All.SendAsync("ProductUpdated", updateProductImage.ProductImageId);
+            await _productHub.Clients.All.SendAsync("ProductUpdated", updateProductImage);
             return Ok(result);
         }
         catch (Exception ex)
@@ -208,17 +207,29 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
-    /// search product
+    /// Tìm kiếm sản phẩm theo tiêu đề
     /// </summary>
-    /// <param name="title"></param>
-    /// <returns></returns>
     [HttpGet("search-product")]
     public async Task<IActionResult> SearchProduct([FromQuery] string title)
     {
         try
         {
             var result = await _productService.SearchProductAsync(title);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
+    }
+    [HttpGet("top-sale-product")]
+    public async Task<IActionResult> GetTopSaleProduct([FromQuery] int size =10)
+    {
+        try
+        {
+            var result = await _productService.GetTopSaleProduct(size);
             return Ok(result);
         }
         catch (Exception ex)
@@ -237,19 +248,6 @@ public class ProductController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(ex);
-        }
-    }
-    [HttpDelete("delete-image/{id}")]
-    public async Task<IActionResult> DeleteImage([FromRoute] int id)
-    {
-        try
-        {
-            var result = await _productService.DeleteImageAsync(id);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

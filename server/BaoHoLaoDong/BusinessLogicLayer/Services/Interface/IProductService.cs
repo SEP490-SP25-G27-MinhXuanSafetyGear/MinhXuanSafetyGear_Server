@@ -16,11 +16,12 @@ public interface IProductService
      Task<ProductResponse> CreateNewProductAsync(NewProduct newProduct);
      Task<int> CountProductByCategory(int category);
      Task<ProductResponse?> UpdateProductAsync(UpdateProduct updateProduct);
-     Task<bool?> UpdateProductImageAsync(UpdateProductImage updateProductImage);
+     Task<ProductResponse?> UpdateProductImageAsync(UpdateProductImage updateProductImage);
      Task<bool?> DeleteImageAsync(int id);
      Task<bool?> CreateNewProductImageAsync(NewProductImage productImage);
      Task<ProductResponse?> CreateNewProductVariantAsync(NewProductVariant newProductVariant);
      Task<ProductResponse?> UpdateProductVariantAsync(UpdateProductVariant updateProductVariant);
      Task<List<ProductResponse>?> SearchProductAsync(string title);
      Task<ProductResponse?> GetProductByIdAsync(int id);
+     Task<List<ProductResponse>?> GetTopSaleProduct(int size);
 }

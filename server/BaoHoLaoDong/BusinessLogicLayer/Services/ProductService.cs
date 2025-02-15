@@ -136,7 +136,7 @@ public class ProductService : IProductService
         }
     }
 
-  public async Task<bool?> UpdateProductImageAsync(UpdateProductImage updateProductImage)
+  public async Task<ProductResponse?> UpdateProductImageAsync(UpdateProductImage updateProductImage)
 {
     IFormFile? file = null;
     string? oldPath = null;
@@ -148,7 +148,7 @@ public class ProductService : IProductService
         if (productImage == null)
         {
             _logger.LogWarning("Product image with ID: {ProductImageId} not found.", updateProductImage.ProductImageId);
-            return false;
+            return null;
         }
 
         file = updateProductImage.File;
@@ -172,6 +172,7 @@ public class ProductService : IProductService
 
             // Update the product image in the repository
             var result = await _productRepo.UpdateProductImageAsync(productImage);
+            var product = await _productRepo.GetProductByIdAsync(productImage.ProductId);
             if (result != null)
             {
                 // Delete the old image if it exists
@@ -187,12 +188,11 @@ public class ProductService : IProductService
                         _logger.LogError(deleteEx, "Failed to delete old image file: {OldImagePath}", oldPath);
                     }
                 }
-
-                return true;
             }
+            return _mapper.Map<ProductResponse>(product);
         }
 
-        return false;
+        return null;
     }
     catch (Exception ex)
     {
@@ -371,6 +371,23 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while get product by id");
+            throw;
+        }
+    }
+
+    public async Task<List<ProductResponse>?> GetTopSaleProduct(int size)
+    {
+        try
+        {
+            var products = await _productRepo.GetAllProductsAsync();
+            var topSaleProducts = products
+                .OrderByDescending(p => p.OrderDetails.Count)
+                .Take(size)
+                .ToList();
+            return _mapper.Map<List<ProductResponse>>(topSaleProducts);
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex, "Error while get top sale product");
             throw;
         }
     }

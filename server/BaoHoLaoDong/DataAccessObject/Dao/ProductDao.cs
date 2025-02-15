@@ -20,6 +20,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.ProductImages)
             .Include(p=>p.ProductReviews)
             .Include(p=>p.ProductVariants)
+            .Include(p=>p.Taxes)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.ProductId == id);
     }
@@ -78,6 +79,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.ProductImages)
             .Include(p=>p.ProductReviews)
             .Include(p=>p.ProductVariants)
+            .Include(p=>p.Taxes)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -91,6 +93,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.ProductImages)
             .Include(p=>p.ProductReviews)
             .Include(p=>p.ProductVariants)
+            .Include(p=>p.Taxes)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -103,6 +106,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.ProductImages.OrderByDescending(p=>p.IsPrimary))
             .Include(p=>p.ProductReviews)
             .Include(p=>p.ProductVariants)
+            .Include(p=>p.Taxes)
             .Where(p => category == 0 || p.CategoryId == category) // Nếu category = 0 thì lấy tất cả, ngược lại lọc theo CategoryId
             .Skip((page - 1) * pageSize) // Bỏ qua các sản phẩm của các trang trước
             .Take(pageSize) // Lấy số lượng sản phẩm của trang hiện tại
