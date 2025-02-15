@@ -40,13 +40,33 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.QualityCertificate, opt => opt.MapFrom(src => src.QualityCertificate))
                 .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants))
                 .ForMember(dest => dest.Category, opt => opt.Ignore());
 
             CreateMap<Product, ProductResponse>()
                 .ForMember(dest => dest.Id, otp => otp.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.Name, otp => otp.MapFrom(src => src.ProductName))
-                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.CategoryName));
+                .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Material, otp => otp.MapFrom(src => src.Material))
+                .ForMember(dest => dest.Origin, otp => otp.MapFrom(src => src.Origin))
+                .ForMember(dest => dest.CategoryId, otp => otp.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category != null ? src.Category.CategoryName : string.Empty))
+                .ForMember(dest => dest.Quantity, otp => otp.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.Price, otp => otp.MapFrom(src => src.Price))
+                .ForMember(dest => dest.PriceDiscount, otp => otp.MapFrom(src => src.Price - src.Price * src.Discount / 100))
+                .ForMember(dest => dest.Discount, otp => otp.MapFrom(src => (src.Discount)))
+                .ForMember(dest => dest.AverageRating, otp => otp.MapFrom(src => src.AverageRating.HasValue ? (int)Math.Round(src.AverageRating.Value) : 0))
+                .ForMember(dest => dest.QualityCertificate, otp => otp.MapFrom(src => src.QualityCertificate))
+                .ForMember(dest => dest.CreatedAt, otp => otp.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.UpdatedAt, otp => otp.MapFrom(src => src.UpdatedAt))
+                .ForMember(dest => dest.Status, otp => otp.MapFrom(src => src.Status))
+                .ForMember(dest => dest.TotalTax, otp => otp.MapFrom(src => src.TotalTax))
+                .ForMember(dest => dest.ProductImages, otp => otp.MapFrom(src => src.ProductImages))
+                .ForMember(dest => dest.ProductVariants, otp => otp.MapFrom(src => src.ProductVariants))
+                .ForMember(dest => dest.Taxes, otp => otp.MapFrom(src => src.Taxes))
+                .ReverseMap();
+
             CreateMap<ProductVariant, ProductVariantResponse>();
             CreateMap<ProductImage, ProductImageResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.ProductImageId))
@@ -63,6 +83,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.QualityCertificate, opt => opt.MapFrom(src => src.QualityCertificate))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<UpdateProductVariant, ProductVariant>();
             CreateMap<NewBlogPost, BlogPost>();
@@ -106,6 +127,13 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
             CreateMap<Order, NewOrder>();
+            
+            CreateMap<Tax,TaxResponse>()
+                .ForMember(dest=>dest.TaxId,otp=>otp.MapFrom(src=>src.TaxId))
+                .ForMember(dest=>dest.TaxName,otp=>otp.MapFrom(src=>src.TaxName))
+                .ForMember(dest=>dest.TaxRate,otp=>otp.MapFrom(src=>src.TaxRate))
+                .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
+                .ReverseMap();
         }
     }
 }

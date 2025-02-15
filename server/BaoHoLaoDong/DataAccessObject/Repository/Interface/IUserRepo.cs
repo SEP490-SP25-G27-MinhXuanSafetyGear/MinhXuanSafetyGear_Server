@@ -24,4 +24,5 @@ public interface IUserRepo
     Task<AccountVerification?> GetAccountVerificationByIdAndTypeAccountAsync(int id);
     Task<int> CountCustomers();
     Task<int> CountEmployees();
+    Task<AccountVerification?> ConfirmEmailCustomerSuccessAsync(int customerCustomerId);
 }

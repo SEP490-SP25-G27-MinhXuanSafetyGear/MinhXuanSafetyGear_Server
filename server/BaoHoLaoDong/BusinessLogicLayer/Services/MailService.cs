@@ -9,10 +9,12 @@ namespace BusinessLogicLayer.Services
     public class MailService : IMailService
     {
         private readonly EmailSettings _emailSettings;
+        private readonly ApplicationUrls _applicationUrls;
 
-        public MailService(IOptions<EmailSettings> emailSettings)
+        public MailService(IOptions<EmailSettings> emailSettings,IOptions<ApplicationUrls> applicationUrls)
         {
             _emailSettings = emailSettings.Value;
+            _applicationUrls = applicationUrls.Value;
         }
 
         public async Task<bool> SendEmailAsync(string toEmail, string subject, string username)
@@ -80,7 +82,7 @@ namespace BusinessLogicLayer.Services
         message.Subject = "Mã xác thực tài khoản của bạn";
 
         // Tạo đường dẫn xác thực
-        string verificationLink = $"https://yourwebsite.com/verify?code={verificationCode}";
+        string verificationLink = $"{_applicationUrls.ClientUrl}/verification?email={toEmail}&verifyCode={verificationCode}";
 
         // Nội dung email với mã xác thực và nút xác thực
         string htmlBody = $@"

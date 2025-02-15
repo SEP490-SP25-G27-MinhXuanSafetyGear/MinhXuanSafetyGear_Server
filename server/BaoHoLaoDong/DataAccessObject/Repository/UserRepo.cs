@@ -169,6 +169,14 @@ namespace DataAccessObject.Repository
             return await _employeeDao.CountAsync();
         }
 
+        public async Task<AccountVerification?> ConfirmEmailCustomerSuccessAsync(int customerCustomerId)
+        {
+            var accountVerification = await _accountVerificationDao.GetByAccountIdAsync(customerCustomerId);
+            if (accountVerification == null) return null;
+            accountVerification.IsVerified = true;
+            return await _accountVerificationDao.UpdateAsync(accountVerification);
+        }
+
         #endregion Employee
     }
 }

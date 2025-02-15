@@ -25,6 +25,10 @@ public partial class Product
 
     public decimal? AverageRating { get; set; }
 
+    public string? QualityCertificate { get; set; }
+
+    public decimal? TotalTax { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
@@ -40,4 +44,6 @@ public partial class Product
     public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
+
+    public virtual ICollection<Tax> Taxes { get; set; } = new List<Tax>();
 }

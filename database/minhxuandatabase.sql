@@ -54,7 +54,7 @@ GO
 CREATE TABLE ProductCategory (
     CategoryId int primary key identity(1,1),  -- Khoá chính cho danh mục sản phẩm
     CategoryName nvarchar(100) not null,       -- Tên danh mục
-    [Description] nvarchar(500) not null         -- Mô tả danh mục
+    [Description] nvarchar(500)          -- Mô tả danh mục
 );
 GO
 
@@ -70,12 +70,28 @@ CREATE TABLE Products (
     Price decimal(18,2) not null,                 -- Giá sản phẩm
     Discount decimal(5,2) null default 0.00,      -- Giảm giá của sản phẩm
 	AverageRating DECIMAL(3,2) NULL DEFAULT 0.00,
+	QualityCertificate nvarchar(1200) NULL,
+	TotalTax DECIMAL(5,2) null,  -- tổng số thuế
     CreatedAt datetime not null default getdate(), -- Thời gian tạo sản phẩm
     UpdatedAt datetime null,                      -- Thời gian cập nhật sản phẩm
     Status bit not null default 1,                 -- Trạng thái sản phẩm (1: Còn bán, 0: Ngừng bán)
     CONSTRAINT FK_Products_Category FOREIGN KEY (CategoryId) REFERENCES ProductCategory(CategoryId) ON DELETE CASCADE
 );
 GO
+CREATE TABLE Tax (
+    TaxID INT PRIMARY KEY Identity(1,1),
+    TaxName VARCHAR(100) NOT NULL,
+    TaxRate DECIMAL(5,2) NOT NULL, -- Thuế suất tính theo %
+    Description TEXT NULL
+);
+
+CREATE TABLE ProductTax (
+    ProductID INT,
+    TaxID INT,
+    PRIMARY KEY (ProductID, TaxID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE,
+    FOREIGN KEY (TaxID) REFERENCES Tax(TaxID) ON DELETE CASCADE
+);
 
 -- Tạo bảng ProductReviews
 CREATE TABLE ProductReviews (
@@ -289,6 +305,32 @@ BEGIN
         WHERE ProductVariants.ProductId = Products.ProductId
     ); -- Chỉ cập nhật nếu có biến thể
 END;
+go
+
+go
+CREATE TRIGGER trg_CalculateTotalTax
+ON ProductTax
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Cập nhật TotalTax trong bảng Products
+    UPDATE p
+    SET p.TotalTax = (
+        SELECT COALESCE(SUM(t.TaxRate), 0)
+        FROM ProductTax pt
+        JOIN Tax t ON pt.TaxID = t.TaxID
+        WHERE pt.ProductID = p.ProductId
+    )
+    FROM Products p
+    WHERE p.ProductId IN (
+        SELECT DISTINCT ProductID FROM inserted
+        UNION
+        SELECT DISTINCT ProductID FROM deleted
+    );
+END;
 GO
-
-
+-- password admin123
+insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
+('admin','admin@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');

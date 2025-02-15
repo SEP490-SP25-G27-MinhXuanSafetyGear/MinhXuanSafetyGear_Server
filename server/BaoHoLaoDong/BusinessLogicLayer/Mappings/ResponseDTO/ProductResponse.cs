@@ -19,20 +19,26 @@ public class ProductResponse
     public int Quantity { get; set; }
 
     public decimal Price { get; set; }
+    
+    public decimal PriceDiscount { get; set; }
 
     public decimal? Discount { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
 
     public bool Status { get; set; }
     
     public int AverageRating { get; set; }
     
+    public string? QualityCertificate { get; set; }
+    
+    public decimal? TotalTax { get; set; }
+    
     public List<ProductImageResponse> ProductImages { get; set; } = new List<ProductImageResponse>();
     
     public List<ProductVariantResponse> ProductVariants { get; set; } = new List<ProductVariantResponse>();
     
+    public List<TaxResponse> Taxes { get; set; } = new List<TaxResponse>();
+    
+    public DateTime CreatedAt { get; set; }
 
+    public DateTime? UpdatedAt { get; set; }
 }

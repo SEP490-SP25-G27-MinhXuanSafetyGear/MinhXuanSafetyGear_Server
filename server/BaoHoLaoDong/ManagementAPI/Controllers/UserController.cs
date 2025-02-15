@@ -147,4 +147,17 @@ public class UserController : ControllerBase
         }
     }
     
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+    {
+        try
+        {
+            var result = await _userService.ConfirmEmailCustomerAsync(request.Email, request.Code);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

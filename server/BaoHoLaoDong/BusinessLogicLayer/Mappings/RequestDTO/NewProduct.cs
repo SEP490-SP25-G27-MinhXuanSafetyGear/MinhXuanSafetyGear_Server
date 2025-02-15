@@ -23,6 +23,8 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
         public decimal Price { get; set; }
 
         public decimal? Discount { get; set; }
+        
+        public string? QualityCertificate { get; set; }
 
         public bool Status { get; set; }
         
