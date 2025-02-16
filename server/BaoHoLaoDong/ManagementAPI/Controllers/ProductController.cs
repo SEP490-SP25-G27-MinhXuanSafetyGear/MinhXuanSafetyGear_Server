@@ -207,7 +207,24 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+    /// <summary>
+    /// delete image product
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete("delete-image/{id}")]
+    public async Task<IActionResult> DeleteImage([FromRoute] int id)
+    {
+        try
+        {
+            var result = await _productService.DeleteImageAsync(id);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
     /// <summary>
     /// Tìm kiếm sản phẩm theo tiêu đề
     /// </summary>
