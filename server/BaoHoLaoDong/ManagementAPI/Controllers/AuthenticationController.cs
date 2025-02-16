@@ -74,23 +74,21 @@ namespace ManagementAPI.Controllers
             {
                 return BadRequest("Google token is required.");
             }
-
             try
             {
                 var payload = await ValidateGoogleTokenViaApi(request.GoogleToken);
                 if (payload == null)
                 {
-                    return Unauthorized("Invalid Google token.");
+                    return Unauthorized(new {message= "Invalid Google token."});
                 }
 
                 var user = await _userService.GetUserByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                    return Unauthorized("User not found.");
+                    return Unauthorized(new { message = "User not found." });
                 }
-
                 var token = _tokenService.GenerateJwtToken(user.Email, user.Id, user.Role);
-                return Ok(new { token, userId = user.Id, email = user.Email, role = user.Role });
+                return Ok(new { token, userId = user.Id, email = user.Email, role = user.Role ,imageUrl=user.ImageUrl});
             }
             catch (Exception ex)
             {
@@ -131,6 +129,7 @@ namespace ManagementAPI.Controllers
                     DateOfBirth = null,
                     Password = "user@123"
                 };
+                _logger.LogInformation("picture url: {Picture}", payload.Picture);
                 var createdUser = await _userService.CreateNewCustomerAsync(newUser);
                 if (createdUser == null)
                 {
@@ -138,7 +137,7 @@ namespace ManagementAPI.Controllers
                 }
 
                 var token = _tokenService.GenerateJwtToken(createdUser.Email, createdUser.Id, createdUser.Role);
-                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role });
+                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role ,imageUrl=createdUser.ImageUrl});
             }
             catch (Exception ex)
             {
@@ -166,13 +165,46 @@ namespace ManagementAPI.Controllers
                     Email = payload["email"]?.ToString(),
                     Name = payload["name"]?.ToString(),
                     Issuer = payload["iss"]?.ToString(),
-                    Audience = payload["aud"]?.ToString()
+                    Audience = payload["aud"]?.ToString(),
+                    Picture = payload["picture"]?.ToString(),
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogWarning("Google token validation via API failed: {Message}", ex.Message);
                 return null;
+            }
+        }
+        
+        [HttpPost("authenticate/registerby-email-password")]
+        public async Task<IActionResult> RegisterByPassword([FromBody] NewCustomer newCustomer)
+        {
+            if (newCustomer == null || string.IsNullOrWhiteSpace(newCustomer.Email) || string.IsNullOrWhiteSpace(newCustomer.Password))
+            {
+                return BadRequest("Email and Password are required.");
+            }
+
+            try
+            {
+                var user = await _userService.GetUserByEmailAsync(newCustomer.Email);
+                if (user != null)
+                {
+                    return BadRequest("User already exists.");
+                }
+
+                var createdUser = await _userService.CreateNewCustomerAsync(newCustomer);
+                if (createdUser == null)
+                {
+                    return StatusCode(500, "An internal server error occurred.");
+                }
+
+                var token = _tokenService.GenerateJwtToken(createdUser.Email, createdUser.Id, createdUser.Role);
+                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role ,imageUrl=createdUser.ImageUrl});
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration process for email {Email}", newCustomer.Email);
+                return StatusCode(500, "An internal server error occurred.");
             }
         }
     }

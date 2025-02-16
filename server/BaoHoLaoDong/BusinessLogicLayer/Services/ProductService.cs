@@ -18,6 +18,7 @@ public class ProductService : IProductService
     private readonly IMapper _mapper;
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
+    private readonly ITaxRepo _taxRepo;
     private readonly string _imageDirectory;
     private readonly IFileService _fileService;
     public ProductService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<ProductService> logger,
@@ -28,6 +29,7 @@ public class ProductService : IProductService
         _logger = logger;
         _imageDirectory = imageDirectory;
         _fileService = fileService;
+        _taxRepo = new TaxRepo(context);
     }
 
 
@@ -388,6 +390,40 @@ public class ProductService : IProductService
         }catch(Exception ex)
         {
             _logger.LogError(ex, "Error while get top sale product");
+            throw;
+        }
+    }
+
+    public async Task<ProductResponse?> AddTaxProductAsync(NewProductTax newProductTax)
+    {
+        try
+        {
+            var productTax = _mapper.Map<ProductTaxis>(newProductTax); 
+             productTax = await _productRepo.AddProductTaxAsync(productTax);
+             if (productTax != null)
+             {
+                 var product = await _productRepo.GetProductByIdAsync(newProductTax.ProductId);
+                 return _mapper.Map<ProductResponse>(product);
+             }
+             return null;
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex, "Error while add tax product");
+            throw;
+        }
+    }
+
+    public async Task<ProductResponse?> DeleteTaxAsync(int productTaxid)
+    {
+        try
+        {
+            var result = await _productRepo.DeleteProductTaxAsync(productTaxid);
+            var product = await _productRepo.GetProductByIdAsync((int)result.ProductId);
+            return _mapper.Map<ProductResponse>(product);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while delete tax product");
             throw;
         }
     }

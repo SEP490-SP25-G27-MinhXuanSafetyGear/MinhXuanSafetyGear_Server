@@ -24,4 +24,6 @@ public interface IProductService
      Task<List<ProductResponse>?> SearchProductAsync(string title);
      Task<ProductResponse?> GetProductByIdAsync(int id);
      Task<List<ProductResponse>?> GetTopSaleProduct(int size);
+     Task<ProductResponse?> AddTaxProductAsync(NewProductTax productTax);
+     Task<ProductResponse?> DeleteTaxAsync(int productTaxid);
 }

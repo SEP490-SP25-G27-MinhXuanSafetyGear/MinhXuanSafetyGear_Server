@@ -13,5 +13,5 @@ public partial class Tax
 
     public string? Description { get; set; }
 
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+    public virtual ICollection<ProductTaxis> ProductTaxes { get; set; } = new List<ProductTaxis>();
 }

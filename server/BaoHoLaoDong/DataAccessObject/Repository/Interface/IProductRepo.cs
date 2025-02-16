@@ -34,4 +34,6 @@ public interface IProductRepo
     Task<List<ProductVariant>?> GetAllVariantsAsync(int productId);
     Task<ProductVariant?> GetProductVariantByIdAsync(int variantId);
     Task<ProductVariant?> UpdateProductVariantAsync(ProductVariant productVariant);
+    Task<ProductTaxis?> AddProductTaxAsync(ProductTaxis productTax);
+    Task<ProductTaxis?> DeleteProductTaxAsync(int productTaxid);
 }
