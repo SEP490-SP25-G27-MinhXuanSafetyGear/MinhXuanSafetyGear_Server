@@ -14,12 +14,12 @@ public interface IUserService
     /// </summary>
     /// <param name="formLogin"></param>
     /// <returns></returns>
-    Task<EmployeeResponse?> EmployeeLoginByEmailAndPasswordAsync(FormLogin formLogin);
-    Task<EmployeeResponse?> CreateNewEmployeeAsync(NewEmployee newEmployee);
-    Task<Page<EmployeeResponse>?> GetEmployeeByPageAsync(int page, int pageSize);
-    Task<EmployeeResponse?> GetEmployeeByEmailAsync(string email);
-    Task<EmployeeResponse?> GetEmployeeByIdAsync(int employeeId);
-    Task<EmployeeResponse?> UpdateEmployeeAsync(UpdateEmployee updateEmployee);
+    Task<UserResponse?> UserLoginByEmailAndPasswordAsync(FormLogin formLogin);
+    Task<UserResponse?> CreateNewEmployeeAsync(NewEmployee newEmployee);
+    Task<Page<UserResponse>?> GetEmployeeByPageAsync(int page, int pageSize);
+    Task<UserResponse?> GetUserByEmailAsync(string email);
+    Task<UserResponse?> GetEmployeeByIdAsync(int employeeId);
+    Task<UserResponse?> UpdateEmployeeAsync(UpdateEmployee updateEmployee);
     
     //Customer
     /// <summary>
@@ -27,11 +27,11 @@ public interface IUserService
     /// </summary>
     /// <param name="newCustomer"></param>
     /// <returns></returns>
-    Task<CustomerResponse?> CreateNewCustomerAsync(NewCustomer newCustomer);
-    Task<CustomerResponse?> CustomerLoginByEmailAndPasswordAsync(FormLogin formLogin);
-    Task<Page<CustomerResponse>?> GetCustomerByPageAsync(int page, int pageSize);
-    Task<CustomerResponse?> GetCustomerByEmailAsync(string email);
-    Task<CustomerResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer);
+    Task<UserResponse?> CreateNewCustomerAsync(NewCustomer newCustomer);
+    Task<UserResponse?> CustomerLoginByEmailAndPasswordAsync(FormLogin formLogin);
+    Task<Page<UserResponse>?> GetCustomerByPageAsync(int page, int pageSize);
+    Task<UserResponse?> GetCustomerByEmailAsync(string email);
+    Task<UserResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer);
     Task<bool> SendVerificationCodeBackAsync(string email);
-    Task<CustomerResponse?> ConfirmEmailCustomerAsync(string email, string code);
+    Task<UserResponse?> ConfirmEmailCustomerAsync(string email, string code);
 }

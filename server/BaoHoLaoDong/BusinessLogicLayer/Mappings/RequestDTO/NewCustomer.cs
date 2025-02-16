@@ -14,6 +14,10 @@ public class NewCustomer
     [Phone]
     public string PhoneNumber { get; set; } = null!;
     
+    public string ImageUrl { get; set; }
+    
+    public bool IsEmailVerified { get; set; }
+    
     public string? Address { get; set; }
     
     public DateOnly? DateOfBirth { get; set; }

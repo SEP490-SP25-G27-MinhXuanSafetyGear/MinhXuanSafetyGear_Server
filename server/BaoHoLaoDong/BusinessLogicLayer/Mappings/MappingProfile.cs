@@ -21,6 +21,31 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<NewCustomer, Customer>();
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId));
+            CreateMap<Customer,UserResponse>()
+                .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId))
+                .ForMember(dest=>dest.Name,otp=>otp.MapFrom(src=>src.FullName))
+                .ForMember(dest=>dest.Email,otp=>otp.MapFrom(src=>src.Email))
+                .ForMember(dest=>dest.PhoneNumber,otp=>otp.MapFrom(src=>src.PhoneNumber))
+                .ForMember(dest=>dest.Address,otp=>otp.MapFrom(src=>src.Address))
+                .ForMember(dest=>dest.DateOfBirth,otp=>otp.MapFrom(src=>src.DateOfBirth))
+                .ForMember(dest=>dest.Role,otp=>otp.MapFrom(src=>"Customer"))
+                .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>src.ImageUrl))
+                .ForMember(dest=>dest.IsEmailVerified,otp=>otp.MapFrom(src=>src.IsEmailVerified))
+                .ForMember(dest=>dest.CreatedAt,otp=>otp.MapFrom(src=>src.CreatedAt))
+                .ForMember(dest=>dest.UpdateAt,otp=>otp.MapFrom(src=>src.UpdateAt))
+                .ForMember(dest=>dest.Status,otp=>otp.MapFrom(src=>"Active"));
+            CreateMap<Employee,UserResponse>()
+                .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.EmployeeId))
+                .ForMember(dest=>dest.Name,otp=>otp.MapFrom(src=>src.FullName))
+                .ForMember(dest=>dest.Email,otp=>otp.MapFrom(src=>src.Email))
+                .ForMember(dest=>dest.PhoneNumber,otp=>otp.MapFrom(src=>src.PhoneNumber))
+                .ForMember(dest=>dest.Address,otp=>otp.MapFrom(src=>src.Address))
+                .ForMember(dest=>dest.DateOfBirth,otp=>otp.MapFrom(src=>src.DateOfBirth))
+                .ForMember(dest=>dest.Role,otp=>otp.MapFrom(src=>src.Role))
+                .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>""))
+                .ForMember(dest=>dest.IsEmailVerified,otp=>otp.MapFrom(src => true))
+                .ForMember(dest=>dest.UpdateAt,otp=>otp.MapFrom(src=>src.UpdateAt))
+                .ForMember(dest=>dest.Status,otp=>otp.MapFrom(src=>src.Status));
             CreateMap<UpdateEmployee, Employee>();
             CreateMap<NewProductCategory, ProductCategory>();
             CreateMap<ProductCategory, CategoryResponse>();

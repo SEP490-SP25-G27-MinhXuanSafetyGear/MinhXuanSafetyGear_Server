@@ -30,7 +30,7 @@ public class UserService : IUserService
         _mailService = mailService;
     }
 
-    public async Task<EmployeeResponse?> EmployeeLoginByEmailAndPasswordAsync(FormLogin formLogin)
+    public async Task<UserResponse?> UserLoginByEmailAndPasswordAsync(FormLogin formLogin)
     {
         _logger.LogInformation("Starting login process for email: {Email}", formLogin.Email);
 
@@ -40,21 +40,42 @@ public class UserService : IUserService
         try
         {
             var employee = await _userRepo.GetEmployeeByEmailAsync(email);
-            if (employee == null)
+            var customer = await _userRepo.GetCustomerByEmailAsync(email);
+
+            if (employee == null && customer == null)
             {
-                _logger.LogWarning("Login failed for email {Email}: Employee not found", email);
+                _logger.LogWarning("Login failed for email {Email}: User not found", email);
                 return null;
             }
 
-            if (employee.Status != "Active")
+            if (employee != null)
             {
-                return null;
+                if (employee.Status != "Active")
+                {
+                    _logger.LogWarning("Login failed for email {Email}: Employee is not active", email);
+                    return null;
+                }
+
+                if (BCrypt.Net.BCrypt.Verify(password, employee.PasswordHash))
+                {
+                    _logger.LogInformation("Login successful for email {Email} as Employee", email);
+                    return _mapper.Map<UserResponse>(employee);
+                }
             }
-            if (BCrypt.Net.BCrypt.Verify(password, employee.PasswordHash))
+
+            if (customer != null)
             {
-                _logger.LogInformation("Login successful for email {Email}", email);
-                var empRequest = _mapper.Map<EmployeeResponse>(employee);
-                return empRequest;
+                if (customer.IsEmailVerified ==false)
+                {
+                    _logger.LogWarning("Login failed for email {Email}: Customer is not verify", email);
+                    return null;
+                }
+
+                if (BCrypt.Net.BCrypt.Verify(password, customer.PasswordHash))
+                {
+                    _logger.LogInformation("Login successful for email {Email} as Customer", email);
+                    return _mapper.Map<UserResponse>(customer);
+                }
             }
 
             _logger.LogWarning("Login failed for email {Email}: Incorrect password", email);
@@ -67,7 +88,8 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<EmployeeResponse?> CreateNewEmployeeAsync(NewEmployee newEmployee)
+
+    public async Task<UserResponse?> CreateNewEmployeeAsync(NewEmployee newEmployee)
     {
         _logger.LogInformation("Starting employee creation for email: {Email}", newEmployee.Email);
         try
@@ -81,7 +103,7 @@ public class UserService : IUserService
                 return null;
             }
             _logger.LogInformation("Employee created successfully for email {Email}", newEmployee.Email);
-            var empRequest = _mapper.Map<EmployeeResponse>(result);
+            var empRequest = _mapper.Map<UserResponse>(result);
             return empRequest;
         }
         catch (Exception ex)
@@ -91,14 +113,14 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<Page<EmployeeResponse>?> GetEmployeeByPageAsync(int page, int pageSize)
+    public async Task<Page<UserResponse>?> GetEmployeeByPageAsync(int page, int pageSize)
     {
         try
         {
             var emps = await _userRepo.GetEmployeesPageAsync(page, pageSize);
             var totalEmp = await _userRepo.CountEmployees();
-            var empRequests = _mapper.Map<List<EmployeeResponse>>(emps);
-            var pageResult = new Page<EmployeeResponse>(empRequests, page, pageSize, totalEmp);
+            var empRequests = _mapper.Map<List<UserResponse>>(emps);
+            var pageResult = new Page<UserResponse>(empRequests, page, pageSize, totalEmp);
             _logger.LogInformation("Get employee by page successfully");
             return pageResult;
         }catch(Exception ex)
@@ -108,47 +130,58 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<EmployeeResponse?> GetEmployeeByEmailAsync(string email)
+    public async Task<UserResponse?> GetUserByEmailAsync(string email)
     {
         var emp = await _userRepo.GetEmployeeByEmailAsync(email);
-        var empRequest = _mapper.Map<EmployeeResponse>(emp);
+        if (emp == null)
+        {
+            var cus = await _userRepo.GetCustomerByEmailAsync(email);
+            if (cus == null) return null;
+            var cusRequest = _mapper.Map<UserResponse>(cus);
+            return cusRequest;
+        }
+        var empRequest = _mapper.Map<UserResponse>(emp);
         return empRequest;
     }
 
-    public async Task<EmployeeResponse?> GetEmployeeByIdAsync(int employeeId)
+    public async Task<UserResponse?> GetEmployeeByIdAsync(int employeeId)
     {
         var emp = await _userRepo.GetEmployeeByIdAsync(employeeId);
-        var empRequest = _mapper.Map<EmployeeResponse>(emp);
+        var empRequest = _mapper.Map<UserResponse>(emp);
         return empRequest;
     }
 
-    public async Task<EmployeeResponse?> UpdateEmployeeAsync(UpdateEmployee updateEmployee)
+    public async Task<UserResponse?> UpdateEmployeeAsync(UpdateEmployee updateEmployee)
     {
         var existingEmployee = await _userRepo.GetEmployeeByIdAsync(updateEmployee.EmployeeId);
         _mapper.Map(updateEmployee, existingEmployee);
         var updatedEmployee = await _userRepo.UpdateEmployeeAsync(existingEmployee);
-        var employeeResponse = _mapper.Map<EmployeeResponse>(updatedEmployee);
+        var employeeResponse = _mapper.Map<UserResponse>(updatedEmployee);
         return employeeResponse;
     }
     
 
 
-    public async Task<CustomerResponse?> CreateNewCustomerAsync(NewCustomer newCustomer)
+    public async Task<UserResponse?> CreateNewCustomerAsync(NewCustomer newCustomer)
     {
         var customer = _mapper.Map<Customer>(newCustomer);
         customer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newCustomer.Password);
         var result = await _userRepo.CreateCustomerAsync(customer);
         var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
-        if (accountVerification != null)
+        if (result != null && result.IsEmailVerified == false)
         {
             var resultMail =
                 await _mailService.SendVerificationEmailAsync(customer.Email, accountVerification.VerificationCode);
         }
-        var customerRequest = _mapper.Map<CustomerResponse>(result);
+        else if(result !=null && result.IsEmailVerified)
+        {
+            var sendMail = await _mailService.SendAccountCreatedEmailAsync(result.Email, result.FullName);
+        }
+        var customerRequest = _mapper.Map<UserResponse>(result);
         return customerRequest;
     }
 
-    public async Task<CustomerResponse?> CustomerLoginByEmailAndPasswordAsync(FormLogin formLogin)
+    public async Task<UserResponse?> CustomerLoginByEmailAndPasswordAsync(FormLogin formLogin)
     {
         _logger.LogInformation("Starting login process for email: {Email}", formLogin.Email);
 
@@ -171,7 +204,7 @@ public class UserService : IUserService
             if (BCrypt.Net.BCrypt.Verify(password, customer.PasswordHash))
             {
                 _logger.LogInformation("Login successful for email {Email}", email);
-                var cusResponst = _mapper.Map<CustomerResponse>(customer);
+                var cusResponst = _mapper.Map<UserResponse>(customer);
                 return cusResponst;
             }
 
@@ -185,27 +218,27 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<Page<CustomerResponse>?> GetCustomerByPageAsync(int page, int pageSize)
+    public async Task<Page<UserResponse>?> GetCustomerByPageAsync(int page, int pageSize)
     {
         var customers = await _userRepo.GetCustomersPageAsync(page, pageSize);
         var totalCustomer = await _userRepo.CountCustomers();
-        var customerRequests = _mapper.Map<List<CustomerResponse>>(customers);
-        var pageResult = new Page<CustomerResponse>(customerRequests, page, pageSize, totalCustomer);
+        var customerRequests = _mapper.Map<List<UserResponse>>(customers);
+        var pageResult = new Page<UserResponse>(customerRequests, page, pageSize, totalCustomer);
         return pageResult;
     }
 
-    public async Task<CustomerResponse?> GetCustomerByEmailAsync(string email)
+    public async Task<UserResponse?> GetCustomerByEmailAsync(string email)
     {
         var customer = await _userRepo.GetCustomerByEmailAsync(email);
-        var customerRequest = _mapper.Map<CustomerResponse>(customer);
+        var customerRequest = _mapper.Map<UserResponse>(customer);
         return customerRequest;
     }
 
-    public async Task<CustomerResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer)
+    public async Task<UserResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer)
     {
         var customer = _mapper.Map<Customer>(updateCustomer);
         var result = await _userRepo.UpdateCustomerAsync(customer);
-        var customerRequest = _mapper.Map<CustomerResponse>(result);
+        var customerRequest = _mapper.Map<UserResponse>(result);
         return customerRequest;
     }
 
@@ -220,7 +253,7 @@ public class UserService : IUserService
         return sendMailresult;
     }
 
-    public async Task<CustomerResponse?> ConfirmEmailCustomerAsync(string email, string code)
+    public async Task<UserResponse?> ConfirmEmailCustomerAsync(string email, string code)
     {
         try
         {
@@ -238,7 +271,11 @@ public class UserService : IUserService
             var result = await _userRepo.ConfirmEmailCustomerSuccessAsync(customer.CustomerId);
             customer.IsEmailVerified = true;
             var customerRequest= await _userRepo.UpdateCustomerAsync(customer);
-            return _mapper.Map<CustomerResponse>(customerRequest);   
+            if (customerRequest.IsEmailVerified)
+            {
+                await _mailService.SendAccountCreatedEmailAsync(customerRequest.Email, customer.FullName);
+            }
+            return _mapper.Map<UserResponse>(customerRequest);   
         }
         catch (Exception ex)
         {
