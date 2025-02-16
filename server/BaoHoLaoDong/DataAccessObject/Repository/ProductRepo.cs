@@ -14,6 +14,7 @@ namespace DataAccessObject.Repository
         private readonly ProductImageDao _productImageDao;
         private readonly ProductReviewDao _productReviewDao;
         private readonly ProductVariantDao _productVariantDao;
+        private readonly ProductTaxDao _productTaxDao;
 
         public ProductRepo(MinhXuanDatabaseContext context)
         {
@@ -22,6 +23,7 @@ namespace DataAccessObject.Repository
             _productImageDao = new ProductImageDao(context);
             _productReviewDao = new ProductReviewDao(context);
             _productVariantDao = new ProductVariantDao(context);
+            _productTaxDao = new ProductTaxDao(context);
         }
 
         #region Category
@@ -212,6 +214,21 @@ namespace DataAccessObject.Repository
                 throw new ArgumentException("Product variant not found.");
             }
             return await _productVariantDao.UpdateAsync(productVariant);
+        }
+
+        public async Task<ProductTaxis?> AddProductTaxAsync(ProductTaxis productTax)
+        {
+            var product = await _productDao.GetByIdAsync((int)productTax.ProductId);
+            if(product.ProductTaxes.Any(t=>t.TaxId == productTax.TaxId && t.ProductId == productTax.ProductId))
+            {
+                return null;
+            }
+            return  await _productTaxDao.CreateAsync(productTax);
+        }
+
+        public async Task<ProductTaxis?> DeleteProductTaxAsync(int productTaxid)
+        {
+            return await _productTaxDao.DeleteAsync(productTaxid);
         }
 
         #endregion ProductReview

@@ -89,7 +89,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.TotalTax, otp => otp.MapFrom(src => src.TotalTax))
                 .ForMember(dest => dest.ProductImages, otp => otp.MapFrom(src => src.ProductImages))
                 .ForMember(dest => dest.ProductVariants, otp => otp.MapFrom(src => src.ProductVariants))
-                .ForMember(dest => dest.Taxes, otp => otp.MapFrom(src => src.Taxes))
+                .ForMember(dest => dest.Taxes, otp => otp.MapFrom(src => src.ProductTaxes))
                 .ReverseMap();
 
             CreateMap<ProductVariant, ProductVariantResponse>();
@@ -158,6 +158,17 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest=>dest.TaxName,otp=>otp.MapFrom(src=>src.TaxName))
                 .ForMember(dest=>dest.TaxRate,otp=>otp.MapFrom(src=>src.TaxRate))
                 .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
+                .ReverseMap();
+            CreateMap<NewProductTax, ProductTaxis>()
+                .ForMember(dest=>dest.ProductId,otp=>otp.MapFrom(src=>src.ProductId))
+                .ForMember(dest=>dest.TaxId,otp=>otp.MapFrom(src=>src.TaxId));
+            CreateMap<ProductTaxis,ProductTaxResponse>()
+                .ForMember(dest=>dest.ProductTaxId,otp=>otp.MapFrom(src=>src.ProductTaxId))
+                .ForMember(dest=>dest.ProductId,otp=>otp.MapFrom(src=>src.ProductId))
+                .ForMember(dest=>dest.TaxId,otp=>otp.MapFrom(src=>src.TaxId))
+                .ForMember(dest=>dest.TaxName,otp=>otp.MapFrom(src=>src.Tax.TaxName))
+                .ForMember(dest=>dest.TaxRate,otp=>otp.MapFrom(src=>src.Tax.TaxRate))
+                .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Tax.Description))
                 .ReverseMap();
         }
     }

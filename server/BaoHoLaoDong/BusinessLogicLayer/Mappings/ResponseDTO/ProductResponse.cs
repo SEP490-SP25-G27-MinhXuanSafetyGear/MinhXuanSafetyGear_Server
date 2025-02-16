@@ -36,7 +36,7 @@ public class ProductResponse
     
     public List<ProductVariantResponse> ProductVariants { get; set; } = new List<ProductVariantResponse>();
     
-    public List<TaxResponse> Taxes { get; set; } = new List<TaxResponse>();
+    public List<ProductTaxResponse> Taxes { get; set; } = new List<ProductTaxResponse>();
     
     public DateTime CreatedAt { get; set; }
 

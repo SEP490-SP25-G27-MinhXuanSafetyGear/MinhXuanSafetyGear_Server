@@ -85,10 +85,11 @@ CREATE TABLE Tax (
     Description TEXT NULL
 );
 
-CREATE TABLE ProductTax (
+CREATE TABLE ProductTaxes (
+    ProductTaxId int primary key identity(1,1),
     ProductID INT,
     TaxID INT,
-    PRIMARY KEY (ProductID, TaxID),
+	UNIQUE(ProductID,TaxID),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE,
     FOREIGN KEY (TaxID) REFERENCES Tax(TaxID) ON DELETE CASCADE
 );
@@ -309,7 +310,7 @@ go
 
 go
 CREATE TRIGGER trg_CalculateTotalTax
-ON ProductTax
+ON ProductTaxes
 AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
@@ -319,7 +320,7 @@ BEGIN
     UPDATE p
     SET p.TotalTax = (
         SELECT COALESCE(SUM(t.TaxRate), 0)
-        FROM ProductTax pt
+        FROM ProductTaxes pt
         JOIN Tax t ON pt.TaxID = t.TaxID
         WHERE pt.ProductID = p.ProductId
     )

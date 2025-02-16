@@ -43,7 +43,7 @@ public partial class Product
 
     public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 
-    public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
+    public virtual ICollection<ProductTaxis> ProductTaxes { get; set; } = new List<ProductTaxis>();
 
-    public virtual ICollection<Tax> Taxes { get; set; } = new List<Tax>();
+    public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 }
