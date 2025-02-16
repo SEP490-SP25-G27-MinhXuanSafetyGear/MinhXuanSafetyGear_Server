@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
+var googleClientId = builder.Configuration["GoogleAuth:ClientId"];
+
 builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json

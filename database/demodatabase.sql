@@ -1,4 +1,6 @@
-﻿INSERT INTO ProductCategory (CategoryName, [Description])
+﻿USE MinhXuanDatabase;
+go
+INSERT INTO ProductCategory (CategoryName, [Description])
 VALUES 
 (N'Mũ bảo hộ', N'Các loại mũ bảo hộ lao động bảo vệ đầu khỏi va đập và rơi vật nặng.'),
 (N'Găng tay bảo hộ', N'Găng tay bảo hộ chống cắt, cách điện, chống hóa chất.'),
@@ -47,6 +49,3 @@ INSERT INTO Tax (TaxName, TaxRate, Description) VALUES
 ('VAT', 10.00, 'Thuế giá trị gia tăng'),
 ('Import Tax', 5.00, 'Thuế nhập khẩu'),
 ('Environmental Tax', 2.00, 'Thuế môi trường');
-
-insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
-('admin','admin@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');

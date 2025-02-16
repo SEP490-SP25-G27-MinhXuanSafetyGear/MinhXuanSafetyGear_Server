@@ -20,7 +20,7 @@ CREATE TABLE Customers (
     Email nvarchar(100) NOT NULL UNIQUE,           -- Email của khách hàng, duy nhất
     IsEmailVerified bit NOT NULL DEFAULT 0,        -- Trạng thái xác minh email (0: chưa xác minh, 1: đã xác minh)
     PasswordHash varchar(150) NULL,                -- Mật khẩu của khách hàng (đã mã hoá)
-    PhoneNumber varchar(10) NOT NULL,              -- Số điện thoại của khách hàng
+    PhoneNumber varchar(10) NULL,              -- Số điện thoại của khách hàng
     [Address] nvarchar(400) NULL,                    -- Địa chỉ của khách hàng
     DateOfBirth date NULL,                         -- Ngày sinh của khách hàng
     Gender bit NULL,                               -- Giới tính của khách hàng (0: Nữ, 1: Nam)
@@ -333,4 +333,4 @@ END;
 GO
 -- password admin123
 insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
-('admin','admin@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
+('admin','ngolinh09032002@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');

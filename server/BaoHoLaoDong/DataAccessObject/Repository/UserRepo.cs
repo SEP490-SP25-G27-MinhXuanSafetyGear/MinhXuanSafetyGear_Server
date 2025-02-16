@@ -45,9 +45,8 @@ namespace DataAccessObject.Repository
             {
                 throw new ArgumentException("Customer with this email already exists.");
             }
-            customer.IsEmailVerified = false;
             var newCustomer= await _customerDao.CreateAsync(customer);
-            if (customer != null)
+            if (customer != null && customer.IsEmailVerified == false)
             {
                 await _accountVerificationDao.CreateAsync(new AccountVerification
                 {
