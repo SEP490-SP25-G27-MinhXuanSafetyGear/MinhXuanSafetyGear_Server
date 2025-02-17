@@ -15,6 +15,7 @@ namespace DataAccessObject.Repository
         private readonly ProductReviewDao _productReviewDao;
         private readonly ProductVariantDao _productVariantDao;
         private readonly ProductTaxDao _productTaxDao;
+        private readonly ProductCategoryGroupDao _productCategoryGroupDao;
 
         public ProductRepo(MinhXuanDatabaseContext context)
         {
@@ -24,6 +25,7 @@ namespace DataAccessObject.Repository
             _productReviewDao = new ProductReviewDao(context);
             _productVariantDao = new ProductVariantDao(context);
             _productTaxDao = new ProductTaxDao(context);
+            _productCategoryGroupDao = new ProductCategoryGroupDao(context);
         }
 
         #region Category
@@ -53,9 +55,9 @@ namespace DataAccessObject.Repository
             return await _productCategoryDao.UpdateAsync(category);
         }
 
-        public async Task<List<ProductCategory>?> GetAllCategoriesAsync()
+        public async Task<List<ProductCategoryGroup>?> GetAllCategoriesAsync()
         {
-            return await _productCategoryDao.GetAllAsync() ?? new List<ProductCategory>();
+            return await _productCategoryGroupDao.GetAllAsync() ?? new List<ProductCategoryGroup>();
         }
 
         #endregion Category

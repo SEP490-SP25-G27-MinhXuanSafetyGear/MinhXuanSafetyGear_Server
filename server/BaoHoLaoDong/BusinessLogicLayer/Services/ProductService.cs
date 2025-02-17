@@ -33,17 +33,18 @@ public class ProductService : IProductService
     }
 
 
-    public async Task<CategoryResponse?> CreateNewCategory(NewProductCategory newProductCategory)
+    public async Task<List<ProductCategoryGroupResponse>?> CreateNewCategory(NewProductCategory newProductCategory)
     {
         var category = _mapper.Map<ProductCategory>(newProductCategory);
         category = await _productRepo.CreateCategoryAsync(category);
-        return _mapper.Map<CategoryResponse>(category);
+        var groups = await _productRepo.GetAllCategoriesAsync();
+        return _mapper.Map<List<ProductCategoryGroupResponse>>(groups);
     }
 
-    public async Task<List<CategoryResponse>?> GetAllCategory()
+    public async Task<List<ProductCategoryGroupResponse>?> GetAllCategory()
     {
         var categories = await _productRepo.GetAllCategoriesAsync();
-        return _mapper.Map<List<CategoryResponse>>(categories);
+        return _mapper.Map<List<ProductCategoryGroupResponse>>(categories);
     }
 
     public async Task<Page<ProductResponse>?> GetProductByPage(int category = 0, int page = 1, int pageSize = 20)
@@ -56,7 +57,7 @@ public class ProductService : IProductService
         return pageResult;
     }
 
-    public async Task<CategoryResponse?> UpdateCategoryAsync(UpdateProductCategory updateProductCategory)
+    public async Task<List<ProductCategoryGroupResponse>?> UpdateCategoryAsync(UpdateProductCategory updateProductCategory)
     {
         try
         {
@@ -68,7 +69,8 @@ public class ProductService : IProductService
 
             _mapper.Map(updateProductCategory, category);
             category = await _productRepo.UpdateCategoryAsync(category);
-            return _mapper.Map<CategoryResponse>(category);
+            var groups = await _productRepo.GetAllCategoriesAsync();
+            return _mapper.Map<List<ProductCategoryGroupResponse>>(groups);
         }
         catch (Exception ex)
         {
@@ -218,7 +220,7 @@ public class ProductService : IProductService
 }
 
 
-    public async Task<bool?> DeleteImageAsync(int id)
+    public async Task<ProductResponse?> DeleteImageAsync(int id)
     {
         try
         {
@@ -231,11 +233,11 @@ public class ProductService : IProductService
                 if (File.Exists(oldFilePath) && result)
                 {
                     File.Delete(oldFilePath);
-                    return true;
+                    var product = await _productRepo.GetProductByIdAsync(productImageExit.ProductId);
+                    return _mapper.Map<ProductResponse>(product);
                 }
             }
-
-            return false;
+            return null;
         }
         catch (Exception ex)
         {
@@ -244,7 +246,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<bool?> CreateNewProductImageAsync(NewProductImage productImage)
+    public async Task<ProductResponse?> CreateNewProductImageAsync(NewProductImage productImage)
     {
         try
         {
@@ -263,9 +265,10 @@ public class ProductService : IProductService
                 };
                 newProductImage = await _productRepo.CreateProductImageAsync(newProductImage);
                 _logger.LogInformation(newProductImage.ProductImageId.ToString());
-                return true;
+                var product = await _productRepo.GetProductByIdAsync(productImage.ProductId);
+                return _mapper.Map<ProductResponse>(product);
             }
-            return false;
+            return null;
         }
         catch (Exception ex)
         {

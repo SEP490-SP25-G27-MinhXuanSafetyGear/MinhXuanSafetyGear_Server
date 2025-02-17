@@ -23,12 +23,12 @@ public class ProductHub : Hub
         await Clients.All.SendAsync("ProductDeleted", productId);
     }
 
-    public async Task SendProductCategoryAdded(int categoryId)
+    public async Task SendProductCategoryAdded(ProductCategoryGroupResponse group)
     {
-        await Clients.All.SendAsync("ProductCategoryAdded",categoryId);
+        await Clients.All.SendAsync("ProductCategoryAdded",group);
     }
-    public async Task SendProductCategoryUpdated(int categoryId)
+    public async Task SendProductCategoryUpdated(ProductCategoryGroupResponse group)
     {
-        await Clients.All.SendAsync("ProductCategoryUpdated",categoryId);
+        await Clients.All.SendAsync("ProductCategoryUpdated",group);
     }
 }
