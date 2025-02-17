@@ -250,4 +250,38 @@ public class ProductController : ControllerBase
             return BadRequest(ex);
         }
     }
+    
+    [HttpPost("add-tax")]
+    public async Task<IActionResult> AddTax([FromBody] NewProductTax productTax)
+    {
+        try
+        {
+            var productResult = await _productService.AddTaxProductAsync(productTax);
+            if (productResult != null)
+            {
+                return Ok(productResult);
+            }
+
+            return BadRequest("Tax added");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
+    }
+
+    [HttpDelete("remove-tax")]
+    public async Task<IActionResult> RemoveTax(int productTaxid)
+    {
+        try
+        {
+            var result = await _productService.DeleteTaxAsync(productTaxid);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 }
