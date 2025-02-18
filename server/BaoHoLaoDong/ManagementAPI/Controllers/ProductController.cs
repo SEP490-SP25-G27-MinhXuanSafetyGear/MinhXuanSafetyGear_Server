@@ -34,7 +34,7 @@ public class ProductController : ControllerBase
         try
         {
             var result = await _productService.CreateNewCategory(productCategory);
-            await _productHub.Clients.All.SendAsync("ProductCategoryAdded");
+            await _productHub.Clients.All.SendAsync("ProductCategoryAdded",result);
             return Ok(result);
         }
         catch (Exception ex)
@@ -71,7 +71,7 @@ public class ProductController : ControllerBase
             var result = await _productService.UpdateCategoryAsync(productCategory);
             if (result != null)
             {
-                await _productHub.Clients.All.SendAsync("ProductCategoryUpdated", productCategory.CategoryId);
+                await _productHub.Clients.All.SendAsync("ProductCategoryUpdated", result);
             }
             return Ok(result);
         }
@@ -199,7 +199,7 @@ public class ProductController : ControllerBase
         try
         {
             var result = await _productService.UpdateProductImageAsync(updateProductImage);
-            await _productHub.Clients.All.SendAsync("ProductUpdated", updateProductImage);
+            await _productHub.Clients.All.SendAsync("ProductUpdated", result);
             return Ok(result);
         }
         catch (Exception ex)
@@ -218,6 +218,7 @@ public class ProductController : ControllerBase
         try
         {
             var result = await _productService.DeleteImageAsync(id);
+            await _productHub.Clients.All.SendAsync("ProductUpdated", result);
             return Ok(result);
         }
         catch (Exception ex)
@@ -260,6 +261,10 @@ public class ProductController : ControllerBase
         try
         {
             var productResult = await _productService.CreateNewProductImageAsync(productImage);
+            if (productResult != null)
+            {
+                await _productHub.Clients.All.SendAsync("ProductUpdated", productResult);
+            }
             return Ok(productResult);
         }
         catch (Exception ex)

@@ -9,7 +9,11 @@ public partial class ProductCategory
 
     public string CategoryName { get; set; } = null!;
 
+    public int? GroupId { get; set; }
+
     public string? Description { get; set; }
+
+    public virtual ProductCategoryGroup? Group { get; set; }
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

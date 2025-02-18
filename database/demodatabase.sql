@@ -1,4 +1,12 @@
 ﻿USE MinhXuanDatabase;
+INSERT INTO ProductCategoryGroup(GroupName,Description) 
+VALUES
+(N'Trang Thiết bị bảo hộ',N''),
+(N'An toàn ngành điện',N''),
+(N'An toàn ngành nước',N''),
+(N'Thiết bị chống ồn',N''),
+(N'Thiết bị phòng độc',N''),
+(N'Phòng cháy chữa cháy',N'');
 go
 INSERT INTO ProductCategory (CategoryName, [Description])
 VALUES 
@@ -49,3 +57,27 @@ INSERT INTO Tax (TaxName, TaxRate, Description) VALUES
 ('VAT', 10.00, 'Thuế giá trị gia tăng'),
 ('Import Tax', 5.00, 'Thuế nhập khẩu'),
 ('Environmental Tax', 2.00, 'Thuế môi trường');
+
+UPDATE ProductCategory
+SET GroupId = 1
+WHERE CategoryId IN (1, 2, 3, 4, 5, 6);  -- Các sản phẩm thuộc nhóm "Trang Thiết bị bảo hộ"
+
+UPDATE ProductCategory
+SET GroupId = 2
+WHERE CategoryId IN (7, 8);  -- Các sản phẩm thuộc nhóm "An toàn ngành điện"
+
+UPDATE ProductCategory
+SET GroupId = 3
+WHERE CategoryId IN (9, 10, 11);  -- Các sản phẩm thuộc nhóm "An toàn ngành nước"
+
+UPDATE ProductCategory
+SET GroupId = 4
+WHERE CategoryId IN (12, 13);  -- Các sản phẩm thuộc nhóm "Thiết bị chống ồn"
+
+UPDATE ProductCategory
+SET GroupId = 5
+WHERE CategoryId IN (14);  -- Các sản phẩm thuộc nhóm "Thiết bị phòng độc"
+
+UPDATE ProductCategory
+SET GroupId = 6
+WHERE CategoryId IN (15, 16);  -- Các sản phẩm thuộc nhóm "Phòng cháy chữa cháy"

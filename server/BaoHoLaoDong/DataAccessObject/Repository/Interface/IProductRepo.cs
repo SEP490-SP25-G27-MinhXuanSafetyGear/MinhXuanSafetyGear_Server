@@ -8,7 +8,7 @@ public interface IProductRepo
     Task<ProductCategory?> CreateCategoryAsync(ProductCategory category);
     Task<ProductCategory?> GetCategoryByIdAsync(int categoryId);
     Task<ProductCategory?> UpdateCategoryAsync(ProductCategory category);
-    Task<List<ProductCategory>?> GetAllCategoriesAsync();
+    Task<List<ProductCategoryGroup>?> GetAllCategoriesAsync();
     // products methods
     Task<Product?> CreateProductAsync(Product product);
     Task<Product?> GetProductByIdAsync(int productId);

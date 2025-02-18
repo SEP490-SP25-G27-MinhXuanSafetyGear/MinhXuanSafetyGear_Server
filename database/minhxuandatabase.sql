@@ -49,12 +49,19 @@ CREATE TABLE Employees (
     CONSTRAINT CHK_Role Check (Role in ('Admin','Manager')) -- Ràng buộc cho vai trò
 );
 GO
-
+CREATE TABLE ProductCategoryGroup (
+    GroupId INT PRIMARY KEY IDENTITY(1,1),       -- Khóa chính cho nhóm danh mục
+    GroupName NVARCHAR(100) NOT NULL,             -- Tên nhóm danh mục
+    Description NVARCHAR(500)                     -- Mô tả nhóm danh mục
+);
+GO
 -- Tạo bảng Category
 CREATE TABLE ProductCategory (
     CategoryId int primary key identity(1,1),  -- Khoá chính cho danh mục sản phẩm
     CategoryName nvarchar(100) not null,       -- Tên danh mục
-    [Description] nvarchar(500)          -- Mô tả danh mục
+	GroupId int null,
+    [Description] nvarchar(500),          -- Mô tả danh mục
+	CONSTRAINT FK_ProductCategory_ProductCategoryGroup FOREIGN KEY (GroupId) REFERENCES ProductCategoryGroup(GroupId) ON DELETE CASCADE
 );
 GO
 
