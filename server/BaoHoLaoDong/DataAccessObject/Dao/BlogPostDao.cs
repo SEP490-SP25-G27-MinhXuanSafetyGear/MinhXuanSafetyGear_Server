@@ -77,4 +77,12 @@ public class BlogPostDao : IDao<BlogPost>
             .Take(pageSize)
             .ToListAsync();
     }
+    public async Task<List<BlogPost>?> SearchBlogPostAsync(string title)
+    {
+        return await _context.BlogPosts
+        .Where(b => b.Title.ToLower().Contains(title.ToLower()))                  
+        .OrderByDescending(b => b.CreatedAt)
+        .ToListAsync();
+    }
+
 }

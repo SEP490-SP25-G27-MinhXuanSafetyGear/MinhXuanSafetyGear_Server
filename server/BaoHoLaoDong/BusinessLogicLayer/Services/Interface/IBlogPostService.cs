@@ -8,6 +8,7 @@ public interface IBlogPostService
     Task<BlogPostResponse> CreateNewBlogPostAsync(NewBlogPost newBlogPost);
     Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId=0,int page=0,int pageSize=5);
     Task<BlogPostResponse?> UpdateBlogPostAsync(UpdateBlogPost updateBlogPost);
+    Task<List<BlogPostResponse?>> SearchBlogPostAsync(string title);
     Task<bool?> DeleteBlogPostAsync(int id);
     Task<List<BlogCategoryResponse>?> GetBlogCategoriesAsync();
     Task<BlogCategoryResponse?> CreateBlogCategoryAsync(NewBlogCategory blogCategoryRequest);
