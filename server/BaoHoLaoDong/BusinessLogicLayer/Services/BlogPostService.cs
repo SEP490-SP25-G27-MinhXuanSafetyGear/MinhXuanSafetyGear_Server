@@ -169,6 +169,27 @@ public class BlogPostService : IBlogPostService
             throw;
         }
     }
+    public static string RemoveDiacritics(string text)
+    {
+        string[] vietnameseSigns = new string[]
+        {
+            "aáàảãạăắằẳẵặâấầẩẫậ", "AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬ",
+            "dđ", "DĐ",
+            "eéèẻẽẹêếềểễệ", "EÉÈẺẼẸÊẾỀỂỄỆ",
+            "iíìỉĩị", "IÍÌỈĨỊ",
+            "oóòỏõọôốồổỗộơớờởỡợ", "OÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ",
+            "uúùủũụưứừửữự", "UÚÙỦŨỤƯỨỪỬỮỰ",
+            "yýỳỷỹỵ", "YÝỲỶỸỴ"
+        };
 
-   
+        foreach (var sign in vietnameseSigns)
+        {
+            foreach (var c in sign.Substring(1))
+            {
+                text = text.Replace(c, sign[0]);
+            }
+        }
+        return text;
+    }
+
 }

@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace DataAccessObject.Dao;
 
@@ -67,22 +68,68 @@ public class BlogPostDao : IDao<BlogPost>
     // Get a page of BlogPosts (pagination)
     public async Task<List<BlogPost>?> GetPageAsync(int page, int pageSize)
     {
-      throw new NotImplementedException();
-    }   
-    public async Task<List<BlogPost>?> GetPageAsync(int categoryId,int page, int pageSize)
+        throw new NotImplementedException();
+    }
+    public async Task<List<BlogPost>?> GetPageAsync(int categoryId, int page, int pageSize)
     {
-        return await _context.BlogPosts
-            .AsNoTracking()
+        var query = _context.BlogPosts.AsNoTracking();
+
+        if (categoryId != 0)
+        {
+            query = query.Where(x => x.CategoryBlogId == categoryId);
+        }
+
+        return await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<BlogPost>?> SearchBlogPostAsync(string title)
+    public async Task<List<BlogPost>> SearchBlogPostAsync(string title)
     {
-        return await _context.BlogPosts
-        .Where(b => b.Title.ToLower().Contains(title.ToLower()))                  
-        .OrderByDescending(b => b.CreatedAt)
-        .ToListAsync();
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return await _context.BlogPosts
+                .AsNoTracking()
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
+        }
+
+        string normalizedTitle = RemoveDiacritics(
+            Regex.Replace(title.ToLower().Trim(), @"\s+", " ") 
+        );
+
+        var blogPosts = await _context.BlogPosts
+            .AsNoTracking()
+            .ToListAsync();
+
+        return blogPosts
+            .Where(b => RemoveDiacritics(
+                Regex.Replace(b.Title.ToLower().Trim(), @"\s+", " ") 
+            ).Contains(normalizedTitle))
+            .OrderByDescending(b => b.CreatedAt)
+            .ToList();
     }
 
+    public static string RemoveDiacritics(string text)
+    {
+        string[] vietnameseSigns = new string[]
+        {
+          "aáàảãạăắằẳẵặâấầẩẫậ", "AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬ",
+          "dđ", "DĐ",
+          "eéèẻẽẹêếềểễệ", "EÉÈẺẼẸÊẾỀỂỄỆ",
+          "iíìỉĩị", "IÍÌỈĨỊ",
+          "oóòỏõọôốồổỗộơớờởỡợ", "OÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ",
+          "uúùủũụưứừửữự", "UÚÙỦŨỤƯỨỪỬỮỰ",
+          "yýỳỷỹỵ", "YÝỲỶỸỴ"
+        };
+
+        foreach (var sign in vietnameseSigns)
+        {
+            foreach (var c in sign.Substring(1))
+            {
+                text = text.Replace(c, sign[0]);
+            }
+        }
+        return text;
+    }
 }
