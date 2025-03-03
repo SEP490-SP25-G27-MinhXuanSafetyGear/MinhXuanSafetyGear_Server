@@ -284,4 +284,29 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<Page<UserResponse>?> GetAllUserPageAsync(string role,int page, int size)
+    {
+        try
+        {
+            switch (role)
+            {
+                case "Customer":
+                    var customers = await _userRepo.GetAllCustomersAsync();
+                    var totalCustomer = await _userRepo.CountCustomers();
+                    var customerResponses = _mapper.Map<List<UserResponse>>(customers);
+                    return new Page<UserResponse>(customerResponses,page,size,totalCustomer);
+                case "Employee":
+                    var employees = await _userRepo.GetAllEmployeesAsync();
+                    var totalEmployees = await _userRepo.CountEmployees();
+                    var employeesResponses = _mapper.Map<List<UserResponse>>(employees);
+                    return new Page<UserResponse>(employeesResponses,page,size,totalEmployees);
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }

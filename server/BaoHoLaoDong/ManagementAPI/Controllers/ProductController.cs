@@ -89,6 +89,16 @@ public class ProductController : ControllerBase
     {
         try
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Where(e => e.Value.Errors.Count > 0)
+                    .ToDictionary(e => e.Key, e => e.Value.Errors.Select(err => err.ErrorMessage).ToArray());
+                return BadRequest(new
+                {
+                    Message = "Dữ liệu không hợp lệ!",
+                    Errors = errors
+                });
+            }
             var product = await _productService.CreateNewProductAsync(newProduct);
             await _productHub.Clients.All.SendAsync("ProductAdded", newProduct);
             return Ok(product);
@@ -139,11 +149,11 @@ public class ProductController : ControllerBase
     /// </summary>
     [EnableQuery]
     [HttpGet("get-product-page")]
-    public async Task<IActionResult> GetProductPage([FromQuery] int category = 0, [FromQuery] int page = 1, [FromQuery] int pagesize = 20)
+    public async Task<IActionResult> GetProductPage([FromQuery]int group=0,[FromQuery] int category = 0, [FromQuery] int page = 1, [FromQuery] int pagesize = 20)
     {
         try
         {
-            var pageResult = await _productService.GetProductByPage(category, page, pagesize);
+            var pageResult = await _productService.GetProductByPage(group,category, page, pagesize);
             return Ok(pageResult);
         }
         catch (Exception ex)
@@ -151,7 +161,7 @@ public class ProductController : ControllerBase
             return BadRequest(ex);
         }
     }
-
+    
     /// <summary>
     /// Cập nhật thông tin sản phẩm
     /// </summary>
@@ -304,6 +314,24 @@ public class ProductController : ControllerBase
         {
             Console.WriteLine(e);
             throw;
+        }
+    }
+
+    /// <summary>
+    /// search product for customer
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("filter-product")]
+    public async Task<IActionResult> FilterProducts( List<int?> categories)
+    {
+        try
+        {
+            var products = await _productService.FilterProductsAsync(categories);
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }

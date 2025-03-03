@@ -98,23 +98,46 @@ public class ProductDao : IDao<Product>
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<Product>?> GetPageAsync(int category, int page, int pageSize)
+    public async Task<List<Product>?> GetPageAsync(int group, int category, int page, int pageSize)
     {
-        return await _context.Products
+        IQueryable<Product> query = _context.Products
             .AsNoTracking()
             .Include(p => p.Category)
-            .Include(p=>p.ProductImages.OrderByDescending(p=>p.IsPrimary))
-            .Include(p=>p.ProductReviews)
-            .Include(p=>p.ProductVariants)
-            .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
-            .Where(p => category == 0 || p.CategoryId == category) // Nếu category = 0 thì lấy tất cả, ngược lại lọc theo CategoryId
-            .Skip((page - 1) * pageSize) // Bỏ qua các sản phẩm của các trang trước
-            .Take(pageSize) // Lấy số lượng sản phẩm của trang hiện tại
+            .Include(p => p.ProductImages.OrderByDescending(p => p.IsPrimary))
+            .Include(p => p.ProductReviews)
+            .Include(p => p.ProductVariants)
+            .Include(p => p.ProductTaxes).ThenInclude(t => t.Tax);
+        // Chỉ lọc nếu group > 0
+        if (group > 0)
+            query = query.Where(p => p.Category.GroupId == group);
+        // Chỉ lọc nếu category > 0
+        if (category > 0)
+            query = query.Where(p => p.CategoryId == category);
+        return await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
     }
 
-    public async Task<int> CountProductByCategory(int category)
+    public async Task<int> CountProductByCategory(int group, int category)
     {
-        return await _context.Products.CountAsync(p => category == 0 || p.CategoryId == category);
+        return await _context.Products.CountAsync(p => 
+            (group == 0 || p.Category.GroupId == group) && 
+            (category == 0 || p.CategoryId == category)
+        );
+    }
+
+
+    public async Task<List<Product>> GetProductByCategory(List<int?> categories)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .Include(p=>p.Category)
+            .Include(p=>p.ProductImages)
+            .Include(p=>p.ProductReviews)
+            .Include(p=>p.ProductVariants)
+            .Include(p=>p.ProductTaxes)
+            .Where(p => categories.Contains(p.CategoryId))
+            .ToListAsync();
     }
 }

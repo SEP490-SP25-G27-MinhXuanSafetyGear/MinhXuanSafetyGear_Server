@@ -26,7 +26,12 @@ public class Page<T>
     /// Trang kế tiếp (nếu có), nếu không có thì bằng 0.
     /// </summary>
     public int NextPage { get; set; }
-
+    
+    /// <summary>
+    /// Tổng số trang.
+    /// </summary>
+    public int TotalPages { get; set; }
+    
     /// <summary>
     /// Constructor không tham số.
     /// </summary>
@@ -45,8 +50,7 @@ public class Page<T>
         CurrentPage = currentPage;
         PageSize = pageSize;
         TotalItems = totalItems;
-
-        // Nếu trang hiện tại là trang cuối cùng thì không có NextPage
+        TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
         NextPage = (currentPage * pageSize >= totalItems) ? 0 : currentPage + 1;
     }
 }

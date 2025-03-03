@@ -2,6 +2,9 @@
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessObject.Entities;
+using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp.ColorSpaces.Companding;
+
 namespace BusinessLogicLayer.Mappings
 {
     public class MappingProfile : Profile
@@ -98,6 +101,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.UpdatedAt, otp => otp.MapFrom(src => src.UpdatedAt))
                 .ForMember(dest => dest.Status, otp => otp.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TotalTax, otp => otp.MapFrom(src => src.TotalTax))
+                .ForMember(dest=>dest.Image, otp => otp.MapFrom(src=>(!src.ProductImages.IsNullOrEmpty())? ($"{applicationUrl}/images/{src.ProductImages.FirstOrDefault().FileName}"):""))
                 .ForMember(dest => dest.ProductImages, otp => otp.MapFrom(src => src.ProductImages))
                 .ForMember(dest => dest.ProductVariants, otp => otp.MapFrom(src => src.ProductVariants))
                 .ForMember(dest => dest.Taxes, otp => otp.MapFrom(src => src.ProductTaxes))
@@ -186,6 +190,20 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.GroupName, otp => otp.MapFrom(src => src.GroupName))
                 .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Categories, otp => otp.MapFrom(src => src.ProductCategories))
+                .ReverseMap();
+            CreateMap<Notification, NotificationResponse>()
+                .ForMember(dest => dest.Id, otp => otp.MapFrom(src => src.NotificationId))
+                .ForMember(dest => dest.Title, otp => otp.MapFrom(src => src.Title))
+                .ForMember(dest => dest.RecipientId, otp => otp.MapFrom(src => src.RecipientId))
+                .ForMember(dest => dest.RecipientType, otp => otp.MapFrom(src => src.RecipientType))
+                .ForMember(dest => dest.IsRead, otp => otp.MapFrom(src => src.IsRead))
+                .ForMember(dest => dest.CreatedAt, otp => otp.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.UpdatedAt, otp => otp.MapFrom(src => src.UpdatedAt))
+                .ReverseMap();
+            CreateMap<NewNotification, Notification>()
+                .ForMember(dest => dest.Title, otp => otp.MapFrom(src => src.Title))
+                .ForMember(dest => dest.RecipientId, otp => otp.MapFrom(src => src.RecipientId))
+                .ForMember(dest => dest.RecipientType, otp => otp.MapFrom(src => src.RecipientType))
                 .ReverseMap();
         }
     }
