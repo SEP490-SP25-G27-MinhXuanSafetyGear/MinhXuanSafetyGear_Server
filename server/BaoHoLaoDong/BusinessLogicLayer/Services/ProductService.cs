@@ -436,4 +436,32 @@ public class ProductService : IProductService
         var products =await _productRepo.FilterProductsAsync(categories);
         return _mapper.Map<List<ProductResponse>>(products);
     }
+
+    public async Task<ProductCategoryGroupResponse?> CreateNewGroupCategoryAsync(NewGroupCategory groupCategory)
+    {
+        try
+        {
+            var group = _mapper.Map<ProductCategoryGroup>(groupCategory);
+            group = await _productRepo.CreateGroupCategoryAsync(group);
+            return _mapper.Map<ProductCategoryGroupResponse>(group);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public async Task<ProductCategoryGroupResponse?> UpdateGroupCategoryAsync(UpdateGroupCategory groupCategory)
+    {
+        try
+        {
+            var group = _mapper.Map<ProductCategoryGroup>(groupCategory);
+            group = await _productRepo.UpdateGroupCategoryAsync(group);
+            return _mapper.Map<ProductCategoryGroupResponse>(group);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }     
+    }
 }

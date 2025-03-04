@@ -37,4 +37,6 @@ public interface IProductRepo
     Task<ProductTaxis?> AddProductTaxAsync(ProductTaxis productTax);
     Task<ProductTaxis?> DeleteProductTaxAsync(int productTaxid);
     Task<List<Product>> FilterProductsAsync(List<int?> categories);
+    Task<ProductCategoryGroup?> CreateGroupCategoryAsync(ProductCategoryGroup group);
+    Task<ProductCategoryGroup> UpdateGroupCategoryAsync(ProductCategoryGroup group);
 }

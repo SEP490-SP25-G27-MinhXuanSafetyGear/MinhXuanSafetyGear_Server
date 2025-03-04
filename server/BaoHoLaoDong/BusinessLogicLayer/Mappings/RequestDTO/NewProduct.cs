@@ -7,7 +7,7 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
     public class NewProduct
     {
         [Required(ErrorMessage = "Tên không được để trống")]
-        [NoSpecialCharacters(ErrorMessage = "Tên sản phẩm không được chứa các ký tự đặc biệt và khoảng trắng trước")]
+        //[NoSpecialCharacters(ErrorMessage = "Tên sản phẩm không được chứa các ký tự đặc biệt và khoảng trắng trước")]
         public string Name { get; set; } = null!;
         [Required(ErrorMessage = "Loại sản phẩm không được để trống")]
         public int Category { get; set; }

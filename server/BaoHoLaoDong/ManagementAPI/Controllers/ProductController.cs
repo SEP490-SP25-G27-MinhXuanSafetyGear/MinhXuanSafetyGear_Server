@@ -334,4 +334,31 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPost("create-group-category")]
+    public async Task<IActionResult> CreateGroupCategory([FromBody] NewGroupCategory groupCategory)
+    {
+        try
+        {
+            var result = await _productService.CreateNewGroupCategoryAsync(groupCategory);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpPut("update-group-category")]
+    public async Task<IActionResult> UpdateGroupCategory([FromBody] UpdateGroupCategory groupCategory)
+    {
+        try
+        {
+            var result = await _productService.UpdateGroupCategoryAsync(groupCategory);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

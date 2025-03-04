@@ -205,6 +205,15 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.RecipientId, otp => otp.MapFrom(src => src.RecipientId))
                 .ForMember(dest => dest.RecipientType, otp => otp.MapFrom(src => src.RecipientType))
                 .ReverseMap();
+            CreateMap<NewGroupCategory, ProductCategoryGroup>()
+                .ForMember(dest => dest.GroupName, otp => otp.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description));
+            CreateMap<UpdateGroupCategory,ProductCategoryGroup>()
+                .ForMember(dest=>dest.GroupId,otp=>otp.MapFrom(src=>src.Id))
+                .ForMember(dest=>dest.GroupName,otp=>otp.MapFrom(src=>src.Name))
+                .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
+                .ForMember(dest=>dest.ProductCategories,otp=>otp.Ignore())
+                .ReverseMap();
         }
     }
 }
