@@ -135,9 +135,10 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(d=>d.CategoryBlogId,otp=>otp.MapFrom(s=>s.Id))
                 .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))
                 .ForMember(d=>d.Description,otp=>otp.MapFrom(s=>s.Description));
+
             CreateMap<BlogCategory,BlogCategoryResponse>()
-                .ForMember(d=>d.Id,otp=>otp.MapFrom(s=>s.CategoryBlogId))
-                .ForMember(d=>d.Name,otp=>otp.MapFrom(s=>s.CategoryName));
+                .ForMember(d=>d.CategoryBlogId,otp=>otp.MapFrom(s=>s.CategoryBlogId))
+                .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.CategoryName));
 
             //Order
             CreateMap<Order, OrderResponse>()
@@ -163,7 +164,8 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
             CreateMap<Order, NewOrder>();
-            
+            CreateMap<BlogCategory, BlogCategoryResponse>();
+            CreateMap<BlogCategoryResponse, BlogCategory>();
             CreateMap<Tax,TaxResponse>()
                 .ForMember(dest=>dest.TaxId,otp=>otp.MapFrom(src=>src.TaxId))
                 .ForMember(dest=>dest.TaxName,otp=>otp.MapFrom(src=>src.TaxName))

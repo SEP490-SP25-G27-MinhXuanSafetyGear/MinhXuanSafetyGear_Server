@@ -63,6 +63,27 @@ public class OrderDao : IDao<Order>
         await _context.SaveChangesAsync();
         return entity;
     }
+    public async Task<int> CountSearchResultsAsync(DateTime? startDate, DateTime? endDate, string customerName)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        if (!string.IsNullOrEmpty(customerName))
+        {
+            query = query.Where(o => o.Customer.FullName.Contains(customerName));
+        }
+
+        return await query.CountAsync();
+    }
 
 
 

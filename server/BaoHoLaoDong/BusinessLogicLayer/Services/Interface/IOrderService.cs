@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 
 namespace BusinessLogicLayer.Services.Interface
 {
@@ -11,14 +12,14 @@ namespace BusinessLogicLayer.Services.Interface
         Task<List<OrderResponse>> GetAllOrdersAsync();
         Task<OrderResponse> CreateNewOrderAsync(NewOrder orderRequest);
         Task<OrderResponse?> GetOrderByIdAsync(int orderId);
-        Task<List<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20);
-        Task<List<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20);
+        Task<Page<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20);
+        Task<Page<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20);
         Task<OrderResponse?> UpdateOrderAsync(int orderId, NewOrder orderRequest);
         Task<bool> UpdateOrderStatusAsync(int orderId, string status);
         Task<bool> DeleteOrderAsync(int orderId);
         Task<decimal> CalculateOrderTotalAsync(int orderId);
         Task<List<OrderDetailResponse>?> GetOrderDetailsByPageAsync(int orderId, int page = 1, int pageSize = 20);
-        Task<List<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20);
+        Task<Page<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20);
         Task<bool> CancelOrderAsync(int orderId);
         Task<int> CountOrdersAsync();
 

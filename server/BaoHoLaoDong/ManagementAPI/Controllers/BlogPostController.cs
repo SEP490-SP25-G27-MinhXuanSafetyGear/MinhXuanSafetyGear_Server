@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Mappings.RequestDTO;
+using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -73,7 +74,7 @@ public class BlogPostController : ControllerBase
     /// <param name="newBlogPost"></param>
     /// <returns></returns>
     [HttpPost("create-blog")]
-    public async Task<IActionResult> CreateBlog([FromForm] NewBlogPost newBlogPost)
+    public async Task<IActionResult> CreateBlog([FromBody] NewBlogPost newBlogPost)
     {
         try
         {
@@ -82,9 +83,11 @@ public class BlogPostController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            Console.WriteLine($"Lỗi khi tạo bài viết: {ex.Message}");
+            return BadRequest(new { message = "Có lỗi xảy ra khi tạo bài viết", error = ex.Message });
         }
     }
+
     /// <summary>
     /// get blog by page
     /// </summary>
@@ -147,6 +150,32 @@ public class BlogPostController : ControllerBase
         {
             var result = await _blogPostService.SearchBlogPostAsync(title);
             return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpGet("get-blog-by-id/{id}")]
+    public async Task<IActionResult> GetProductById([FromRoute] int id)
+    {
+        try
+        {
+            var product = await _blogPostService.GetBlogsByIdAsync(id);
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpGet("getall-category")]
+    public async Task<IActionResult> GetAllCategory()
+    {
+        try
+        {
+            var categories = await _blogPostService.GetAllCategoriesAsync();
+            return Ok(categories);
         }
         catch (Exception ex)
         {

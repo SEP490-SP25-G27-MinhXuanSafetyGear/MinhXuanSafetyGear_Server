@@ -109,7 +109,17 @@ public class BlogPostDao : IDao<BlogPost>
             .OrderByDescending(b => b.CreatedAt)
             .ToList();
     }
+    public async Task<List<BlogCategory>> GetAllCategoriesAsync()
+    {
+        return await _context.BlogCategories
+            .AsNoTracking()
+            .ToListAsync();
+    }
 
+    public async Task<int> CountBlogByCategory(int category)
+    {
+        return await _context.BlogPosts.CountAsync(p => category == 0 || p.CategoryBlogId == category);
+    }
     public static string RemoveDiacritics(string text)
     {
         string[] vietnameseSigns = new string[]
@@ -128,7 +138,7 @@ public class BlogPostDao : IDao<BlogPost>
             foreach (var c in sign.Substring(1))
             {
                 text = text.Replace(c, sign[0]);
-            }
+            }   
         }
         return text;
     }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
@@ -15,53 +16,61 @@ public class BlogPostService : IBlogPostService
     private readonly string _imagePathBlog;
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
-    public BlogPostService(MinhXuanDatabaseContext context,string imagePathBlog,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(MinhXuanDatabaseContext context, string imagePathBlog, IMapper mapper, ILogger<BlogPostService> logger)
     {
         _blogPostRepo = new BlogPostRepo(context);
         _imagePathBlog = imagePathBlog;
         _mapper = mapper;
         _logger = logger;
     }
+    public async Task<List<BlogCategoryResponse>> GetAllCategoriesAsync()
+    {
+        var response = await _blogPostRepo.GetBlogCategoriesAsync(); 
+        return _mapper.Map<List<BlogCategoryResponse>>(response);
+    }
+
     public async Task<BlogPostResponse> CreateNewBlogPostAsync(NewBlogPost newBlogPost)
     {
         try
         {
+            var categories = await _blogPostRepo.GetAllCategoriesAsync();
             var blogPost = _mapper.Map<BlogPost>(newBlogPost);
-            var file = newBlogPost.File;
-            if (file != null && file.Length>0)
+
+            if (!string.IsNullOrEmpty(newBlogPost.ImageURL))
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var pathImage = Path.Combine(_imagePathBlog, fileName);
-                using (var stream = new FileStream(pathImage,FileMode.Create))
-                { 
-                    await file.CopyToAsync(stream);
-                }
-                blogPost.FileName = fileName;
-                blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
-                return _mapper.Map<BlogPostResponse>(blogPost);
+                blogPost.FileName = newBlogPost.ImageURL;
             }
-            return null;
+            else
+            {
+                return null; 
+            }
+
+            blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
+
+            var response = _mapper.Map<BlogPostResponse>(blogPost);
+           
+
+            return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while save blogpost");
+            _logger.LogError(ex, "Error while saving blog post");
             throw;
         }
     }
-
-    public async Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
+    public async Task<Page<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId = 0, int page = 1, int pageSize = 10)
     {
-        try
-        {
-            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId,page, pageSize);
-            blogs = blogs.OrderByDescending(b => b.CreatedAt).ToList();
-            return _mapper.Map<List<BlogPostResponse>>(blogs);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex,"Error while get blogpost by page");
-            throw;
-        }
+        var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId, page, pageSize);
+        var totalBlog = await _blogPostRepo.CountBlogByCategory(categoryId);
+        var blogPosts = _mapper.Map<List<BlogPostResponse>>(blogs);
+        var pageResult = new Page<BlogPostResponse>(blogPosts, page, pageSize, totalBlog);
+        _logger.LogInformation("getBlogs", pageResult);
+        return pageResult;
+    }
+    
+    public async Task<int> CountBlogByCategory(int category)
+    {
+        return await _blogPostRepo.CountBlogByCategory(category);
     }
 
     public async Task<BlogPostResponse?> UpdateBlogPostAsync(UpdateBlogPost updateBlogPost)
@@ -69,14 +78,14 @@ public class BlogPostService : IBlogPostService
         try
         {
             var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(updateBlogPost.PostId);
-            _mapper.Map(updateBlogPost,blogPostExit);
+            _mapper.Map(updateBlogPost, blogPostExit);
             var file = updateBlogPost.File;
             if (file != null && file.Length > 0)
             {
                 var fileName = blogPostExit.FileName;
                 var pathImage = Path.Combine(_imagePathBlog, fileName);
-                using (var stream = new FileStream(pathImage,FileMode.Create))
-                { 
+                using (var stream = new FileStream(pathImage, FileMode.Create))
+                {
                     await file.CopyToAsync(stream);
                 }
             }
@@ -86,7 +95,7 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while update blog");
+            _logger.LogError(ex, "Error while update blog");
             throw;
         }
     }
@@ -108,10 +117,24 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while delete blog");
+            _logger.LogError(ex, "Error while delete blog");
             throw;
         }
     }
+    public async Task<BlogPostResponse?> GetBlogsByIdAsync(int id)
+    {
+        try
+        {
+            var blogs = await _blogPostRepo.GetBlogPostByIdAsync(id);
+            return _mapper.Map<BlogPostResponse>(blogs);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while get product by id");
+            throw;
+        }
+    }
+
 
     public async Task<List<BlogCategoryResponse>?> GetBlogCategoriesAsync()
     {
@@ -122,7 +145,7 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while get blog categories");
+            _logger.LogError(ex, "Error while get blog categories");
             throw;
         }
     }
@@ -160,7 +183,6 @@ public class BlogPostService : IBlogPostService
         try
         {
             var blogPosts = await _blogPostRepo.SearchBlogPostAsync(title);
-
             return _mapper.Map<List<BlogPostResponse>>(blogPosts);
         }
         catch (Exception ex)

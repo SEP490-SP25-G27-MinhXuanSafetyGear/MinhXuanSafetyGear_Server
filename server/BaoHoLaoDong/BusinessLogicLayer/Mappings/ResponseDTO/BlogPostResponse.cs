@@ -1,4 +1,6 @@
-﻿namespace BusinessLogicLayer.Mappings.ResponseDTO;
+﻿using BusinessObject.Entities;
+
+namespace BusinessLogicLayer.Mappings.ResponseDTO;
 
 public class BlogPostResponse
 {
@@ -13,6 +15,7 @@ public class BlogPostResponse
     public DateTime? UpdatedAt { get; set; }
 
     public string? ImageUrl { get; set; }
+    public int CategoryBlogId { get; set; }
 
     public string Status { get; set; } = null!;
 }

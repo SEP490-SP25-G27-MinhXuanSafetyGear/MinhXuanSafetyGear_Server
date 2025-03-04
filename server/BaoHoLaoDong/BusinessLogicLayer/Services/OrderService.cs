@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
@@ -70,12 +71,16 @@ namespace BusinessLogicLayer.Services
             }
         }
 
-        public async Task<List<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20)
+        public async Task<Page<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20)
         {
             try
             {
                 var orders = await _orderRepo.GetOrdersByCustomerIdAsync(customerId, page, pageSize);
-                return _mapper.Map<List<OrderResponse>>(orders);
+                var totalOrder = await _orderRepo.CountOrdersAsync();
+                var orderPost = _mapper.Map<List<OrderResponse>>(orders);
+                var pageResult = new Page<OrderResponse>(orderPost, page, pageSize, totalOrder);
+                _logger.LogInformation("getOrders", pageResult);
+                return pageResult;
             }
             catch (Exception ex)
             {
@@ -83,13 +88,16 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-
-        public async Task<List<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20)
+        public async Task<Page<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20)
         {
             try
             {
                 var orders = await _orderRepo.GetOrdersByPageAsync(page, pageSize);
-                return _mapper.Map<List<OrderResponse>>(orders);
+                var totalOrder = await _orderRepo.CountOrdersAsync(); 
+                var orderPost = _mapper.Map<List<OrderResponse>>(orders);
+                var pageResult = new Page<OrderResponse>(orderPost, page, pageSize, totalOrder);
+                _logger.LogInformation("getOrdersByPage", pageResult);
+                return pageResult;
             }
             catch (Exception ex)
             {
@@ -97,6 +105,7 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
+
 
         public async Task<OrderResponse?> UpdateOrderAsync(int orderId, NewOrder orderRequest)
         {
@@ -197,18 +206,31 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-
-        public async Task<List<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
+        public async Task<Page<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
         {
-            var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
-
-            if (orders == null || !orders.Any())
+            try
             {
-                return null;
-            }
+                var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
+                var totalOrders = await _orderRepo.CountSearchResultsAsync(startDate, endDate, customerName);
 
-            return _mapper.Map<List<OrderResponse>>(orders);
+                if (orders == null || !orders.Any())
+                {
+                    return new Page<OrderResponse>(new List<OrderResponse>(), page, pageSize, 0);
+                }
+
+                var orderResponses = _mapper.Map<List<OrderResponse>>(orders);
+                var pageResult = new Page<OrderResponse>(orderResponses, page, pageSize, totalOrders);
+
+                _logger.LogInformation("SearchOrders", pageResult);
+                return pageResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching orders.");
+                throw;
+            }
         }
+
         public async Task<bool> CancelOrderAsync(int orderId)
         {
             try

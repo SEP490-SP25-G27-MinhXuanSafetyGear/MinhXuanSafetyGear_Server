@@ -18,7 +18,11 @@ namespace DataAccessObject.Repository
         }
 
         #region Order 
-
+        
+        public async Task<int> CountSearchResultsAsync(DateTime? startDate, DateTime? endDate, string customerName)
+        {
+            return await _orderDao.CountSearchResultsAsync(startDate, endDate, customerName);
+        }
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _orderDao.GetByIdAsync(id);
