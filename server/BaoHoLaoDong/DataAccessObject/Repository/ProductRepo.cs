@@ -95,9 +95,9 @@ namespace DataAccessObject.Repository
             return await _productDao.GetAllAsync();
         }
 
-        public async Task<List<Product>?> GetProductPageAsync(int category, int page, int pageSize)
+        public async Task<List<Product>?> GetProductPageAsync(int group,int category, int page, int pageSize)
         {
-            return await _productDao.GetPageAsync(category,page,pageSize);
+            return await _productDao.GetPageAsync(group,category,page,pageSize);
         }
 
         #endregion Product
@@ -188,9 +188,9 @@ namespace DataAccessObject.Repository
             return reviews.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public async Task<int> CountProductByCategory(int category)
+        public async Task<int> CountProductByCategory(int group,int category)
         {
-            return await _productDao.CountProductByCategory(category);
+            return await _productDao.CountProductByCategory(group,category);
         }
 
         public async Task<ProductVariant?> CreateProductVariantAsync(ProductVariant productVariant)
@@ -231,6 +231,11 @@ namespace DataAccessObject.Repository
         public async Task<ProductTaxis?> DeleteProductTaxAsync(int productTaxid)
         {
             return await _productTaxDao.DeleteAsync(productTaxid);
+        }
+
+        public async Task<List<Product>> FilterProductsAsync(List<int?> categories)
+        {
+            return await _productDao.GetProductByCategory(categories);
         }
 
         #endregion ProductReview

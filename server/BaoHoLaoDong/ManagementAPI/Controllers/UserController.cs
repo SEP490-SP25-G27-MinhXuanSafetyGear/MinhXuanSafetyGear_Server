@@ -160,4 +160,18 @@ public class UserController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet("get-users")]
+    public async Task<IActionResult> GetUsers([FromQuery] int page ,[FromQuery] int size,[FromQuery] string role)
+    {
+        try
+        {
+            var users = await _userService.GetAllUserPageAsync(role,page, size );
+            return Ok(users);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

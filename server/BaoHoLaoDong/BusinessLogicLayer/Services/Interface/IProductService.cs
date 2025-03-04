@@ -11,7 +11,7 @@ public interface IProductService
      Task<List<ProductCategoryGroupResponse>?> CreateNewCategory(NewProductCategory productCategory);
      Task<List<ProductCategoryGroupResponse>?> GetAllCategory();
      
-     Task<Page<ProductResponse>?> GetProductByPage(int category = 0, int page = 1, int pageSize = 20);
+     Task<Page<ProductResponse>?> GetProductByPage(int group,int category = 0, int page = 1, int pageSize = 20);
      Task<List<ProductCategoryGroupResponse>?> UpdateCategoryAsync(UpdateProductCategory productCategory);
      Task<ProductResponse> CreateNewProductAsync(NewProduct newProduct);
      Task<int> CountProductByCategory(int category);
@@ -26,4 +26,5 @@ public interface IProductService
      Task<List<ProductResponse>?> GetTopSaleProduct(int size);
      Task<ProductResponse?> AddTaxProductAsync(NewProductTax productTax);
      Task<ProductResponse?> DeleteTaxAsync(int productTaxid);
+     Task<List<ProductResponse>?> FilterProductsAsync(List<int?> categories);
 }

@@ -34,4 +34,5 @@ public interface IUserService
     Task<UserResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer);
     Task<bool> SendVerificationCodeBackAsync(string email);
     Task<UserResponse?> ConfirmEmailCustomerAsync(string email, string code);
+    Task<Page<UserResponse>?> GetAllUserPageAsync(string role,int page, int size);
 }

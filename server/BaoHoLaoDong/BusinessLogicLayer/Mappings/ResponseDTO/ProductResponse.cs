@@ -32,6 +32,8 @@ public class ProductResponse
     
     public decimal? TotalTax { get; set; }
     
+    public string Image { get; set; } = string.Empty;
+    
     public List<ProductImageResponse> ProductImages { get; set; } = new List<ProductImageResponse>();
     
     public List<ProductVariantResponse> ProductVariants { get; set; } = new List<ProductVariantResponse>();
