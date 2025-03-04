@@ -148,4 +148,5 @@ if (app.Environment.IsDevelopment()!)
 
 app.MapHub<ProductHub>("/productHub");
 app.MapHub<BlogHub>("/blogHub");
+app.MapHub<OrderHub>("/orderHub");
 app.Run();

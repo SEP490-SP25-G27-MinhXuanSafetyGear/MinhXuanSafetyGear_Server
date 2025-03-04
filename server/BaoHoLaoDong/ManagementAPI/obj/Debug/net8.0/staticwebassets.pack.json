@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\75d28671-9d95-4eef-8e91-945b24d4846e.png",
+      "PackagePath": "staticwebassets\\images\\75d28671-9d95-4eef-8e91-945b24d4846e.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ManagementAPI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.ManagementAPI.props",
+      "PackagePath": "build\\ManagementAPI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.ManagementAPI.props",
+      "PackagePath": "buildMultiTargeting\\ManagementAPI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.ManagementAPI.props",
+      "PackagePath": "buildTransitive\\ManagementAPI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

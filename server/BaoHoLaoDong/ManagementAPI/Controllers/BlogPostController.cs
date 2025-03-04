@@ -113,7 +113,7 @@ public class BlogPostController : ControllerBase
     /// <param name="updateBlogPost"></param>
     /// <returns></returns>
     [HttpPut("update-blog")]
-    public async Task<IActionResult> UpdateBlogPost([FromForm] UpdateBlogPost updateBlogPost)
+    public async Task<IActionResult> UpdateBlogPostAsync([FromForm] UpdateBlogPost updateBlogPost)
     {
         try
         {
@@ -131,7 +131,7 @@ public class BlogPostController : ControllerBase
     /// <param name="id"></param>
     /// <returns>bool</returns>
     [HttpDelete("delete-blog/{id}")]
-    public async Task<IActionResult> DeleteBlog([FromRoute] int id)
+    public async Task<IActionResult> DeleteBlogPostAsync([FromRoute] int id)
     {
         try
         {

@@ -1,0 +1,16 @@
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\bin\Debug\net8.0\DataAccessObject.deps.json
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\bin\Debug\net8.0\DataAccessObject.dll
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\bin\Debug\net8.0\DataAccessObject.pdb
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\bin\Debug\net8.0\BusinessObject.dll
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\bin\Debug\net8.0\BusinessObject.pdb
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.csproj.AssemblyReference.cache
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.GeneratedMSBuildEditorConfig.editorconfig
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.AssemblyInfoInputs.cache
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.AssemblyInfo.cs
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.csproj.CoreCompileInputs.cache
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.sourcelink.json
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAcce.FCD2CC32.Up2Date
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.dll
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\refint\DataAccessObject.dll
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\DataAccessObject.pdb
+E:\a_SEP_SP24\MinhXuanSafetyGear_Server\server\BaoHoLaoDong\DataAccessObject\obj\Debug\net8.0\ref\DataAccessObject.dll
