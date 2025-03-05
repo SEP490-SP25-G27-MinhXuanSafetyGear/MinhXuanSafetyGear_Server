@@ -238,6 +238,18 @@ namespace DataAccessObject.Repository
             return await _productDao.GetProductByCategory(categories);
         }
 
+        public async Task<ProductCategoryGroup?> CreateGroupCategoryAsync(ProductCategoryGroup group)
+        {
+            return await _productCategoryGroupDao.CreateAsync(group);
+        }
+
+        public async Task<ProductCategoryGroup> UpdateGroupCategoryAsync(ProductCategoryGroup group)
+        {
+            var groupExit = await _productCategoryGroupDao.GetByIdAsync(group.GroupId);
+            if(groupExit == null) throw new ArgumentException("Product category group not found.");
+            return await _productCategoryGroupDao.UpdateAsync(group);
+        }
+
         #endregion ProductReview
     }
 }

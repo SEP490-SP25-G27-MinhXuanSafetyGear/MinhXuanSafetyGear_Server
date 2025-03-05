@@ -71,4 +71,11 @@ public class ProductCategoryDao : IDao<ProductCategory>
             .Take(pageSize)
             .ToListAsync();
     }
+
+    public async Task<ProductCategoryGroup?> CreateGroupAsync(ProductCategoryGroup group)
+    { 
+        await _context.ProductCategoryGroups.AddAsync(group);
+        await _context.SaveChangesAsync();
+        return group;
+    }
 }

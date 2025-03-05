@@ -27,4 +27,6 @@ public interface IProductService
      Task<ProductResponse?> AddTaxProductAsync(NewProductTax productTax);
      Task<ProductResponse?> DeleteTaxAsync(int productTaxid);
      Task<List<ProductResponse>?> FilterProductsAsync(List<int?> categories);
+     Task<ProductCategoryGroupResponse?> CreateNewGroupCategoryAsync(NewGroupCategory groupCategory);
+     Task<ProductCategoryGroupResponse?> UpdateGroupCategoryAsync(UpdateGroupCategory groupCategory);
 }

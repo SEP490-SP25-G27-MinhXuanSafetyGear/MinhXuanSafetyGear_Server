@@ -18,4 +18,25 @@ public class ProductCategoryGroupDao
             .Include(p => p.ProductCategories)
             .ToListAsync();
     }
+
+    public async Task<ProductCategoryGroup?> CreateAsync(ProductCategoryGroup group)
+    {
+       await _context.ProductCategoryGroups.AddAsync(group);
+       await _context.SaveChangesAsync();
+       return group;
+    }
+
+    public async Task<ProductCategoryGroup> UpdateAsync(ProductCategoryGroup group)
+    {
+        _context.Entry(group).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+        return group;
+    }
+
+    public async Task<ProductCategoryGroup?> GetByIdAsync(int groupGroupId)
+    {
+        return await _context.ProductCategoryGroups
+            .AsNoTracking()
+            .FirstOrDefaultAsync(g => g.GroupId == groupGroupId);
+    }
 }
