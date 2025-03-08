@@ -57,7 +57,7 @@ public partial class MinhXuanDatabaseContext : DbContext
     {
         modelBuilder.Entity<AccountVerification>(entity =>
         {
-            entity.HasKey(e => e.VerificationId).HasName("PK__AccountV__306D4907AF16420C");
+            entity.HasKey(e => e.VerificationId).HasName("PK__AccountV__306D4907F44ABAF9");
 
             entity.Property(e => e.AccountType).HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
@@ -74,7 +74,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<BlogCategory>(entity =>
         {
-            entity.HasKey(e => e.CategoryBlogId).HasName("PK__BlogCate__D724E44F580FF46C");
+            entity.HasKey(e => e.CategoryBlogId).HasName("PK__BlogCate__D724E44F9EDE55FA");
 
             entity.Property(e => e.CategoryName).HasMaxLength(100);
             entity.Property(e => e.Description).HasMaxLength(500);
@@ -82,7 +82,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<BlogPost>(entity =>
         {
-            entity.HasKey(e => e.PostId).HasName("PK__BlogPost__AA1260183DB8BB0E");
+            entity.HasKey(e => e.PostId).HasName("PK__BlogPost__AA1260188234D601");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -104,9 +104,9 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64D85ED5D6B5");
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64D805D347D6");
 
-            entity.HasIndex(e => e.Email, "UQ__Customer__A9D105347F284B45").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Customer__A9D105341C40389D").IsUnique();
 
             entity.Property(e => e.Address).HasMaxLength(400);
             entity.Property(e => e.CreatedAt)
@@ -126,9 +126,9 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__7AD04F115930A25F");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__7AD04F115E635D77");
 
-            entity.HasIndex(e => e.Email, "UQ__Employee__A9D1053471D701E3").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Employee__A9D10534477075AD").IsUnique();
 
             entity.Property(e => e.Address).HasMaxLength(400);
             entity.Property(e => e.CreateAt)
@@ -151,9 +151,9 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB5939AE306");
+            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB502CBECDA");
 
-            entity.HasIndex(e => e.InvoiceNumber, "UQ__Invoices__D776E981AC08C02D").IsUnique();
+            entity.HasIndex(e => e.InvoiceNumber, "UQ__Invoices__D776E981097972E6").IsUnique();
 
             entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.CreatedAt)
@@ -175,7 +175,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E1228BDD0F3");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E12F2DBF3F5");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -199,7 +199,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCFB6CE6FD9");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCFCA500925");
 
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
@@ -218,7 +218,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.OrderDetailId).HasName("PK__OrderDet__D3B9D36C1EABB2B2");
+            entity.HasKey(e => e.OrderDetailId).HasName("PK__OrderDet__D3B9D36C2FC4E26F");
 
             entity.Property(e => e.Color).HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
@@ -243,7 +243,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CD5114A8B0");
+            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CD3C664387");
 
             entity.ToTable(tb => tb.HasTrigger("trg_Update_Quantity_Products"));
 
@@ -274,7 +274,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductCategory>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__ProductC__19093A0B03740FC3");
+            entity.HasKey(e => e.CategoryId).HasName("PK__ProductC__19093A0B86846429");
 
             entity.ToTable("ProductCategory");
 
@@ -289,7 +289,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductCategoryGroup>(entity =>
         {
-            entity.HasKey(e => e.GroupId).HasName("PK__ProductC__149AF36A9CCE996C");
+            entity.HasKey(e => e.GroupId).HasName("PK__ProductC__149AF36ABD6C6624");
 
             entity.ToTable("ProductCategoryGroup");
 
@@ -299,11 +299,11 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
-            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B816F8D826");
+            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B8D46A4DC3");
 
             entity.ToTable("ProductImage");
 
-            entity.HasIndex(e => e.FileName, "UQ__ProductI__589E6EECDDB3F3BC").IsUnique();
+            entity.HasIndex(e => e.FileName, "UQ__ProductI__589E6EEC4DAA3631").IsUnique();
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -321,7 +321,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductReview>(entity =>
         {
-            entity.HasKey(e => e.ReviewId).HasName("PK__ProductR__74BC79CEAD9D66CD");
+            entity.HasKey(e => e.ReviewId).HasName("PK__ProductR__74BC79CE6E58FD33");
 
             entity.ToTable(tb => tb.HasTrigger("trg_Update_AverageRating"));
 
@@ -341,11 +341,11 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductTaxis>(entity =>
         {
-            entity.HasKey(e => e.ProductTaxId).HasName("PK__ProductT__1DEAC2BE3CA129D5");
+            entity.HasKey(e => e.ProductTaxId).HasName("PK__ProductT__1DEAC2BEF02E14A5");
 
             entity.ToTable(tb => tb.HasTrigger("trg_CalculateTotalTax"));
 
-            entity.HasIndex(e => new { e.ProductId, e.TaxId }, "UQ__ProductT__631D78E40A0A02EB").IsUnique();
+            entity.HasIndex(e => new { e.ProductId, e.TaxId }, "UQ__ProductT__631D78E4A19A8122").IsUnique();
 
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.TaxId).HasColumnName("TaxID");
@@ -363,7 +363,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<ProductVariant>(entity =>
         {
-            entity.HasKey(e => e.VariantId).HasName("PK__ProductV__0EA23384D5AA6221");
+            entity.HasKey(e => e.VariantId).HasName("PK__ProductV__0EA23384406EDC77");
 
             entity.ToTable(tb => tb.HasTrigger("trg_Update_Quantity_ProductVariants"));
 
@@ -386,7 +386,7 @@ public partial class MinhXuanDatabaseContext : DbContext
 
         modelBuilder.Entity<Tax>(entity =>
         {
-            entity.HasKey(e => e.TaxId).HasName("PK__Tax__711BE08C2D99401B");
+            entity.HasKey(e => e.TaxId).HasName("PK__Tax__711BE08C78E745DF");
 
             entity.ToTable("Tax");
 

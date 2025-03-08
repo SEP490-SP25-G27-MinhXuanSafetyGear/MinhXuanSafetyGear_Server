@@ -109,7 +109,7 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating new product.");
-            throw;
+            throw ex;
         }
     }
 
@@ -463,5 +463,23 @@ public class ProductService : IProductService
         {
             throw ex;
         }     
+    }
+
+    public bool IsProductNameExists(string productName)
+    {
+        return _productRepo.IsProductNameExists(productName);
+    }
+
+    public async Task<List<ProductResponse>?> GetTopDealProductAsync(int size,int minDiscountPercent)
+    {
+        try
+        {
+            var products = await _productRepo.GetTopDiscountAsync(size,minDiscountPercent);
+            return _mapper.Map<List<ProductResponse>>(products);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 }

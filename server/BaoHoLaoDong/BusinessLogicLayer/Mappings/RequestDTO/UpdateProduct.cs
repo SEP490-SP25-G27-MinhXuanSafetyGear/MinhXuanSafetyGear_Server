@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BusinessLogicLayer.Validations;
 using BusinessObject.Entities;
 
 namespace BusinessLogicLayer.Mappings.RequestDTO;
@@ -8,14 +9,14 @@ public class UpdateProduct
     [Required]
     public int Id { get; set; }
     [Required]
-    [StringLength(100, MinimumLength = 3)]
     public string Name { get; set; } = null!;
     [Required]
     public int? CategoryId { get; set; }
 
     public string? Description { get; set; }
+    [NoSpecialCharacters]
     public string? Material { get; set; }
-
+    [NoSpecialCharacters]
     public string? Origin { get; set; }
     [Range(0, int.MaxValue, ErrorMessage = "Quantity must be non-negative.")]
     public int Quantity { get; set; }

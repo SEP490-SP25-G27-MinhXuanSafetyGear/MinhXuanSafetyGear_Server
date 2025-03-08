@@ -29,4 +29,6 @@ public interface IProductService
      Task<List<ProductResponse>?> FilterProductsAsync(List<int?> categories);
      Task<ProductCategoryGroupResponse?> CreateNewGroupCategoryAsync(NewGroupCategory groupCategory);
      Task<ProductCategoryGroupResponse?> UpdateGroupCategoryAsync(UpdateGroupCategory groupCategory);
+     bool IsProductNameExists(string productName);
+     Task<List<ProductResponse>?> GetTopDealProductAsync(int size,int minDiscountPercent);
 }
