@@ -91,6 +91,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

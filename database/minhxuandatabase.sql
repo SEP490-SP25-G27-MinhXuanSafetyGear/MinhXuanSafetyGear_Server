@@ -163,7 +163,6 @@ CREATE TABLE OrderDetails (
     OrderDetailId int PRIMARY KEY IDENTITY(1,1),     -- Khoá chính cho chi tiết đơn hàng
     OrderId int NOT NULL,                             -- Mã đơn hàng
     ProductId int NOT NULL,                           -- Mã sản phẩm
-    ProductVariantId int NOT NULL,                    -- Mã biến thể sản phẩm (có thể là size hoặc màu sắc)
     ProductName nvarchar(250) NOT NULL,               -- Tên sản phẩm tại thời điểm mua
     ProductPrice decimal(18,2) NOT NULL,              -- Giá sản phẩm tại thời điểm mua
     ProductDiscount decimal(5,2) NULL DEFAULT 0.00,   -- Giảm giá sản phẩm tại thời điểm mua

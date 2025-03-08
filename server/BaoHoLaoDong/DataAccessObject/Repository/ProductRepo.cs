@@ -66,11 +66,7 @@ namespace DataAccessObject.Repository
 
         public async Task<Product?> CreateProductAsync(Product product)
         {
-            var existingProduct = await _productDao.GetByNameAsync(product.ProductName);
-            if (existingProduct != null)
-            {
-                throw new ArgumentException("Product with this name already exists.");
-            }
+           
             return await _productDao.CreateAsync(product);
         }
 
@@ -248,6 +244,27 @@ namespace DataAccessObject.Repository
             var groupExit = await _productCategoryGroupDao.GetByIdAsync(group.GroupId);
             if(groupExit == null) throw new ArgumentException("Product category group not found.");
             return await _productCategoryGroupDao.UpdateAsync(group);
+        }
+
+        public bool IsProductNameExists(string productName)
+        {
+            var product =  _productDao.GetByName(productName);
+            return product != null;
+        }
+
+        public async Task<int?> CountProductSaleAsync()
+        {
+            return await _productDao.CountProductSaleAsync();
+        }
+
+        public async Task<Dictionary<Product, int>> GetProductSaleQualityAsync(int top)
+        {
+            return await _productDao.GetProductSaleQualityAsync(top);
+        }
+
+        public async Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent)
+        {
+            return await _productDao.GetTopDiscountAsync(size,minDiscountPercent);
         }
 
         #endregion ProductReview
