@@ -31,4 +31,6 @@ public interface IProductService
      Task<ProductCategoryGroupResponse?> UpdateGroupCategoryAsync(UpdateGroupCategory groupCategory);
      bool IsProductNameExists(string productName);
      Task<List<ProductResponse>?> GetTopDealProductAsync(int size,int minDiscountPercent);
+     Task<List<ProductResponse>?> GetRelatedProducts(int id, int size);
+     Task<Review> GetReviewAsync(int id, int size);
 }

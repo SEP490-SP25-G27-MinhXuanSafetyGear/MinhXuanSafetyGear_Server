@@ -76,7 +76,10 @@ CREATE TABLE Products (
     Quantity int not null,                        -- Số lượng sản phẩm có sẵn
     Price decimal(18,2) not null,                 -- Giá sản phẩm
     Discount decimal(5,2) null default 0.00,      -- Giảm giá của sản phẩm
-	AverageRating DECIMAL(3,2) NULL DEFAULT 0.00,
+	AverageRating DECIMAL(4,2) NULL DEFAULT 0.00,
+	TotalSale int null DEFAULT 0, -- Đã bán
+	FreeShip bit null default 1, -- Miễn ship hay không
+	Guarantee int null default 0, -- thời gian bảo hành tháng 
 	QualityCertificate nvarchar(1200) NULL,
 	TotalTax DECIMAL(5,2) null,  -- tổng số thuế
     CreatedAt datetime not null default getdate(), -- Thời gian tạo sản phẩm
@@ -255,7 +258,7 @@ BEGIN
     -- Cập nhật AverageRating của sản phẩm khi có thay đổi trong bảng Reviews
     UPDATE Products
     SET AverageRating = (
-        SELECT COALESCE(AVG(Rating), 0)
+        SELECT COALESCE(CAST(ROUND(AVG(Rating), 1) AS DECIMAL(4,2)), 0)
         FROM ProductReviews
         WHERE ProductReviews.ProductId = Products.ProductId
     )
@@ -338,6 +341,23 @@ BEGIN
     );
 END;
 GO
+CREATE TRIGGER trg_UpdateTotalSale
+ON Orders
+AFTER UPDATE
+AS
+BEGIN
+    -- Chỉ cập nhật khi trạng thái đơn hàng là 'Completed'
+    IF UPDATE(Status)
+    BEGIN
+        UPDATE p
+        SET p.TotalSale = p.TotalSale + od.Quantity
+        FROM Products p
+        INNER JOIN OrderDetails od ON p.ProductId = od.ProductId
+        INNER JOIN inserted i ON od.OrderId = i.OrderId
+        WHERE i.Status = 'Completed';
+    END
+END;
+
 -- password admin123
 insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
 ('admin','ngolinh09032002@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');

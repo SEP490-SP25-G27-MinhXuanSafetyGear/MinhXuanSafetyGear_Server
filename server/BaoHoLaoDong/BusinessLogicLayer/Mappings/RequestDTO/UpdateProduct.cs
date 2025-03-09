@@ -24,6 +24,10 @@ public class UpdateProduct
     [Range(0, double.MaxValue, ErrorMessage = "Price must be non-negative.")]
     public decimal Price { get; set; }
 
+    public bool FreeShip { get; set; }
+    [Range(0,int.MaxValue, ErrorMessage = "Guarantee must >= 0")]
+    public int Guarantee { get; set; }
+    
     [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100.")]
     public decimal? Discount { get; set; }
     public string? QualityCertificate { get; set; }

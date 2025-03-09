@@ -405,4 +405,31 @@ public class ProductController : ControllerBase
         }
     }
 
+    [HttpGet("related")]
+    public async Task<IActionResult> RelatedProducts([FromQuery] int size ,[FromQuery] int id)
+    {
+        try
+        {
+            var products = await _productService.GetRelatedProducts(id, size);
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("reviews")]
+    public async Task<IActionResult> Reviews([FromQuery] int size,[FromQuery] int id)
+    {
+        try
+        {
+            var review = await _productService.GetReviewAsync(id, size);
+            return Ok(review);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

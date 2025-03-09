@@ -1,4 +1,6 @@
 ﻿
+using BusinessObject.Entities;
+
 namespace BusinessLogicLayer.Mappings.ResponseDTO;
 
 public class ProductResponse
@@ -21,7 +23,12 @@ public class ProductResponse
     public decimal Price { get; set; }
     
     public decimal PriceDiscount { get; set; }
+    
+    public int? TotalSale { get; set; }
 
+    public bool? FreeShip { get; set; }
+
+    public int? Guarantee { get; set; }
     public decimal? Discount { get; set; }
 
     public bool Status { get; set; }
@@ -40,6 +47,7 @@ public class ProductResponse
     
     public List<ProductTaxResponse> Taxes { get; set; } = new List<ProductTaxResponse>();
     
+    public List<ProductReviewResponse> Reviews { get; set; } = new List<ProductReviewResponse>();
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

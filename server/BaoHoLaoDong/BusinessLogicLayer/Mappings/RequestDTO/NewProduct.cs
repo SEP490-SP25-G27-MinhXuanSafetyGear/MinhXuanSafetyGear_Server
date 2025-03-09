@@ -27,6 +27,11 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
         [Range(0,100,ErrorMessage = "Chiết khấu chỉ trong khoảng 0-100%")]
         public decimal? Discount { get; set; }
         public string? QualityCertificate { get; set; }
+        
+        public bool FreeShip { get; set; }
+        
+        [Range(0,int.MaxValue, ErrorMessage = "Guarantee must >= 0")]
+        public int Guarantee { get; set; }
         public bool Status { get; set; }
         
         [MinFileCount(1,ErrorMessage = "Phải tải lên ít nhất 1 hình ảnh")]
