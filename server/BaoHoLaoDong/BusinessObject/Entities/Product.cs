@@ -25,6 +25,12 @@ public partial class Product
 
     public decimal? AverageRating { get; set; }
 
+    public int? TotalSale { get; set; }
+
+    public bool? FreeShip { get; set; }
+
+    public int? Guarantee { get; set; }
+
     public string? QualityCertificate { get; set; }
 
     public decimal? TotalTax { get; set; }
@@ -41,9 +47,9 @@ public partial class Product
 
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
-    public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
+    public virtual ICollection<ProductReview>ProductReviews { get; set; } = new List<ProductReview>();
 
-    public virtual ICollection<ProductTaxis> ProductTaxes { get; set; } = new List<ProductTaxis>();
+    public virtual ICollection<ProductTaxis>ProductTaxes { get; set; } = new List<ProductTaxis>();
 
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 }

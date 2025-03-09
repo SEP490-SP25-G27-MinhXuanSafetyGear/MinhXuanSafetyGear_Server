@@ -482,4 +482,48 @@ public class ProductService : IProductService
             throw;
         }
     }
+
+    public async Task<List<ProductResponse>?> GetRelatedProducts(int id, int size)
+    {
+        try
+        {
+            var products = await _productRepo.GetAllProductsAsync()??new List<Product>();
+            var productExit = products.FirstOrDefault(p=>p.ProductId==id)?? null;
+            if (productExit == null)  return null;
+            products = products.Where(p=>p.Category.GroupId == productExit.Category.GroupId && p.ProductId!=id)
+                .OrderBy(x=> Guid.NewGuid())
+                .Take(size)
+                .ToList();
+            return _mapper.Map<List<ProductResponse>>(products);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<Review> GetReviewAsync(int id, int size)
+    {
+        try
+        {
+            var review = new Review();
+            var productExit = await _productRepo.GetProductByIdAsync(id);
+            if ( productExit != null)
+            {
+                review.Star1 = productExit.ProductReviews.Count(r => r.Rating == 1);
+                review.Star2 = productExit.ProductReviews.Count(r => r.Rating == 2);
+                review.Star3 = productExit.ProductReviews.Count(r => r.Rating == 3);
+                review.Star4 = productExit.ProductReviews.Count(r => r.Rating == 4);
+                review.Star5 = productExit.ProductReviews.Count(r => r.Rating == 5);
+                review.ProductReviews = _mapper.Map<List<ProductReviewResponse>>(productExit.ProductReviews);
+            }
+            return review;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw;
+        }
+    }
 }

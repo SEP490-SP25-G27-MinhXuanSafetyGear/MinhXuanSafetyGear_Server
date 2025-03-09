@@ -19,6 +19,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.Category)
             .Include(p=>p.ProductImages)
             .Include(p=>p.ProductReviews)
+            .ThenInclude(c=>c.Customer)
             .Include(p=>p.ProductVariants)
             .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
             .AsNoTracking()
