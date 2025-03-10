@@ -213,13 +213,57 @@ namespace BusinessLogicLayer.Services
         }
 
         return true;
-    }
-    catch (Exception ex)
+    }catch (Exception ex)
     {
         Console.WriteLine($"Error sending account creation email: {ex.Message}");
         return false;
     }
 }
+
+        public async Task<bool> SendResetPasswordEmail(string userEmail, string resetUrl)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("No Reply", _emailSettings.SmtpUser));
+                message.To.Add(new MailboxAddress("", userEmail));
+                message.Subject = "Đặt lại mật khẩu của bạn";
+
+                // Nội dung email HTML
+                string htmlBody = $@"
+        <html>
+            <body>
+                <h2>Xin chào,</h2>
+                <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                <p>Nhấn vào nút bên dưới để đặt lại mật khẩu:</p>
+                <a href='{resetUrl}' style='padding: 10px 20px; background-color: #ff5722; color: white; text-decoration: none; border-radius: 5px;'>Đặt lại mật khẩu</a>
+                <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+                <p>Trân trọng,<br />Đội ngũ hỗ trợ</p>
+            </body>
+        </html>";
+
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true);
+                    await client.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending password reset email: {ex.Message}");
+                return false;
+            }
+        }
 
     }
 }

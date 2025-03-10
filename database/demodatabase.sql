@@ -9,7 +9,10 @@ insert into BlogPosts(Title,Content,CategoryBlogId)
 values 
 (N'Địa chỉ',N'Hai bà Trưng, Hà Nội',1),
 (N'Điện thoại',N'0912.423.062',1),
-(N'Email',N'minhxuanbhld@gmail.com',1);
+(N'Email',N'minhxuanbhld@gmail.com',1),
+(N'Chính sách mua hàng',N'',2),
+(N'Điện thoại',N'0912.423.062',2),
+(N'Email',N'minhxuanbhld@gmail.com',2),
 
 INSERT INTO ProductCategoryGroup(GroupName,Description) 
 VALUES
