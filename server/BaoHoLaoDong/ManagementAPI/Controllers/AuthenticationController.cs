@@ -1,14 +1,10 @@
 ﻿using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
-using BusinessObject.Entities;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
 
 namespace ManagementAPI.Controllers
@@ -19,21 +15,24 @@ namespace ManagementAPI.Controllers
     {
         private readonly IUserService _userService;
         private readonly TokenService _tokenService;
-        private readonly string _googleClientId;
+        private readonly IMailService _mailService;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<AuthenticationController> _logger;
         private readonly HttpClient _httpClient;
-
+        private readonly int expriryDay = 7;
         public AuthenticationController(
             IUserService userService,
             TokenService tokenService,
             IConfiguration configuration,
+            IMailService mailService,
             ILogger<AuthenticationController> logger)
         {
             _userService = userService;
             _tokenService = tokenService;
             _logger = logger;
-            _googleClientId = configuration["GoogleAuth:ClientId"];
+            _configuration = configuration;
             _httpClient = new HttpClient();
+            _mailService = mailService;
         }
 
         [HttpPost("authenticate/loginby-email-password")]
@@ -52,7 +51,7 @@ namespace ManagementAPI.Controllers
                     return Unauthorized("Invalid email or password.");
                 }
 
-                var token = _tokenService.GenerateJwtToken(user.Email, user.Id, user.Role);
+                var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.Role,expriryDay);
                 return Ok(new { token, email = user.Email, role = user.Role, userId = user.Id });
             }
             catch (Exception ex)
@@ -87,7 +86,7 @@ namespace ManagementAPI.Controllers
                 {
                     return Unauthorized(new { message = "User not found." });
                 }
-                var token = _tokenService.GenerateJwtToken(user.Email, user.Id, user.Role);
+                var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.Role,expriryDay);
                 return Ok(new { token, userId = user.Id, email = user.Email, role = user.Role ,imageUrl=user.ImageUrl});
             }
             catch (Exception ex)
@@ -136,7 +135,7 @@ namespace ManagementAPI.Controllers
                     return StatusCode(500, "An internal server error occurred.");
                 }
 
-                var token = _tokenService.GenerateJwtToken(createdUser.Email, createdUser.Id, createdUser.Role);
+                var token = _tokenService.GenerateJwtTokenByDays(createdUser.Email, createdUser.Id, createdUser.Role,expriryDay);
                 return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role ,imageUrl=createdUser.ImageUrl});
             }
             catch (Exception ex)
@@ -198,13 +197,55 @@ namespace ManagementAPI.Controllers
                     return StatusCode(500, "An internal server error occurred.");
                 }
 
-                var token = _tokenService.GenerateJwtToken(createdUser.Email, createdUser.Id, createdUser.Role);
+                var token = _tokenService.GenerateJwtTokenByDays(createdUser.Email, createdUser.Id, createdUser.Role,expriryDay);
                 return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role ,imageUrl=createdUser.ImageUrl});
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during registration process for email {Email}", newCustomer.Email);
                 return StatusCode(500, "An internal server error occurred.");
+            }
+        }
+        
+        [HttpPost("authenticate/request-reset-password")]
+        public async Task<IActionResult> RequestResetPassword([FromQuery] [EmailAddress] [Required] string email)
+        {
+            
+            var user = await _userService.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            var resetToken = _tokenService.GenerateJwtTokenByMinutes(user.Email, user.Id, user.Role,1);
+            var resetUrl = $"{_configuration["ApplicationSettings:UrlResetPassword"]}?email={email}&token={resetToken}&time={DateTime.Now.AddMinutes(5)}";
+            await _mailService.SendResetPasswordEmail(user.Email, resetUrl);
+            return Ok(new
+            {
+                message = "Reset password email sent successfully." ,
+                resetUrl = resetUrl,
+            });
+        }
+
+        [HttpPost("authenticate/reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword resetPassword)
+        {
+            try
+            {
+                var isToken = _tokenService.IsValidToken(resetPassword.Token);
+                if (isToken)
+                {
+                    var result = await _userService.ResetPasswordAsync( resetPassword);
+                    if (result)
+                    {
+                        return Ok("Reset password successfully.");
+                    }
+                    return BadRequest("Reset password failed.");
+                }
+               return BadRequest("Invalid token.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
