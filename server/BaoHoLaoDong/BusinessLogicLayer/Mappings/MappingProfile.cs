@@ -3,6 +3,7 @@ using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessObject.Entities;
 using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp.ColorSpaces.Companding;
 
 namespace BusinessLogicLayer.Mappings
 {
@@ -77,8 +78,6 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
-                .ForMember(dest=>dest.FreeShip,otp=>otp.MapFrom((src=>src.FreeShip)))
-                .ForMember(dest=>dest.Guarantee,otp=>otp.MapFrom((src=>src.Guarantee)))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.QualityCertificate, opt => opt.MapFrom(src => src.QualityCertificate))
                 .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants))
@@ -94,9 +93,6 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category != null ? src.Category.CategoryName : string.Empty))
                 .ForMember(dest => dest.Quantity, otp => otp.MapFrom(src => src.Quantity))
                 .ForMember(dest => dest.Price, otp => otp.MapFrom(src => src.Price))
-                .ForMember(dest=>dest.TotalSale,otp=>otp.MapFrom(src=>src.TotalSale))
-                .ForMember(dest=>dest.FreeShip,otp=>otp.MapFrom(src=>src.FreeShip))
-                .ForMember(dest=>dest.Guarantee,otp=>otp.MapFrom(src=>src.Guarantee))
                 .ForMember(dest => dest.PriceDiscount, otp => otp.MapFrom(src => src.Price - src.Price * src.Discount / 100))
                 .ForMember(dest => dest.Discount, otp => otp.MapFrom(src => (src.Discount)))
                 .ForMember(dest => dest.AverageRating, otp => otp.MapFrom(src => src.AverageRating.HasValue ? (int)Math.Round(src.AverageRating.Value) : 0))
@@ -124,8 +120,6 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material))
                 .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src.Origin))
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
-                .ForMember(dest=>dest.FreeShip,otp=>otp.MapFrom((src=>src.FreeShip)))
-                .ForMember(dest=>dest.Guarantee,otp=>otp.MapFrom((src=>src.Guarantee)))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
@@ -220,18 +214,8 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
                 .ForMember(dest=>dest.ProductCategories,otp=>otp.Ignore())
                 .ReverseMap();
-            
-            CreateMap<ProductReview, ProductReviewResponse>()
-                .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId))
-                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
-                .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
-                .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-                .ForMember(dest=>dest.CustomerName,otp=>otp.MapFrom(src=>src.Customer.FullName))
-                .ForMember(dest=>dest.CustomerImage,otp=>otp.MapFrom(src=>src.Customer.ImageUrl));
-            
+            CreateMap<OrderDetail, OrderPaymentResponseDetails>();
+            CreateMap<OrderPaymentResponseDetails, OrderDetail>();
         }
     }
 }

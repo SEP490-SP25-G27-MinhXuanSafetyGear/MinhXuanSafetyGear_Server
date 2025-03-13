@@ -309,35 +309,4 @@ public class UserService : IUserService
             return null;
         }
     }
-
-    public async Task<bool> ResetPasswordAsync(ResetPassword resetPassword)
-    {
-        try
-        {
-            var emp = await _userRepo.GetEmployeeByEmailAsync(resetPassword.Email);
-            if (emp != null)
-            {
-                emp.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPassword.Password); ;
-                await _userRepo.UpdateEmployeeAsync(emp);
-                return true;
-            }
-            else if (emp == null)
-            {
-                var cus = await _userRepo.GetCustomerByEmailAsync(resetPassword.Email);
-                if (cus != null)
-                {
-                    cus.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPassword.Email);
-                    await _userRepo.UpdateCustomerAsync(cus);
-                    return true;
-                }
-
-                return false;
-            }
-            else return false;
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
-    }
 }

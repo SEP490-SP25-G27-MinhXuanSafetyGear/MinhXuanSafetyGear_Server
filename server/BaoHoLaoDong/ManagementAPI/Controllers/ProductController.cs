@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using AutoMapper;
+﻿using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
@@ -92,7 +91,13 @@ public class ProductController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState.Where(e => e.Value.Errors.Count > 0)
+                    .ToDictionary(e => e.Key, e => e.Value.Errors.Select(err => err.ErrorMessage).ToArray());
+                return BadRequest(new
+                {
+                    Message = "Dữ liệu không hợp lệ!",
+                    Errors = errors
+                });
             }
             var product = await _productService.CreateNewProductAsync(newProduct);
             await _productHub.Clients.All.SendAsync("ProductAdded", newProduct);
@@ -100,7 +105,7 @@ public class ProductController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { Errors = new List<string> { ex.Message } });
+            return BadRequest(ex.Message);
         }
     }
 
@@ -165,10 +170,6 @@ public class ProductController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var product = await _productService.UpdateProductAsync(updateProduct);
             if (product != null)
             {
@@ -178,7 +179,7 @@ public class ProductController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { Errors = new List<string> { ex.Message } });
+            return BadRequest(ex.Message);
         }
     }
 
@@ -354,78 +355,6 @@ public class ProductController : ControllerBase
         {
             var result = await _productService.UpdateGroupCategoryAsync(groupCategory);
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet("top-deal")]
-    public async Task<IActionResult> TopDeal([FromQuery] int size = 10,[FromQuery] int minDiscountPercent =10)
-    {
-        try
-        {
-            var products = await _productService.GetTopDealProductAsync(size,minDiscountPercent);
-            return Ok(products);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet("top-product-group")]
-    public async Task<IActionResult> TopProductGroup([FromQuery] int size)
-    {
-        try
-        {
-            var groups = await _productService.GetAllCategory();
-            var result = new List<object>();
-            if (groups != null)
-            {
-                foreach (var g in groups)
-                {
-                    var topProducts = await _productService.GetProductByPage(g.GroupId, 0, 1, size);
-                    if (topProducts != null)
-                    {
-                        result.Add(new
-                        {
-                            groupName = g.GroupName,
-                            products = topProducts.Items
-                        });
-                    }
-                }
-            }
-            return Ok(result); // Trả về danh sách group + product
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet("related")]
-    public async Task<IActionResult> RelatedProducts([FromQuery] int size ,[FromQuery] int id)
-    {
-        try
-        {
-            var products = await _productService.GetRelatedProducts(id, size);
-            return Ok(products);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet("reviews")]
-    public async Task<IActionResult> Reviews([FromQuery] int size,[FromQuery] int id)
-    {
-        try
-        {
-            var review = await _productService.GetReviewAsync(id, size);
-            return Ok(review);
         }
         catch (Exception ex)
         {
