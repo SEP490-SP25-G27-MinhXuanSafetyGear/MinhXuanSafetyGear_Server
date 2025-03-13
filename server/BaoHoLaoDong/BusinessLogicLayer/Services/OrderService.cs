@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
-using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using BusinessLogicLayer.Models;
 
 namespace BusinessLogicLayer.Services
 {
@@ -18,12 +20,16 @@ namespace BusinessLogicLayer.Services
         private readonly IMapper _mapper;
         private readonly ILogger<OrderService> _logger;
         private readonly IOrderRepo _orderRepo;
+        private readonly IProductRepo _productRepo;
+        private readonly IInvoiceRepo _invoiceRepo;
 
         public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger)
         {
             _orderRepo = new OrderRepo(context);
             _mapper = mapper;
             _logger = logger;
+            _productRepo = new ProductRepo(context);
+            _invoiceRepo = new InvoiceRepo(context);
         }
 
 
@@ -71,16 +77,12 @@ namespace BusinessLogicLayer.Services
             }
         }
 
-        public async Task<Page<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20)
+        public async Task<List<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20)
         {
             try
             {
                 var orders = await _orderRepo.GetOrdersByCustomerIdAsync(customerId, page, pageSize);
-                var totalOrder = await _orderRepo.CountOrdersAsync();
-                var orderPost = _mapper.Map<List<OrderResponse>>(orders);
-                var pageResult = new Page<OrderResponse>(orderPost, page, pageSize, totalOrder);
-                _logger.LogInformation("getOrders", pageResult);
-                return pageResult;
+                return _mapper.Map<List<OrderResponse>>(orders);
             }
             catch (Exception ex)
             {
@@ -88,16 +90,13 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-        public async Task<Page<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20)
+
+        public async Task<List<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20)
         {
             try
             {
                 var orders = await _orderRepo.GetOrdersByPageAsync(page, pageSize);
-                var totalOrder = await _orderRepo.CountOrdersAsync(); 
-                var orderPost = _mapper.Map<List<OrderResponse>>(orders);
-                var pageResult = new Page<OrderResponse>(orderPost, page, pageSize, totalOrder);
-                _logger.LogInformation("getOrdersByPage", pageResult);
-                return pageResult;
+                return _mapper.Map<List<OrderResponse>>(orders);
             }
             catch (Exception ex)
             {
@@ -105,7 +104,6 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-
 
         public async Task<OrderResponse?> UpdateOrderAsync(int orderId, NewOrder orderRequest)
         {
@@ -206,31 +204,18 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-        public async Task<Page<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
+
+        public async Task<List<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
         {
-            try
+            var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
+
+            if (orders == null || !orders.Any())
             {
-                var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
-                var totalOrders = await _orderRepo.CountSearchResultsAsync(startDate, endDate, customerName);
-
-                if (orders == null || !orders.Any())
-                {
-                    return new Page<OrderResponse>(new List<OrderResponse>(), page, pageSize, 0);
-                }
-
-                var orderResponses = _mapper.Map<List<OrderResponse>>(orders);
-                var pageResult = new Page<OrderResponse>(orderResponses, page, pageSize, totalOrders);
-
-                _logger.LogInformation("SearchOrders", pageResult);
-                return pageResult;
+                return null;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error searching orders.");
-                throw;
-            }
+
+            return _mapper.Map<List<OrderResponse>>(orders);
         }
-
         public async Task<bool> CancelOrderAsync(int orderId)
         {
             try
@@ -412,7 +397,126 @@ namespace BusinessLogicLayer.Services
             return existingOrderDetail;
         }
 
-
         #endregion OrderDetail
+
+        public async Task<bool> PayAsync(OrderPaymentResponse model)
+        {
+            try
+            {
+                var productIds = model.OrderDetails.Select(od => od.ProductId).Distinct().ToList();
+                var products = await _productRepo.GetProductByIdsAsync(productIds);
+                if (products == null || !products.Any())
+                {
+                    throw new Exception("Invalid product IDs.");
+                }
+                foreach (var item in model.OrderDetails)
+                {
+                    var product = products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                    if (product != null)
+                    {
+                        item.ProductPrice = product.Price;
+                        item.ProductDiscount = product.Discount;
+                        item.TotalPrice = product.Price * item.Quantity * (1 - (item.ProductDiscount ?? 0) / 100);
+                        item.Size = item.Size;
+                        item.Color = item.Color;
+                        item.ProductName = product.ProductName;
+                    }
+                }
+
+                var order = new Order
+                {
+                    CustomerId = model.CustomerId,
+                    CustomerInfo = JsonSerializer.Serialize(model.CustomerInfo),
+                    TotalAmount = model.TotalPrice,
+                    OrderDate = DateTime.Now,
+                    Status = OrderStatus.Pending.ToString(),
+                    UpdatedAt = DateTime.Now,
+                    OrderDetails = model.OrderDetails.Select(od => new OrderDetail
+                    {
+                        ProductId = od.ProductId,
+                        ProductName = od.ProductName,
+                        ProductPrice = od.ProductPrice,
+                        ProductDiscount = od.ProductDiscount ?? 0,
+                        Quantity = od.Quantity,
+                        TotalPrice = od.TotalPrice,
+                        Size = od.Size,
+                        Color = od.Color,
+                        CreatedAt = DateTime.Now
+                    }).ToList(),
+                    Invoices = new List<Invoice>
+                    {
+                        new Invoice
+                        {
+                            InvoiceNumber = Guid.NewGuid().ToString(),
+                            Amount = model.Invoice.Amount,
+                            PaymentMethod = model.Invoice.PaymentMethod,
+                            QrcodeData = model.Invoice.QRCodeData,
+                            PaymentStatus = InvoiceStatus.Pending.ToString(),
+                            ImagePath = model.Invoice.ImagePath,
+                            CreatedAt = DateTime.Now,
+                            Status = "Paid"
+                        }
+                    }
+                };
+
+                var orderResponse = await _orderRepo.PayAsync(order);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating new order.");
+                throw;
+            }
+        }
+
+        public async Task<bool> ConfirmOrderAsync(int orderId)
+        {
+            try
+            {
+                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                if (order == null)
+                {
+                    return false;
+                }
+
+                order.Status = OrderStatus.Completed.ToString();
+                order.UpdatedAt = DateTime.Now;
+                var invoices = order.Invoices;
+                if (invoices == null || !invoices.Any())
+                {
+                    return false;
+                }
+
+                foreach (var invoice in invoices)
+                {
+                    invoice.Status = InvoiceStatus.Paid.ToString();
+                }
+                return await _orderRepo.UpdateOrderWithInvoiceAsync(order,invoices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating invoice status for order ID: {OrderId}", orderId);
+                throw;
+            }
+        }
+
+        public async Task<string> GetInvoiceImageAsync(int orderId)
+        {
+            try
+            {
+                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                if (order == null || order.Invoices?.Any() != true)
+                {
+                    return String.Empty;
+                }
+                var invoices = order.Invoices.FirstOrDefault();
+                return invoices?.ImagePath != null ? invoices.ImagePath : String.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error GetInvoiceImageAsync");
+                throw;
+            }
+        }
     }
 }

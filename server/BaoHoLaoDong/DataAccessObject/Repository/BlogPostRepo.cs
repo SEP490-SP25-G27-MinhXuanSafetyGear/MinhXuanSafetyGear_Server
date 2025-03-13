@@ -60,17 +60,5 @@ namespace DataAccessObject.Repository
         {
             return await _blogCategoryDao.UpdateAsync(blogCategory);
         }
-        public async Task<List<BlogPost>?> SearchBlogPostAsync(string title)
-        {
-            return await _blogPostDao.SearchBlogPostAsync(title);
-        }
-        public async Task<int> CountBlogByCategory(int category)
-        {
-            return await _blogPostDao.CountBlogByCategory(category);
-        }
-        public async Task<List<BlogCategory>> GetAllCategoriesAsync()
-        {
-            return await _blogPostDao.GetAllCategoriesAsync();
-        }
     }
 }

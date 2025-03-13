@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.Mappings.RequestDTO;
-using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -74,7 +73,7 @@ public class BlogPostController : ControllerBase
     /// <param name="newBlogPost"></param>
     /// <returns></returns>
     [HttpPost("create-blog")]
-    public async Task<IActionResult> CreateBlog([FromBody] NewBlogPost newBlogPost)
+    public async Task<IActionResult> CreateBlog([FromForm] NewBlogPost newBlogPost)
     {
         try
         {
@@ -83,11 +82,9 @@ public class BlogPostController : ControllerBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Lỗi khi tạo bài viết: {ex.Message}");
-            return BadRequest(new { message = "Có lỗi xảy ra khi tạo bài viết", error = ex.Message });
+            return BadRequest(ex.Message);
         }
     }
-
     /// <summary>
     /// get blog by page
     /// </summary>
@@ -113,7 +110,7 @@ public class BlogPostController : ControllerBase
     /// <param name="updateBlogPost"></param>
     /// <returns></returns>
     [HttpPut("update-blog")]
-    public async Task<IActionResult> UpdateBlogPostAsync([FromForm] UpdateBlogPost updateBlogPost)
+    public async Task<IActionResult> UpdateBlogPost([FromForm] UpdateBlogPost updateBlogPost)
     {
         try
         {
@@ -131,51 +128,12 @@ public class BlogPostController : ControllerBase
     /// <param name="id"></param>
     /// <returns>bool</returns>
     [HttpDelete("delete-blog/{id}")]
-    public async Task<IActionResult> DeleteBlogPostAsync([FromRoute] int id)
+    public async Task<IActionResult> DeleteBlog([FromRoute] int id)
     {
         try
         {
             var result = await _blogPostService.DeleteBlogPostAsync(id);
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-    [HttpGet("search-blog")]
-    public async Task<IActionResult> SearchBlog([FromQuery] string title)
-    {
-        try
-        {
-            var result = await _blogPostService.SearchBlogPostAsync(title);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-    [HttpGet("get-blog-by-id/{id}")]
-    public async Task<IActionResult> GetProductById([FromRoute] int id)
-    {
-        try
-        {
-            var product = await _blogPostService.GetBlogsByIdAsync(id);
-            return Ok(product);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-    [HttpGet("getall-category")]
-    public async Task<IActionResult> GetAllCategory()
-    {
-        try
-        {
-            var categories = await _blogPostService.GetAllCategoriesAsync();
-            return Ok(categories);
         }
         catch (Exception ex)
         {

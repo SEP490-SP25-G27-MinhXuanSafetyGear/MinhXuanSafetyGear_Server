@@ -9,7 +9,7 @@ public class OrderResponse
     public string Status { get; set; }
     public DateTime OrderDate { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public int CustomerId { get; set; }
+    public int? CustomerId { get; set; }
     public string FullName { get; set; }
     public string Email { get; set; }
     public bool IsEmailVerified { get; set; }
@@ -19,6 +19,7 @@ public class OrderResponse
     public bool Gender { get; set; }
     public DateTime CreatedAt { get; set; }
     public string ImageUrl { get; set; }
+    public string CustomerInfo { get; set; }
     public DateTime UpdateAt { get; set; }
     public List<OrderDetailResponse> OrderDetails { get; set; }
     public List<InvoiceResponse> Receipts { get; set; }

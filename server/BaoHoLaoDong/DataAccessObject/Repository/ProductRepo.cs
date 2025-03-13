@@ -1,6 +1,7 @@
 ﻿using BusinessObject.Entities;
 using DataAccessObject.Dao;
 using DataAccessObject.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -95,9 +96,9 @@ namespace DataAccessObject.Repository
             return await _productDao.GetAllAsync();
         }
 
-        public async Task<List<Product>?> GetProductPageAsync(int category, int page, int pageSize)
+        public async Task<List<Product>?> GetProductPageAsync(int group,int category, int page, int pageSize)
         {
-            return await _productDao.GetPageAsync(category,page,pageSize);
+            return await _productDao.GetPageAsync(group,category,page,pageSize);
         }
 
         #endregion Product
@@ -188,9 +189,9 @@ namespace DataAccessObject.Repository
             return reviews.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public async Task<int> CountProductByCategory(int category)
+        public async Task<int> CountProductByCategory(int group,int category)
         {
-            return await _productDao.CountProductByCategory(category);
+            return await _productDao.CountProductByCategory(group,category);
         }
 
         public async Task<ProductVariant?> CreateProductVariantAsync(ProductVariant productVariant)
@@ -231,6 +232,35 @@ namespace DataAccessObject.Repository
         public async Task<ProductTaxis?> DeleteProductTaxAsync(int productTaxid)
         {
             return await _productTaxDao.DeleteAsync(productTaxid);
+        }
+
+        public async Task<List<Product>> FilterProductsAsync(List<int?> categories)
+        {
+            return await _productDao.GetProductByCategory(categories);
+        }
+
+        public async Task<ProductCategoryGroup?> CreateGroupCategoryAsync(ProductCategoryGroup group)
+        {
+            return await _productCategoryGroupDao.CreateAsync(group);
+        }
+
+        public async Task<ProductCategoryGroup> UpdateGroupCategoryAsync(ProductCategoryGroup group)
+        {
+            var groupExit = await _productCategoryGroupDao.GetByIdAsync(group.GroupId);
+            if(groupExit == null) throw new ArgumentException("Product category group not found.");
+            return await _productCategoryGroupDao.UpdateAsync(group);
+        }
+
+        public async Task<List<Product>> GetProductByIdsAsync(List<int> productIds)
+        {
+            var products = await _productDao.GetProductByIdsAsync(productIds);
+            return products;
+        }
+
+        public async Task<List<ProductVariant>> GetProductVariantsByIdsAsync(List<int> Ids)
+        {
+            var products = await _productVariantDao.GetProductVariantByIdsAsync(Ids);
+            return products;
         }
 
         #endregion ProductReview

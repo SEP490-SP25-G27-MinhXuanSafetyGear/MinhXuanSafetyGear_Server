@@ -15,7 +15,7 @@ public interface IProductRepo
     Task<Product?> UpdateProductAsync(Product product);
     Task<List<Product>?> GetAllProductsAsync();
 
-    Task<List<Product>?> GetProductPageAsync(int category, int page, int pageSize);
+    Task<List<Product>?> GetProductPageAsync(int group,int category, int page, int pageSize);
     // productimages methods
     Task<ProductImage?> CreateProductImageAsync(ProductImage productImage);
     Task<ProductImage?> GetProductImageByIdAsync(int productImageId);
@@ -29,11 +29,16 @@ public interface IProductRepo
     Task<bool> DeleteProductReviewAsync(int productReviewId);
     Task<List<ProductReview>?> GetProductReviewsAsync(int productId);
     Task<List<ProductReview>?> GetProductReviewsPageAsync(int productId, int page, int pageSize);
-    Task<int> CountProductByCategory(int category);
+    Task<int> CountProductByCategory(int group,int category);
     Task<ProductVariant?> CreateProductVariantAsync(ProductVariant productVariant);
     Task<List<ProductVariant>?> GetAllVariantsAsync(int productId);
     Task<ProductVariant?> GetProductVariantByIdAsync(int variantId);
     Task<ProductVariant?> UpdateProductVariantAsync(ProductVariant productVariant);
     Task<ProductTaxis?> AddProductTaxAsync(ProductTaxis productTax);
     Task<ProductTaxis?> DeleteProductTaxAsync(int productTaxid);
+    Task<List<Product>> FilterProductsAsync(List<int?> categories);
+    Task<ProductCategoryGroup?> CreateGroupCategoryAsync(ProductCategoryGroup group);
+    Task<ProductCategoryGroup> UpdateGroupCategoryAsync(ProductCategoryGroup group);
+    Task<List<Product>> GetProductByIdsAsync(List<int> productIds);
+    Task<List<ProductVariant>> GetProductVariantsByIdsAsync(List<int> Ids);
 }

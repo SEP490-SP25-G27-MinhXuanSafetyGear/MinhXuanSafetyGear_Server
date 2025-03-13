@@ -2,6 +2,9 @@
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessObject.Entities;
+using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp.ColorSpaces.Companding;
+
 namespace BusinessLogicLayer.Mappings
 {
     public class MappingProfile : Profile
@@ -98,6 +101,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.UpdatedAt, otp => otp.MapFrom(src => src.UpdatedAt))
                 .ForMember(dest => dest.Status, otp => otp.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TotalTax, otp => otp.MapFrom(src => src.TotalTax))
+                .ForMember(dest=>dest.Image, otp => otp.MapFrom(src=>(!src.ProductImages.IsNullOrEmpty())? ($"{applicationUrl}/images/{src.ProductImages.FirstOrDefault().FileName}"):""))
                 .ForMember(dest => dest.ProductImages, otp => otp.MapFrom(src => src.ProductImages))
                 .ForMember(dest => dest.ProductVariants, otp => otp.MapFrom(src => src.ProductVariants))
                 .ForMember(dest => dest.Taxes, otp => otp.MapFrom(src => src.ProductTaxes))
@@ -135,10 +139,9 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(d=>d.CategoryBlogId,otp=>otp.MapFrom(s=>s.Id))
                 .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))
                 .ForMember(d=>d.Description,otp=>otp.MapFrom(s=>s.Description));
-
             CreateMap<BlogCategory,BlogCategoryResponse>()
-                .ForMember(d=>d.CategoryBlogId,otp=>otp.MapFrom(s=>s.CategoryBlogId))
-                .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.CategoryName));
+                .ForMember(d=>d.Id,otp=>otp.MapFrom(s=>s.CategoryBlogId))
+                .ForMember(d=>d.Name,otp=>otp.MapFrom(s=>s.CategoryName));
 
             //Order
             CreateMap<Order, OrderResponse>()
@@ -164,8 +167,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
             CreateMap<Order, NewOrder>();
-            CreateMap<BlogCategory, BlogCategoryResponse>();
-            CreateMap<BlogCategoryResponse, BlogCategory>();
+            
             CreateMap<Tax,TaxResponse>()
                 .ForMember(dest=>dest.TaxId,otp=>otp.MapFrom(src=>src.TaxId))
                 .ForMember(dest=>dest.TaxName,otp=>otp.MapFrom(src=>src.TaxName))
@@ -189,6 +191,31 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Categories, otp => otp.MapFrom(src => src.ProductCategories))
                 .ReverseMap();
+            CreateMap<Notification, NotificationResponse>()
+                .ForMember(dest => dest.Id, otp => otp.MapFrom(src => src.NotificationId))
+                .ForMember(dest => dest.Title, otp => otp.MapFrom(src => src.Title))
+                .ForMember(dest => dest.RecipientId, otp => otp.MapFrom(src => src.RecipientId))
+                .ForMember(dest => dest.RecipientType, otp => otp.MapFrom(src => src.RecipientType))
+                .ForMember(dest => dest.IsRead, otp => otp.MapFrom(src => src.IsRead))
+                .ForMember(dest => dest.CreatedAt, otp => otp.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.UpdatedAt, otp => otp.MapFrom(src => src.UpdatedAt))
+                .ReverseMap();
+            CreateMap<NewNotification, Notification>()
+                .ForMember(dest => dest.Title, otp => otp.MapFrom(src => src.Title))
+                .ForMember(dest => dest.RecipientId, otp => otp.MapFrom(src => src.RecipientId))
+                .ForMember(dest => dest.RecipientType, otp => otp.MapFrom(src => src.RecipientType))
+                .ReverseMap();
+            CreateMap<NewGroupCategory, ProductCategoryGroup>()
+                .ForMember(dest => dest.GroupName, otp => otp.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description));
+            CreateMap<UpdateGroupCategory,ProductCategoryGroup>()
+                .ForMember(dest=>dest.GroupId,otp=>otp.MapFrom(src=>src.Id))
+                .ForMember(dest=>dest.GroupName,otp=>otp.MapFrom(src=>src.Name))
+                .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
+                .ForMember(dest=>dest.ProductCategories,otp=>otp.Ignore())
+                .ReverseMap();
+            CreateMap<OrderDetail, OrderPaymentResponseDetails>();
+            CreateMap<OrderPaymentResponseDetails, OrderDetail>();
         }
     }
 }

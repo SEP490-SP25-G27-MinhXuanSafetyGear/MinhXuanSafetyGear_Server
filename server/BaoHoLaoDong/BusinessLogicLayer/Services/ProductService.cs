@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿
+using System.Text.RegularExpressions;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
@@ -46,10 +47,10 @@ public class ProductService : IProductService
         return _mapper.Map<List<ProductCategoryGroupResponse>>(categories);
     }
 
-    public async Task<Page<ProductResponse>?> GetProductByPage(int category = 0, int page = 1, int pageSize = 20)
+    public async Task<Page<ProductResponse>?> GetProductByPage(int group,int category = 0, int page = 1, int pageSize = 20)
     {
-        var products = await _productRepo.GetProductPageAsync(category, page, pageSize);
-        var totalProduct = await _productRepo.CountProductByCategory(category);
+        var products = await _productRepo.GetProductPageAsync(group,category, page, pageSize);
+        var totalProduct = await _productRepo.CountProductByCategory(group,category);
         var productsResponse = _mapper.Map<List<ProductResponse>>(products);
         var pageResult = new Page<ProductResponse>(productsResponse, page, pageSize, totalProduct);
         _logger.LogInformation("getproducts",pageResult);
@@ -114,7 +115,7 @@ public class ProductService : IProductService
 
     public async Task<int> CountProductByCategory(int category)
     {
-        return await _productRepo.CountProductByCategory(category);
+        return await _productRepo.CountProductByCategory(0,category);
     }
 
     public async Task<ProductResponse?> UpdateProductAsync(UpdateProduct updateProduct)
@@ -428,5 +429,39 @@ public class ProductService : IProductService
             _logger.LogError(ex, "Error while delete tax product");
             throw;
         }
+    }
+
+    public async Task<List<ProductResponse>?> FilterProductsAsync(List<int?> categories)
+    {
+        var products =await _productRepo.FilterProductsAsync(categories);
+        return _mapper.Map<List<ProductResponse>>(products);
+    }
+
+    public async Task<ProductCategoryGroupResponse?> CreateNewGroupCategoryAsync(NewGroupCategory groupCategory)
+    {
+        try
+        {
+            var group = _mapper.Map<ProductCategoryGroup>(groupCategory);
+            group = await _productRepo.CreateGroupCategoryAsync(group);
+            return _mapper.Map<ProductCategoryGroupResponse>(group);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public async Task<ProductCategoryGroupResponse?> UpdateGroupCategoryAsync(UpdateGroupCategory groupCategory)
+    {
+        try
+        {
+            var group = _mapper.Map<ProductCategoryGroup>(groupCategory);
+            group = await _productRepo.UpdateGroupCategoryAsync(group);
+            return _mapper.Map<ProductCategoryGroupResponse>(group);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }     
     }
 }

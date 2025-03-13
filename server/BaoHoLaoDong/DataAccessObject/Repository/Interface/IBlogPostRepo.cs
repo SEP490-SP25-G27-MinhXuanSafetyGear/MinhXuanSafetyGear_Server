@@ -5,7 +5,6 @@ namespace DataAccessObject.Repository.Interface
     public interface IBlogPostRepo
     {
         Task<BlogPost?> GetBlogPostByIdAsync(int id);
-        Task<List<BlogCategory>> GetAllCategoriesAsync();
         Task<BlogPost?> CreateBlogPostAsync(BlogPost blogPost);
         Task<BlogPost?> UpdateBlogPostAsync(BlogPost blogPost);
         Task<bool> DeleteBlogPostAsync(int id);
@@ -15,7 +14,5 @@ namespace DataAccessObject.Repository.Interface
         Task<BlogCategory?> CreateBlogCategoryAsync(BlogCategory blogCategory);
         Task<BlogCategory?> GetBlogCategoryByIdAsync(int id);
         Task<BlogCategory?> UpdateBlogCategoryAsync(BlogCategory? blogCategory);
-        Task<List<BlogPost>?> SearchBlogPostAsync(string? title = null);
-        Task<int> CountBlogByCategory(int category);
     }
 }

@@ -18,11 +18,7 @@ namespace DataAccessObject.Repository
         }
 
         #region Order 
-        
-        public async Task<int> CountSearchResultsAsync(DateTime? startDate, DateTime? endDate, string customerName)
-        {
-            return await _orderDao.CountSearchResultsAsync(startDate, endDate, customerName);
-        }
+
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _orderDao.GetByIdAsync(id);
@@ -150,6 +146,21 @@ namespace DataAccessObject.Repository
         public Task<List<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Order?> PayAsync(Order order)
+        {
+            return await _orderDao.PayAsync(order);
+        }
+
+        public async Task<Order?> GetOrderByIdWithTrackingAsync(int id)
+        {
+            return await _orderDao.GetByIdWithTrackingAsync(id);
+        }
+
+        public async Task<bool> UpdateOrderWithInvoiceAsync(Order order, ICollection<Invoice> invoices)
+        {
+            return await _orderDao.UpdateOrderWithInvoiceAsync(order, invoices);
         }
 
 
