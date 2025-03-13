@@ -12,4 +12,5 @@ public interface IMailService
     public Task<bool> SendVerificationEmailAsync(string toEmail, string verificationCode);
     public Task<bool> SendOrderConfirmationEmailAsync(string toEmail, string orderNumber, string orderDetails);
     public  Task<bool> SendAccountCreatedEmailAsync(string toEmail, string username);
+    Task<bool> SendResetPasswordEmail(string userEmail, string resetUrl);
 }

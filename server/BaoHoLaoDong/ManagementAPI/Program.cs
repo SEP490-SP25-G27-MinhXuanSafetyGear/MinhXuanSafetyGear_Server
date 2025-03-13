@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
+var urlResetPassword = builder.Configuration["ApplicationSettings:UrlResetPassword"];
 var googleClientId = builder.Configuration["GoogleAuth:ClientId"];
 
 builder.WebHost.UseUrls(baseUrl);
@@ -91,6 +92,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -139,7 +141,7 @@ if (app.Environment.IsDevelopment()!)
     {
         StartInfo = new System.Diagnostics.ProcessStartInfo
         {
-            FileName = $"{baseUrl}/swagger",
+            FileName = $"{baseUrl}/swagger/index.html",
             UseShellExecute = true
         }
     };

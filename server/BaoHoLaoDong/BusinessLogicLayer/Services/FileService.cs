@@ -2,15 +2,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 
 namespace BusinessLogicLayer.Services;
 
-public  class FileService : IFileService
+public class FileService : IFileService
 {
     private readonly string _imageDirectory;
     private readonly ILogger<FileService> _logger;
+    private const int MAX_FILE_SIZE_KB = 300; // Giới hạn file tối đa 500KB
 
     public FileService(ILogger<FileService> logger, string imageDirectory)
     {
@@ -27,12 +28,12 @@ public  class FileService : IFileService
                 Directory.CreateDirectory(_imageDirectory);
             }
 
-            var fileName = $"{Guid.NewGuid()}.jpg"; 
+            var fileName = $"{Guid.NewGuid()}.webp"; 
             var filePath = Path.Combine(_imageDirectory, fileName);
 
             using (var image = Image.Load(file.OpenReadStream())) 
             {
-                // Giảm kích thước ảnh (ví dụ: tối đa 1080px chiều rộng hoặc cao)
+                // Giảm kích thước ảnh (tối đa 1080px chiều rộng hoặc cao)
                 int maxWidth = 1080;
                 int maxHeight = 1080;
                 image.Mutate(x => x.Resize(new ResizeOptions
@@ -41,18 +42,26 @@ public  class FileService : IFileService
                     Size = new Size(maxWidth, maxHeight)
                 }));
 
-                // Giảm chất lượng ảnh xuống 75% để tiết kiệm dung lượng
-                var encoder = new JpegEncoder { Quality = 75 };
+                int quality = 75; // Mặc định là 75%
+                long fileSizeKB = file.Length / 1024; // Kích thước file ban đầu (KB)
+
+                // Nếu file lớn hơn mức tối đa, giảm chất lượng xuống 50%
+                if (fileSizeKB > MAX_FILE_SIZE_KB)
+                {
+                    quality = 50;
+                }
+
+                var encoder = new WebpEncoder { Quality = quality };
 
                 await image.SaveAsync(filePath, encoder);
             }
 
-            _logger.LogInformation($"Image saved to {_imageDirectory}");
+            _logger.LogInformation($"Image saved as WebP to {_imageDirectory}");
             return fileName;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving image.");
+            _logger.LogError(ex, "Error saving WebP image.");
             return null;
         }
     }

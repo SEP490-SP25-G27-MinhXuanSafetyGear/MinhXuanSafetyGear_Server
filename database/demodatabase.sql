@@ -1,4 +1,19 @@
 ﻿USE MinhXuanDatabase;
+insert into BlogCategories(CategoryName)
+values 
+(N'Liên hệ'),
+(N'Chính Sách'),
+(N'Hướng Dẫn'),
+(N'KIẾN THỨC AN TOÀN LAO ĐỘNG');
+insert into BlogPosts(Title,Content,CategoryBlogId)
+values 
+(N'Địa chỉ',N'Hai bà Trưng, Hà Nội',1),
+(N'Điện thoại',N'0912.423.062',1),
+(N'Email',N'minhxuanbhld@gmail.com',1),
+(N'Chính sách mua hàng',N'',2),
+(N'Điện thoại',N'0912.423.062',2),
+(N'Email',N'minhxuanbhld@gmail.com',2),
+
 INSERT INTO ProductCategoryGroup(GroupName,Description) 
 VALUES
 (N'Trang Thiết bị bảo hộ',N''),
