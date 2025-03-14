@@ -15,4 +15,14 @@ public class TaxRepo : ITaxRepo
     {
         return await _taxDao.GetAllAsync();
     }
+
+    public async Task<Tax> CreateAsync(Tax newTax)
+    {
+        return await _taxDao.CreateAsync(newTax);
+    }
+
+    public async Task<Tax?> UpdateAsync(Tax updateTax)
+    {
+        return await _taxDao.UpdateAsync(updateTax);
+    }
 }

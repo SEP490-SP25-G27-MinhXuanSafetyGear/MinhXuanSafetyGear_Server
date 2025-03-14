@@ -18,5 +18,4 @@ public class NewEmployee
     public DateOnly? DateOfBirth { get; set; }
     public bool? Gender { get; set; }
     public string Role { get; set; } = "Manager";
-    public string Status { get; set; } = "Active";
 }

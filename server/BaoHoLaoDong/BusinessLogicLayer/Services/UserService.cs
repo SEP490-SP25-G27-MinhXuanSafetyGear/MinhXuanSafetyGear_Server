@@ -95,7 +95,6 @@ public class UserService : IUserService
         try
         {
             var employee = _mapper.Map<Employee>(newEmployee);
-            employee.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newEmployee.Password);
             var result = await _userRepo.CreateEmployeeAsync(employee);
             if (result == null)
             {
@@ -165,7 +164,6 @@ public class UserService : IUserService
     public async Task<UserResponse?> CreateNewCustomerAsync(NewCustomer newCustomer)
     {
         var customer = _mapper.Map<Customer>(newCustomer);
-        customer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newCustomer.Password);
         var result = await _userRepo.CreateCustomerAsync(customer);
         var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
         if (result != null && result.IsEmailVerified == false)
