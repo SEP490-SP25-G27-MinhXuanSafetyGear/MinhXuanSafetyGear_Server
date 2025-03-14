@@ -178,11 +178,6 @@ namespace ManagementAPI.Controllers
         [HttpPost("authenticate/registerby-email-password")]
         public async Task<IActionResult> RegisterByPassword([FromBody] NewCustomer newCustomer)
         {
-            if (newCustomer == null || string.IsNullOrWhiteSpace(newCustomer.Email) || string.IsNullOrWhiteSpace(newCustomer.Password))
-            {
-                return BadRequest("Email and Password are required.");
-            }
-
             try
             {
                 var user = await _userService.GetUserByEmailAsync(newCustomer.Email);

@@ -19,6 +19,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.Category)
             .Include(p=>p.ProductImages)
             .Include(p=>p.ProductReviews)
+            .ThenInclude(c=>c.Customer)
             .Include(p=>p.ProductVariants)
             .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
             .AsNoTracking()
@@ -141,11 +142,61 @@ public class ProductDao : IDao<Product>
             .ToListAsync();
     }
 
-    public async Task<List<Product>> GetProductByIdsAsync(List<int> ids)
+    public Product? GetByName(string productName)
+    {
+        return _context.Products.AsTracking().FirstOrDefault(p => p.ProductName.Equals(productName));
+    }
+
+    public async Task<int?> CountProductSaleAsync()
+    {
+        var totalSale = 0;
+        var orders = await _context.Orders.AsNoTracking()
+            .Include(o=>o.OrderDetails)
+            .ToListAsync();
+        totalSale = orders.Sum(o => o.OrderDetails.Sum(p => p.Quantity));
+        return totalSale;
+    }
+
+    public async Task<Dictionary<Product, int>> GetProductSaleQualityAsync(int top)
+    {
+        var result = await _context.OrderDetails
+            .AsNoTracking()
+            .GroupBy(od => od.ProductId)  // Nhóm theo ProductId
+            .Select(g => new 
+            { 
+                ProductId = g.Key, 
+                TotalSold = g.Sum(od => od.Quantity)  // Tổng số lượng bán
+            })
+            .OrderByDescending(p => p.TotalSold)  // Sắp xếp giảm dần theo số lượng bán
+            .Take(top)  // Lấy top sản phẩm
+            .ToListAsync();
+        var productSales = new Dictionary<Product, int>();
+        foreach (var item in result)
+        {
+            var product = await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProductId == item.ProductId);
+
+            if (product != null)
+            {
+                productSales[product] = item.TotalSold;
+            }
+        }
+
+        return productSales;
+    }
+
+    public async Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent )
     {
         return await _context.Products
-            .Where(x => ids.Contains(x.ProductId))
+            .Include(p=>p.Category)
+            .Include(p=>p.ProductImages)
+            .Include(p=>p.ProductReviews)
+            .Include(p=>p.ProductVariants)
+            .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
             .AsNoTracking()
+            .Where(p=>p.Discount >= minDiscountPercent)
+            .Take(size)
             .ToListAsync();
     }
 }

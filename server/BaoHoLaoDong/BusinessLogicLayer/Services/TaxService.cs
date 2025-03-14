@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
@@ -27,6 +28,36 @@ public class TaxService :ITaxService
             var taxes = await _taxRepo.GetAllTaxesAsync();
             return _mapper.Map<List<TaxResponse>>(taxes);
         }catch(Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return null;
+        }
+    }
+
+    public async Task<TaxResponse?> CreateTaxAsync(NewTax tax)
+    {
+        try
+        {
+            var newTax = _mapper.Map<Tax>(tax);
+            newTax = await _taxRepo.CreateAsync(newTax);
+            return _mapper.Map<TaxResponse>(newTax);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return null;
+        }
+    }
+
+    public async Task<TaxResponse?> UpdateTaxAsync(UpdateTax updateTax)
+    {
+        try
+        {
+            var tax = _mapper.Map<Tax>(updateTax);
+            tax = await _taxRepo.UpdateAsync(tax);
+            return _mapper.Map<TaxResponse>(tax);
+        }
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
             return null;

@@ -95,7 +95,6 @@ public class UserService : IUserService
         try
         {
             var employee = _mapper.Map<Employee>(newEmployee);
-            employee.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newEmployee.Password);
             var result = await _userRepo.CreateEmployeeAsync(employee);
             if (result == null)
             {
@@ -165,7 +164,6 @@ public class UserService : IUserService
     public async Task<UserResponse?> CreateNewCustomerAsync(NewCustomer newCustomer)
     {
         var customer = _mapper.Map<Customer>(newCustomer);
-        customer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newCustomer.Password);
         var result = await _userRepo.CreateCustomerAsync(customer);
         var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
         if (result != null && result.IsEmailVerified == false)
@@ -307,6 +305,37 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             return null;
+        }
+    }
+
+    public async Task<bool> ResetPasswordAsync(ResetPassword resetPassword)
+    {
+        try
+        {
+            var emp = await _userRepo.GetEmployeeByEmailAsync(resetPassword.Email);
+            if (emp != null)
+            {
+                emp.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPassword.Password); ;
+                await _userRepo.UpdateEmployeeAsync(emp);
+                return true;
+            }
+            else if (emp == null)
+            {
+                var cus = await _userRepo.GetCustomerByEmailAsync(resetPassword.Email);
+                if (cus != null)
+                {
+                    cus.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPassword.Email);
+                    await _userRepo.UpdateCustomerAsync(cus);
+                    return true;
+                }
+
+                return false;
+            }
+            else return false;
+        }
+        catch (Exception ex)
+        {
+            throw;
         }
     }
 }

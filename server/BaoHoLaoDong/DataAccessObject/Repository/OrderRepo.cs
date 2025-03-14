@@ -148,21 +148,6 @@ namespace DataAccessObject.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<Order?> PayAsync(Order order)
-        {
-            return await _orderDao.PayAsync(order);
-        }
-
-        public async Task<Order?> GetOrderByIdWithTrackingAsync(int id)
-        {
-            return await _orderDao.GetByIdWithTrackingAsync(id);
-        }
-
-        public async Task<bool> UpdateOrderWithInvoiceAsync(Order order, ICollection<Invoice> invoices)
-        {
-            return await _orderDao.UpdateOrderWithInvoiceAsync(order, invoices);
-        }
-
 
 
         //public async Task<int> CountOrderDetailsByOrderIdAsync(int orderId)

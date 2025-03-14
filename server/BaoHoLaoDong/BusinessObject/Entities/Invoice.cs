@@ -23,7 +23,5 @@ public partial class Invoice
 
     public string Status { get; set; } = null!;
 
-    public string? ImagePath { get; set; }
-
     public virtual Order Order { get; set; } = null!;
 }

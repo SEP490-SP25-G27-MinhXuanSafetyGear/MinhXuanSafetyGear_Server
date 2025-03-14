@@ -2,15 +2,6 @@
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using Microsoft.AspNetCore.Mvc;
-using BusinessObject.Entities;
-using ManagementAPI.ModelHelper;
-using BusinessLogicLayer.Models;
-using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.X9;
-using System.Runtime.CompilerServices;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ManagementAPI.Controllers
 {
@@ -19,12 +10,10 @@ namespace ManagementAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        private readonly IConfiguration _configuration;
 
-        public OrderController(IOrderService orderService, IConfiguration configuration)
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
-            _configuration = configuration;
         }
 
         /// <summary>
@@ -198,96 +187,6 @@ namespace ManagementAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("payment")]
-        public async Task<IActionResult> Payment([FromForm] PaymentInfo model)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(model.OrderInfo))
-                {
-                    return BadRequest("OrderInfo is required.");
-                }
-
-                // Parse JSON từ string OrderInfo
-                OrderPaymentResponse orderInfo;
-                try
-                {
-                    orderInfo = JsonConvert.DeserializeObject<OrderPaymentResponse>(model.OrderInfo);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest("Invalid OrderInfo format: " + ex.Message);
-                }
-                if (orderInfo == null
-                    || orderInfo.Invoice == null
-                    || orderInfo.OrderDetails?.Any() != true)
-                {
-                    return BadRequest("Invalid data");
-                }
-                if (orderInfo.Invoice.PaymentMethod == "Chuyển khoản" && model.InvoiceImage != null)
-                {
-                    var pathFolder = _configuration["ApplicationSettings:ImageFolder"];
-                    if (!Directory.Exists(pathFolder))
-                    {
-                        Directory.CreateDirectory(pathFolder);
-                    }
-                    string fileExtension = Path.GetExtension(model.InvoiceImage.FileName);
-                    var fileName = orderInfo.CustomerInfo.Name.Replace(" ","-") + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
-                    var filePath = Path.Combine(pathFolder, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.InvoiceImage.CopyToAsync(stream);
-                    }
-                    orderInfo.Invoice.ImagePath = fileName;
-                }
-
-                var result = await _orderService.PayAsync(orderInfo);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("img/invoice")]
-        public async Task<IActionResult> GetImage(int orderId)
-        {
-            try
-            {
-                var fileName = await _orderService.GetInvoiceImageAsync(orderId);
-                if(string.IsNullOrEmpty(fileName))
-                {
-                    return NotFound();
-                }
-                var pathFolder = _configuration["ApplicationSettings:ImageFolder"];
-                string imagePath = Path.Combine(pathFolder, fileName);
-                byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
-                string base64String = Convert.ToBase64String(imageBytes);
-                return Ok(new { ImageBase64 = base64String });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [HttpPut("confirm-order")]
-        public async Task<IActionResult> ConfirmOrderAsync(int orderId)
-        {
-            try
-            {
-                var result = await _orderService.ConfirmOrderAsync(orderId);
-
-                return Ok();
-            }
-            catch (Exception)
-            {
-                throw;
             }
         }
     }

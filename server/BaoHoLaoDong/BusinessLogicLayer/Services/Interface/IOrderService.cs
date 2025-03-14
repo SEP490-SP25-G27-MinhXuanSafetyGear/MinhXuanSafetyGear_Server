@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
-using BusinessObject.Entities;
 
 namespace BusinessLogicLayer.Services.Interface
 {
@@ -31,11 +30,5 @@ namespace BusinessLogicLayer.Services.Interface
         Task<OrderDetailResponse?> UpdateOrderDetailAsync(int orderDetailId, NewOrderDetail orderDetailRequest);
         Task<bool> DeleteOrderDetailAsync(int orderDetailId);
         Task<decimal> CalculateOrderDetailTotalAsync(int orderDetailId);
-
-        #region Payment
-        Task<bool> PayAsync(OrderPaymentResponse order);
-        Task<bool> ConfirmOrderAsync(int orderId);
-        Task<string> GetInvoiceImageAsync(int orderId);
-        #endregion
     }
 }

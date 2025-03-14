@@ -3,7 +3,6 @@ using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessObject.Entities;
 using Microsoft.IdentityModel.Tokens;
-using SixLabors.ImageSharp.ColorSpaces.Companding;
 
 namespace BusinessLogicLayer.Mappings
 {
@@ -19,9 +18,38 @@ namespace BusinessLogicLayer.Mappings
                             ? (src.Gender.Value ? "Male" : "Female")
                             : "Undefined")); // Nếu null thì trả về null
             // Ánh xạ từ newEmployee sang Employee
-            CreateMap<NewEmployee, Employee>();
+            CreateMap<NewEmployee, Employee>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.Ignore()) // ID tự sinh
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Password))) // Chuyển đổi Password → PasswordHash
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+                .ForMember(dest => dest.CreateAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Mặc định là thời gian hiện tại
+                .ForMember(dest => dest.UpdateAt, opt => opt.Ignore()) // Bỏ qua UpdateAt khi tạo mới
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active")) // Gán mặc định "Active"
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore()); // Bỏ qua danh sách thông báo
             // mapping fromg newcustomer => customer
-            CreateMap<NewCustomer, Customer>();
+            CreateMap<NewCustomer, Customer>()
+                .ForMember(dest => dest.CustomerId, opt => opt.Ignore()) // ID tự sinh
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Password))) // Hash password nếu cần
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+                .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => src.IsEmailVerified))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Mặc định ngày tạo
+                .ForMember(dest => dest.UpdateAt, opt => opt.Ignore()) // Không cập nhật ban đầu
+                .ForMember(dest => dest.AccountVerifications, opt => opt.Ignore()) // Bỏ qua danh sách xác thực tài khoản
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore()) // Bỏ qua danh sách thông báo
+                .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Bỏ qua danh sách đơn hàng
+                .ForMember(dest => dest.ProductReviews, opt => opt.Ignore()); // Bỏ qua danh sách đánh giá sản phẩm
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.CustomerId));
             CreateMap<Customer,UserResponse>()
@@ -48,6 +76,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>""))
                 .ForMember(dest=>dest.IsEmailVerified,otp=>otp.MapFrom(src => true))
                 .ForMember(dest=>dest.UpdateAt,otp=>otp.MapFrom(src=>src.UpdateAt))
+                .ForMember(dest=>dest.CreatedAt,otp=>otp.MapFrom(src=>src.CreateAt))
                 .ForMember(dest=>dest.Status,otp=>otp.MapFrom(src=>src.Status));
             CreateMap<UpdateEmployee, Employee>();
             CreateMap<NewProductCategory, ProductCategory>()
@@ -78,6 +107,8 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+                .ForMember(dest=>dest.FreeShip,otp=>otp.MapFrom((src=>src.FreeShip)))
+                .ForMember(dest=>dest.Guarantee,otp=>otp.MapFrom((src=>src.Guarantee)))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.QualityCertificate, opt => opt.MapFrom(src => src.QualityCertificate))
                 .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants))
@@ -93,6 +124,9 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category != null ? src.Category.CategoryName : string.Empty))
                 .ForMember(dest => dest.Quantity, otp => otp.MapFrom(src => src.Quantity))
                 .ForMember(dest => dest.Price, otp => otp.MapFrom(src => src.Price))
+                .ForMember(dest=>dest.TotalSale,otp=>otp.MapFrom(src=>src.TotalSale))
+                .ForMember(dest=>dest.FreeShip,otp=>otp.MapFrom(src=>src.FreeShip))
+                .ForMember(dest=>dest.Guarantee,otp=>otp.MapFrom(src=>src.Guarantee))
                 .ForMember(dest => dest.PriceDiscount, otp => otp.MapFrom(src => src.Price - src.Price * src.Discount / 100))
                 .ForMember(dest => dest.Discount, otp => otp.MapFrom(src => (src.Discount)))
                 .ForMember(dest => dest.AverageRating, otp => otp.MapFrom(src => src.AverageRating.HasValue ? (int)Math.Round(src.AverageRating.Value) : 0))
@@ -120,6 +154,8 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material))
                 .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src.Origin))
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest=>dest.FreeShip,otp=>otp.MapFrom((src=>src.FreeShip)))
+                .ForMember(dest=>dest.Guarantee,otp=>otp.MapFrom((src=>src.Guarantee)))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
@@ -214,8 +250,27 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
                 .ForMember(dest=>dest.ProductCategories,otp=>otp.Ignore())
                 .ReverseMap();
-            CreateMap<OrderDetail, OrderPaymentResponseDetails>();
-            CreateMap<OrderPaymentResponseDetails, OrderDetail>();
+            
+            CreateMap<ProductReview, ProductReviewResponse>()
+                .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
+                .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+                .ForMember(dest=>dest.CustomerName,otp=>otp.MapFrom(src=>src.Customer.FullName))
+                .ForMember(dest=>dest.CustomerImage,otp=>otp.MapFrom(src=>src.Customer.ImageUrl));
+            CreateMap<NewTax, Tax>()
+                .ForMember(dest => dest.TaxName, otp => otp.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description))
+                .ForMember(dest => dest.TaxRate, otp => otp.MapFrom(src => src.Rate));
+            CreateMap<UpdateTax, Tax>()
+                .ForMember(dest => dest.TaxId, otp => otp.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TaxName, otp => otp.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description))
+                .ForMember(dest => dest.TaxRate, otp => otp.MapFrom(src => src.Rate))
+                .ReverseMap();
         }
     }
 }

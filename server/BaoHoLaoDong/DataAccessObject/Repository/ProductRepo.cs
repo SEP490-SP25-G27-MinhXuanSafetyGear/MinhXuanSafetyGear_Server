@@ -1,7 +1,6 @@
 ﻿using BusinessObject.Entities;
 using DataAccessObject.Dao;
 using DataAccessObject.Repository.Interface;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -67,11 +66,7 @@ namespace DataAccessObject.Repository
 
         public async Task<Product?> CreateProductAsync(Product product)
         {
-            var existingProduct = await _productDao.GetByNameAsync(product.ProductName);
-            if (existingProduct != null)
-            {
-                throw new ArgumentException("Product with this name already exists.");
-            }
+           
             return await _productDao.CreateAsync(product);
         }
 
@@ -251,16 +246,25 @@ namespace DataAccessObject.Repository
             return await _productCategoryGroupDao.UpdateAsync(group);
         }
 
-        public async Task<List<Product>> GetProductByIdsAsync(List<int> productIds)
+        public bool IsProductNameExists(string productName)
         {
-            var products = await _productDao.GetProductByIdsAsync(productIds);
-            return products;
+            var product =  _productDao.GetByName(productName);
+            return product != null;
         }
 
-        public async Task<List<ProductVariant>> GetProductVariantsByIdsAsync(List<int> Ids)
+        public async Task<int?> CountProductSaleAsync()
         {
-            var products = await _productVariantDao.GetProductVariantByIdsAsync(Ids);
-            return products;
+            return await _productDao.CountProductSaleAsync();
+        }
+
+        public async Task<Dictionary<Product, int>> GetProductSaleQualityAsync(int top)
+        {
+            return await _productDao.GetProductSaleQualityAsync(top);
+        }
+
+        public async Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent)
+        {
+            return await _productDao.GetTopDiscountAsync(size,minDiscountPercent);
         }
 
         #endregion ProductReview

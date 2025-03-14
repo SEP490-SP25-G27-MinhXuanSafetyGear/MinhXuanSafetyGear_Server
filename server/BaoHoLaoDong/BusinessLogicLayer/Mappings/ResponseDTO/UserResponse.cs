@@ -18,7 +18,7 @@ public class UserResponse
 
     public bool? Gender { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
     public string? ImageUrl { get; set; }
 
