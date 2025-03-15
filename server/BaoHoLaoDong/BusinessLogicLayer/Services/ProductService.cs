@@ -19,15 +19,13 @@ public class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
     private readonly ITaxRepo _taxRepo;
-    private readonly string _imageDirectory;
+    private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","products");
     private readonly IFileService _fileService;
-    public ProductService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<ProductService> logger,
-        string imageDirectory,IFileService fileService)
+    public ProductService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<ProductService> logger,IFileService fileService)
     {
         _productRepo = new ProductRepo(context);
         _mapper = mapper;
         _logger = logger;
-        _imageDirectory = imageDirectory;
         _fileService = fileService;
         _taxRepo = new TaxRepo(context);
     }
@@ -90,7 +88,7 @@ public class ProductService : IProductService
             {
                 foreach (var file in files)
                 {
-                    var fileName = await _fileService.SaveImageAsync(file);
+                    var fileName = await _fileService.SaveImageAsync(_imageDirectory,file);
                     if (fileName != null)
                     {
                         var productImage = new ProductImage()
@@ -164,7 +162,7 @@ public class ProductService : IProductService
         if (file != null && file.Length > 0)
         {
             // Save the new image and get the new file name
-            fileName = await _fileService.SaveImageAsync(file);
+            fileName = await _fileService.SaveImageAsync(_imageDirectory,file);
             if (fileName == null)
             {
                 throw new Exception("Failed to save new product image.");
@@ -179,19 +177,7 @@ public class ProductService : IProductService
             var product = await _productRepo.GetProductByIdAsync(productImage.ProductId);
             if (result != null)
             {
-                // Delete the old image if it exists
-                if (!string.IsNullOrEmpty(oldPath) && File.Exists(oldPath))
-                {
-                    try
-                    {
-                        File.Delete(oldPath);
-                        _logger.LogInformation("Old image file deleted: {OldImagePath}", oldPath);
-                    }
-                    catch (Exception deleteEx)
-                    {
-                        _logger.LogError(deleteEx, "Failed to delete old image file: {OldImagePath}", oldPath);
-                    }
-                }
+                await _fileService.DeleteFileAsync(oldPath);
             }
             return _mapper.Map<ProductResponse>(product);
         }
@@ -255,7 +241,7 @@ public class ProductService : IProductService
             var file = productImage.File;
             if (file != null && file.Length > 0)
             {
-                var fileName = await _fileService.SaveImageAsync(file);
+                var fileName = await _fileService.SaveImageAsync(_imageDirectory,file);
                 var newProductImage = new ProductImage()
                 {
                     ProductId = productExit.ProductId,

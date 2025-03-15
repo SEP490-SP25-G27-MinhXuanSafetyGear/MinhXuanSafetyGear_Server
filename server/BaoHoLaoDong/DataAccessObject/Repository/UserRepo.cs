@@ -123,21 +123,17 @@ namespace DataAccessObject.Repository
         {
             if (employee == null)
             {
-                throw new ArgumentNullException(nameof(employee), "Employee object cannot be null.");
+                throw new Exception( "Employee object cannot be null.");
             }
-
+            var emps = await _employeeDao.GetAllAsync() ?? new List<Employee>();
             var existingEmployee = await _employeeDao.GetByIdAsync(employee.EmployeeId);
             if (existingEmployee == null)
             {
-                throw new ArgumentException("Employee not found.");
+                throw new Exception("Employee not found.");
             }
-            if (employee.Email != existingEmployee.Email)
+            if (emps.Any(e => e.Email == employee.Email && e.EmployeeId != employee.EmployeeId))
             {
-                var employeeWithEmail = await _employeeDao.GetEmployeeByEmailAsync(employee.Email);
-                if (employeeWithEmail != null)
-                {
-                    throw new Exception($"Email '{employee.Email}' is already in use.");
-                }
+                throw new Exception($"Email '{employee.Email}' is already in use.");
             }
             return await _employeeDao.UpdateAsync(employee);
         }

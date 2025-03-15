@@ -68,11 +68,19 @@ public class BlogPostDao : IDao<BlogPost>
     public async Task<List<BlogPost>?> GetPageAsync(int page, int pageSize)
     {
       throw new NotImplementedException();
-    }   
+    }
+
+    public async Task<int> CountBlogPostByCategoryAsync(int categoryId)
+    {
+        return await _context.BlogPosts
+            .Where(b=> categoryId ==0 || b.CategoryBlogId == categoryId)
+            .CountAsync();
+    }
     public async Task<List<BlogPost>?> GetPageAsync(int categoryId,int page, int pageSize)
     {
         return await _context.BlogPosts
             .AsNoTracking()
+            .Where(b=> categoryId ==0 || b.CategoryBlogId == categoryId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

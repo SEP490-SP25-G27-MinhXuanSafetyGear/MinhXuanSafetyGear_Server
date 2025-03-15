@@ -12,7 +12,8 @@ values
 (N'Email',N'minhxuanbhld@gmail.com',1),
 (N'Chính sách mua hàng',N'',2),
 (N'Điện thoại',N'0912.423.062',2),
-(N'Email',N'minhxuanbhld@gmail.com',2),
+(N'Email',N'minhxuanbhld@gmail.com',2);
+go
 
 INSERT INTO ProductCategoryGroup(GroupName,Description) 
 VALUES

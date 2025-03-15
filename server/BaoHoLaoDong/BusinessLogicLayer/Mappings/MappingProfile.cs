@@ -78,7 +78,14 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest=>dest.UpdateAt,otp=>otp.MapFrom(src=>src.UpdateAt))
                 .ForMember(dest=>dest.CreatedAt,otp=>otp.MapFrom(src=>src.CreateAt))
                 .ForMember(dest=>dest.Status,otp=>otp.MapFrom(src=>src.Status));
-            CreateMap<UpdateEmployee, Employee>();
+            CreateMap<UpdateEmployee, Employee>()
+                .ForMember(dest=>dest.EmployeeId,otp=>otp.MapFrom(src=>src.Id))
+                .ForMember(dest=>dest.FullName,otp=>otp.MapFrom((src=>src.Name)))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status)) // Chuyển Enum thành string
+                .ForMember(dest => dest.UpdateAt, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Cập nhật thời gian chỉnh sửa
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) // Không map mật khẩu
+                .ForMember(dest => dest.CreateAt, opt => opt.Ignore()) // Giữ nguyên CreateAt trong DB
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore()); // Bỏ qua danh sách Notifications
             CreateMap<NewProductCategory, ProductCategory>()
                 .ForMember(dest=>dest.CategoryName,otp=>otp.MapFrom(src=>src.CategoryName))
                 .ForMember(dest=>dest.Description,otp=>otp.MapFrom(src=>src.Description))
@@ -135,7 +142,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.UpdatedAt, otp => otp.MapFrom(src => src.UpdatedAt))
                 .ForMember(dest => dest.Status, otp => otp.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TotalTax, otp => otp.MapFrom(src => src.TotalTax))
-                .ForMember(dest=>dest.Image, otp => otp.MapFrom(src=>(!src.ProductImages.IsNullOrEmpty())? ($"{applicationUrl}/images/{src.ProductImages.FirstOrDefault().FileName}"):""))
+                .ForMember(dest=>dest.Image, otp => otp.MapFrom(src=>(!src.ProductImages.IsNullOrEmpty())? ($"{applicationUrl}/images/products/{src.ProductImages.FirstOrDefault().FileName}"):""))
                 .ForMember(dest => dest.ProductImages, otp => otp.MapFrom(src => src.ProductImages))
                 .ForMember(dest => dest.ProductVariants, otp => otp.MapFrom(src => src.ProductVariants))
                 .ForMember(dest => dest.Taxes, otp => otp.MapFrom(src => src.ProductTaxes))
@@ -145,7 +152,7 @@ namespace BusinessLogicLayer.Mappings
             CreateMap<ProductImage, ProductImageResponse>()
                 .ForMember(dest=>dest.Id,otp=>otp.MapFrom(src=>src.ProductImageId))
                 .ForMember(dest => dest.Image,
-                    otp => otp.MapFrom(src => $"{applicationUrl}/images/{src.FileName}"));
+                    otp => otp.MapFrom(src => $"{applicationUrl}/images/products/{src.FileName}"));
             CreateMap<UpdateProduct, Product>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Name))
@@ -162,11 +169,25 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.QualityCertificate, opt => opt.MapFrom(src => src.QualityCertificate))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<UpdateProductVariant, ProductVariant>();
-            CreateMap<NewBlogPost, BlogPost>();
+            CreateMap<NewBlogPost, BlogPost>()
+                .ForMember(dest=>dest.Title, opt=>opt.MapFrom(src=>src.Title))
+                .ForMember(dest=>dest.Content,otp=>otp.MapFrom(src=>src.Content))
+                .ForMember(dest=>dest.Status,otp=>otp.MapFrom((src=>src.Status)))
+                .ForMember(dest=>dest.CategoryBlogId,otp=>otp.MapFrom(src=>src.Category));
             CreateMap<BlogPost, BlogPostResponse>()
-                .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>$"{applicationUrl}/images/{src.FileName}"));
+                .ForMember(dest=>dest.CategoryId,otp=>otp.MapFrom(src=>src.CategoryBlogId))
+                .ForMember(dest=>dest.CategoryName,otp=>otp.MapFrom(src=>src.CategoryBlog!=null ? src.CategoryBlog.CategoryName : null))
+                .ForMember(dest=>dest.Title,otp=>otp.MapFrom(src=>src.Title))
+                .ForMember(dest=>dest.Content,otp=>otp.MapFrom(src=>src.Content))
+                .ForMember(dest=>dest.Status,otp=>otp.MapFrom(src=>src.Status))
+                .ForMember(dest=>dest.ImageUrl,otp=>otp.MapFrom(src=>src.FileName!= null ? $"{applicationUrl}/images/blogs/{src.FileName}" :null ));
             CreateMap<UpdateBlogPost, BlogPost>()
-                .ForMember(dest => dest.FileName, opt => opt.Ignore()); // FileName sẽ được xử lý riêng
+                .ForMember(dest=>dest.PostId,otp=>otp.MapFrom(src=>src.Id))
+                .ForMember(dest=>dest.CategoryBlogId,otp=>otp.MapFrom(src=>src.Category))
+                .ForMember(dest=>dest.Title,otp=>otp.MapFrom(src=>src.Title))
+                .ForMember(dest=>dest.Content,otp=>otp.MapFrom(src=>src.Content))
+                .ForMember(dest=>dest.Status,otp=>otp.MapFrom(src=>src.Status))
+                .ForMember(dest => dest.FileName, opt => opt.Ignore());
 
             CreateMap<NewBlogCategory, BlogCategory>()
                 .ForMember(d=>d.CategoryName,otp=>otp.MapFrom(s=>s.Name))

@@ -46,7 +46,7 @@ namespace ManagementAPI.Controllers
             try
             {
                 var user = await _userService.UserLoginByEmailAndPasswordAsync(formLogin);
-                if (user == null)
+                if (user == null || user.Status == "InActive")
                 {
                     return Unauthorized("Invalid email or password.");
                 }
@@ -82,9 +82,9 @@ namespace ManagementAPI.Controllers
                 }
 
                 var user = await _userService.GetUserByEmailAsync(payload.Email);
-                if (user == null)
+                if (user == null || user.Status == "InActive")
                 {
-                    return Unauthorized(new { message = "User not found." });
+                    return Unauthorized("Invalid email or password.");
                 }
                 var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.Role,expriryDay);
                 return Ok(new { token, userId = user.Id, email = user.Email, role = user.Role ,imageUrl=user.ImageUrl});

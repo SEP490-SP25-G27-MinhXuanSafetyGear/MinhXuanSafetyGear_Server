@@ -152,11 +152,19 @@ public class UserService : IUserService
 
     public async Task<UserResponse?> UpdateEmployeeAsync(UpdateEmployee updateEmployee)
     {
-        var existingEmployee = await _userRepo.GetEmployeeByIdAsync(updateEmployee.EmployeeId);
-        _mapper.Map(updateEmployee, existingEmployee);
-        var updatedEmployee = await _userRepo.UpdateEmployeeAsync(existingEmployee);
-        var employeeResponse = _mapper.Map<UserResponse>(updatedEmployee);
-        return employeeResponse;
+        try
+        {
+            var existingEmployee = await _userRepo.GetEmployeeByIdAsync(updateEmployee.Id);
+            _mapper.Map(updateEmployee, existingEmployee);
+            var updatedEmployee = await _userRepo.UpdateEmployeeAsync(existingEmployee);
+            var employeeResponse = _mapper.Map<UserResponse>(updatedEmployee);
+            return employeeResponse;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw;
+        }
     }
     
 
