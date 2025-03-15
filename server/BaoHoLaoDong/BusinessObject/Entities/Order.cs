@@ -7,7 +7,7 @@ public partial class Order
 {
     public int OrderId { get; set; }
 
-    public int CustomerId { get; set; }
+    public int? CustomerId { get; set; }
 
     public decimal TotalAmount { get; set; }
 
@@ -17,7 +17,9 @@ public partial class Order
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual Customer Customer { get; set; } = null!;
+    public string? CustomerInfo { get; set; }
+
+    public virtual Customer? Customer { get; set; }
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 

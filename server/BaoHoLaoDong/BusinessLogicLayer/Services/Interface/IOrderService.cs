@@ -30,5 +30,11 @@ namespace BusinessLogicLayer.Services.Interface
         Task<OrderDetailResponse?> UpdateOrderDetailAsync(int orderDetailId, NewOrderDetail orderDetailRequest);
         Task<bool> DeleteOrderDetailAsync(int orderDetailId);
         Task<decimal> CalculateOrderDetailTotalAsync(int orderDetailId);
+
+        #region Payment
+        Task<bool> PayAsync(OrderPaymentResponse order);
+        Task<bool> ConfirmOrderAsync(int orderId);
+        Task<string> GetInvoiceImageAsync(int orderId);
+        #endregion
     }
 }

@@ -266,7 +266,11 @@ namespace DataAccessObject.Repository
         {
             return await _productDao.GetTopDiscountAsync(size,minDiscountPercent);
         }
-
+        public async Task<List<Product>> GetProductByIdsAsync(List<int> productIds)
+        {
+            var products = await _productDao.GetProductByIdsAsync(productIds);
+            return products;
+        }
         #endregion ProductReview
     }
 }

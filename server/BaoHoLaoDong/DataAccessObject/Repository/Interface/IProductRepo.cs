@@ -43,4 +43,7 @@ public interface IProductRepo
     Task<int?> CountProductSaleAsync();
     Task<Dictionary<Product, int>> GetProductSaleQualityAsync(int top);
     Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent);
+
+    Task<List<Product>> GetProductByIdsAsync(List<int> productIds);
+ 
 }
