@@ -46,11 +46,17 @@ public class UserController : ControllerBase
         {
             var employee = await _userService.UpdateEmployeeAsync(updateEmployee);
             return Ok(employee);
-        }catch(Exception e)
+        }
+        catch (Exception ex)
         {
-            return BadRequest(e.Message);
+            return StatusCode(500, new
+            {
+                message = "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+                errors = new List<string> { ex.Message }
+            });
         }
     }
+
     
     /// <summary>
     /// admin and manager can get all employee

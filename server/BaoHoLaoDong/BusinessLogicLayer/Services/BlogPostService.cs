@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
@@ -12,13 +13,14 @@ namespace BusinessLogicLayer.Services;
 public class BlogPostService : IBlogPostService
 {
     private readonly IBlogPostRepo _blogPostRepo;
-    private readonly string _imagePathBlog;
+    private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","blogs");
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
-    public BlogPostService(MinhXuanDatabaseContext context,string imagePathBlog,IMapper mapper,ILogger<BlogPostService> logger)
+    private readonly IFileService _fileService;
+    public BlogPostService(MinhXuanDatabaseContext context,IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
     {
         _blogPostRepo = new BlogPostRepo(context);
-        _imagePathBlog = imagePathBlog;
+        _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
     }
@@ -30,17 +32,11 @@ public class BlogPostService : IBlogPostService
             var file = newBlogPost.File;
             if (file != null && file.Length>0)
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var pathImage = Path.Combine(_imagePathBlog, fileName);
-                using (var stream = new FileStream(pathImage,FileMode.Create))
-                { 
-                    await file.CopyToAsync(stream);
-                }
+                var fileName = await _fileService.SaveImageAsync(_imagePathBlog,file);
                 blogPost.FileName = fileName;
-                blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
-                return _mapper.Map<BlogPostResponse>(blogPost);
             }
-            return null;
+            blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
+            return _mapper.Map<BlogPostResponse>(blogPost);
         }
         catch (Exception ex)
         {
@@ -49,13 +45,15 @@ public class BlogPostService : IBlogPostService
         }
     }
 
-    public async Task<List<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
+    public async Task<Page<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
     {
         try
         {
             var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId,page, pageSize);
             blogs = blogs.OrderByDescending(b => b.CreatedAt).ToList();
-            return _mapper.Map<List<BlogPostResponse>>(blogs);
+            var totalBlogPosts = await _blogPostRepo.CountBlogPostByCategoryAsync(categoryId) ;
+            var blogPage = new Page<BlogPostResponse>(_mapper.Map<List<BlogPostResponse>>(blogs), page, pageSize, totalBlogPosts);
+            return blogPage;
         }
         catch (Exception ex)
         {
@@ -68,19 +66,18 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(updateBlogPost.PostId);
-            _mapper.Map(updateBlogPost,blogPostExit);
-            var file = updateBlogPost.File;
-            if (file != null && file.Length > 0)
+            var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(updateBlogPost.Id);
+            blogPostExit.Title = updateBlogPost.Title;
+            blogPostExit.Content = updateBlogPost.Content;
+            blogPostExit.Status = updateBlogPost.Status;
+            var newFile = updateBlogPost.File;
+            if (newFile != null && newFile.Length > 0)
             {
-                var fileName = blogPostExit.FileName;
-                var pathImage = Path.Combine(_imagePathBlog, fileName);
-                using (var stream = new FileStream(pathImage,FileMode.Create))
-                { 
-                    await file.CopyToAsync(stream);
-                }
+                var oldFileName = blogPostExit.FileName;
+                var fileName = await _fileService.SaveImageAsync(_imagePathBlog, newFile);
+                blogPostExit.FileName = fileName;
+                await _fileService.DeleteFileAsync(Path.Combine(_imagePathBlog,oldFileName));
             }
-
             blogPostExit = await _blogPostRepo.UpdateBlogPostAsync(blogPostExit);
             return _mapper.Map<BlogPostResponse>(blogPostExit);
         }
@@ -99,11 +96,7 @@ public class BlogPostService : IBlogPostService
             var fileName = blogPostExit.FileName;
             var pathImage = Path.Combine(_imagePathBlog, fileName);
             var result = await _blogPostRepo.DeleteBlogPostAsync(id);
-            if (File.Exists(pathImage) && result)
-            {
-                File.Delete(pathImage);
-            }
-
+            await _fileService.DeleteFileAsync(pathImage);
             return result;
         }
         catch (Exception ex)
@@ -156,6 +149,17 @@ public class BlogPostService : IBlogPostService
         }
     }
 
-
-
+    public async Task<BlogPostResponse?> GetBlogPostByIdAsync(int id)
+    {
+        try
+        {
+            var blogPost = await _blogPostRepo.GetBlogPostByIdAsync(id);
+            return _mapper.Map<BlogPostResponse>(blogPost);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,"Error while get blog post");
+            throw;
+        }
+    }
 }

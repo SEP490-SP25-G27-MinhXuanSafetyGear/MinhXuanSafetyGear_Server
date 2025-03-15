@@ -14,5 +14,6 @@ namespace DataAccessObject.Repository.Interface
         Task<BlogCategory?> CreateBlogCategoryAsync(BlogCategory blogCategory);
         Task<BlogCategory?> GetBlogCategoryByIdAsync(int id);
         Task<BlogCategory?> UpdateBlogCategoryAsync(BlogCategory? blogCategory);
+        Task<int> CountBlogPostByCategoryAsync(int categoryId);
     }
 }

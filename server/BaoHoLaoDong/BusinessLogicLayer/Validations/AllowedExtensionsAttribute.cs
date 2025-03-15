@@ -29,6 +29,18 @@ public class AllowedExtensionsAttribute : ValidationAttribute
                 }
             }
         }
+        else if (value is IFormFile file)
+        {
+            var extension = System.IO.Path.GetExtension(file.FileName).ToLower();
+            if (!_extensions.Contains(extension))
+            {
+                return new ValidationResult($"File {file.FileName} có định dạng không hợp lệ. Chỉ chấp nhận {string.Join(", ", _extensions)}.");
+            }
+            if (!file.ContentType.StartsWith("image/"))
+            {
+                return new ValidationResult($"File {file.FileName} không phải là hình ảnh hợp lệ.");
+            }
+        }
         return ValidationResult.Success;
     }
     

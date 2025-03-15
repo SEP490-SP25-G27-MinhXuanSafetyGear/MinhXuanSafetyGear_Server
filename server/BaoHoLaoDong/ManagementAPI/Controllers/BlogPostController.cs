@@ -92,7 +92,7 @@ public class BlogPostController : ControllerBase
     /// <param name="pagesize"></param>
     /// <returns></returns>
     [HttpGet("get-blog-page")]
-    public async Task<IActionResult> GetBlogPostPage([FromQuery] int categoryId,[FromQuery] int page, [FromQuery]int size)
+    public async Task<IActionResult> GetBlogPostPage([FromQuery] int categoryId = 0,[FromQuery] int page=1, [FromQuery]int size=20)
     {
         try
         {
@@ -138,6 +138,20 @@ public class BlogPostController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("get-blog/{id}")]
+    public async Task<IActionResult> GetBlog([FromRoute] int id)
+    {
+        try
+        {
+            var blog = await _blogPostService.GetBlogPostByIdAsync(id);
+            return Ok(blog);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
         }
     }
 }

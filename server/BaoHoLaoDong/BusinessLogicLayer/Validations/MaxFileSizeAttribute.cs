@@ -24,7 +24,13 @@ public class MaxFileSizeAttribute : ValidationAttribute
                 }
             }
         }
-
+        else if (value is IFormFile file)
+        {
+            if (file.Length > _maxFileSizeInMB * 1024 * 1024)
+            {
+                return new ValidationResult($"File {file.FileName} quá lớn, chỉ cho phép tối đa {_maxFileSizeInMB}MB.");
+            }
+        }
         return ValidationResult.Success;
     }
 }

@@ -9,27 +9,25 @@ namespace BusinessLogicLayer.Services;
 
 public class FileService : IFileService
 {
-    private readonly string _imageDirectory;
     private readonly ILogger<FileService> _logger;
     private const int MAX_FILE_SIZE_KB = 300; // Giới hạn file tối đa 500KB
 
-    public FileService(ILogger<FileService> logger, string imageDirectory)
+    public FileService(ILogger<FileService> logger)
     {
         _logger = logger;
-        _imageDirectory = imageDirectory;
     }
 
-    public async Task<string?> SaveImageAsync(IFormFile file)
+    public async Task<string?> SaveImageAsync(string imageDirectory,IFormFile file)
     {
         try
         {
-            if (!Directory.Exists(_imageDirectory))
+            if (!Directory.Exists(imageDirectory))
             {
-                Directory.CreateDirectory(_imageDirectory);
+                Directory.CreateDirectory(imageDirectory);
             }
 
             var fileName = $"{Guid.NewGuid()}.webp"; 
-            var filePath = Path.Combine(_imageDirectory, fileName);
+            var filePath = Path.Combine(imageDirectory, fileName);
 
             using (var image = Image.Load(file.OpenReadStream())) 
             {
@@ -56,7 +54,7 @@ public class FileService : IFileService
                 await image.SaveAsync(filePath, encoder);
             }
 
-            _logger.LogInformation($"Image saved as WebP to {_imageDirectory}");
+            _logger.LogInformation($"Image saved as WebP to {imageDirectory}");
             return fileName;
         }
         catch (Exception ex)
@@ -65,4 +63,25 @@ public class FileService : IFileService
             return null;
         }
     }
+
+    public async Task<bool> DeleteFileAsync(string directoryFile)
+    {
+        return await Task.Run(() =>
+        {
+            try
+            {
+                if (File.Exists(directoryFile))
+                {
+                    File.Delete(directoryFile);
+                    return true;
+                }
+                return false; 
+            }
+            catch (Exception)
+            {
+                return false; 
+            }
+        });
+    }
+
 }
