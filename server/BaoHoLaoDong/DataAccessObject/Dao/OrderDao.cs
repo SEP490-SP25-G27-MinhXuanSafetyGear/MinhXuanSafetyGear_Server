@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace DataAccessObject.Dao;
 
@@ -27,6 +28,16 @@ public class OrderDao : IDao<Order>
             .Include(x => x.OrderDetails)
             .Include(x => x.Invoices)
             .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.OrderId == id);
+    }
+
+    // Get Order by ID
+    public async Task<Order?> GetByIdWithTrackingAsync(int id)
+    {
+        return await _context.Orders
+            .Include(x => x.Customer)
+            .Include(x => x.OrderDetails)
+            .Include(x => x.Invoices)
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 
@@ -137,5 +148,41 @@ public class OrderDao : IDao<Order>
     public async Task<int> CountAsync()
     {
         return await _context.Orders.CountAsync();
+    }
+
+    // Create a new Order
+    public async Task<Order?> PayAsync(Order entity)
+    {
+        using var transaction = _context.Database.BeginTransaction();
+        try
+        {
+            _context.Orders.Add(entity);
+            _context.SaveChanges();
+            transaction.Commit();
+            return entity;
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
+
+    public async Task<bool> UpdateOrderWithInvoiceAsync(Order order, ICollection<Invoice> invoices)
+    {
+        using var transaction = _context.Database.BeginTransaction();
+        try
+        {
+            _context.Orders.Update(order);
+            _context.SaveChanges();
+            _context.Invoices.UpdateRange(invoices);
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
     }
 }

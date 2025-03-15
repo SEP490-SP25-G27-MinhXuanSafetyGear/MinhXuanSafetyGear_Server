@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
@@ -17,14 +19,17 @@ namespace BusinessLogicLayer.Services
         private readonly IMapper _mapper;
         private readonly ILogger<OrderService> _logger;
         private readonly IOrderRepo _orderRepo;
+        private readonly IProductRepo _productRepo;
+        private readonly IInvoiceRepo _invoiceRepo;
 
         public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger)
         {
             _orderRepo = new OrderRepo(context);
             _mapper = mapper;
             _logger = logger;
+            _productRepo = new ProductRepo(context);
+            _invoiceRepo = new InvoiceRepo(context);
         }
-
 
         #region Order
         public async Task<List<OrderResponse>> GetAllOrdersAsync()
@@ -392,5 +397,125 @@ namespace BusinessLogicLayer.Services
 
 
         #endregion OrderDetail
+
+        public async Task<bool> PayAsync(OrderPaymentResponse model)
+        {
+            try
+            {
+                var productIds = model.OrderDetails.Select(od => od.ProductId).Distinct().ToList();
+                var products = await _productRepo.GetProductByIdsAsync(productIds);
+                if (products == null || !products.Any())
+                {
+                    throw new Exception("Invalid product IDs.");
+                }
+                foreach (var item in model.OrderDetails)
+                {
+                    var product = products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                    if (product != null)
+                    {
+                        item.ProductPrice = product.Price;
+                        item.ProductDiscount = product.Discount;
+                        item.TotalPrice = product.Price * item.Quantity * (1 - (item.ProductDiscount ?? 0) / 100);
+                        item.Size = item.Size;
+                        item.Color = item.Color;
+                        item.ProductName = product.ProductName;
+                    }
+                }
+
+                var order = new Order
+                {
+                    CustomerId = model.CustomerId,
+                    CustomerInfo = JsonSerializer.Serialize(model.CustomerInfo),
+                    TotalAmount = model.TotalPrice,
+                    OrderDate = DateTime.Now,
+                    Status = OrderStatus.Pending.ToString(),
+                    UpdatedAt = DateTime.Now,
+                    OrderDetails = model.OrderDetails.Select(od => new OrderDetail
+                    {
+                        ProductId = od.ProductId,
+                        ProductName = od.ProductName,
+                        ProductPrice = od.ProductPrice,
+                        ProductDiscount = od.ProductDiscount ?? 0,
+                        Quantity = od.Quantity,
+                        TotalPrice = od.TotalPrice,
+                        Size = od.Size,
+                        Color = od.Color,
+                        CreatedAt = DateTime.Now
+                    }).ToList(),
+                    Invoices = new List<Invoice>
+                    {
+                        new Invoice
+                        {
+                            InvoiceNumber = Guid.NewGuid().ToString(),
+                            Amount = model.Invoice.Amount,
+                            PaymentMethod = model.Invoice.PaymentMethod,
+                            QrcodeData = model.Invoice.QRCodeData,
+                            PaymentStatus = InvoiceStatus.Pending.ToString(),
+                            ImagePath = model.Invoice.ImagePath,
+                            CreatedAt = DateTime.Now,
+                            Status = "Paid"
+                        }
+                    }
+                };
+
+                var orderResponse = await _orderRepo.PayAsync(order);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating new order.");
+                throw;
+            }
+        }
+
+        public async Task<bool> ConfirmOrderAsync(int orderId)
+        {
+            try
+            {
+                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                if (order == null)
+                {
+                    return false;
+                }
+
+                order.Status = OrderStatus.Completed.ToString();
+                order.UpdatedAt = DateTime.Now;
+                var invoices = order.Invoices;
+                if (invoices == null || !invoices.Any())
+                {
+                    return false;
+                }
+
+                foreach (var invoice in invoices)
+                {
+                    invoice.Status = InvoiceStatus.Paid.ToString();
+                }
+                return await _orderRepo.UpdateOrderWithInvoiceAsync(order, invoices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating invoice status for order ID: {OrderId}", orderId);
+                throw;
+            }
+        }
+
+        public async Task<string> GetInvoiceImageAsync(int orderId)
+        {
+            try
+            {
+                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                if (order == null || order.Invoices?.Any() != true)
+                {
+                    return String.Empty;
+                }
+                var invoices = order.Invoices.FirstOrDefault();
+                return invoices?.ImagePath != null ? invoices.ImagePath : String.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error GetInvoiceImageAsync");
+                throw;
+            }
+        }
     }
 }

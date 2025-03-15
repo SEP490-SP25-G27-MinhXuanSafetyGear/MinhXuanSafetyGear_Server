@@ -292,6 +292,9 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Description, otp => otp.MapFrom(src => src.Description))
                 .ForMember(dest => dest.TaxRate, otp => otp.MapFrom(src => src.Rate))
                 .ReverseMap();
+
+            CreateMap<OrderDetail, OrderPaymentResponseDetails>();
+            CreateMap<OrderPaymentResponseDetails, OrderDetail>();
         }
     }
 }
