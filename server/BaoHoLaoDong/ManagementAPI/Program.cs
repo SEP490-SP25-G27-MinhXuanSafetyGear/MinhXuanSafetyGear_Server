@@ -20,6 +20,9 @@ builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
 var jwtConfig = builder.Configuration.GetSection("Jwt");
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddEnvironmentVariables();  // Đọc từ biến môi trường (nếu có)
+
 // JWT
 builder.Services.AddAuthentication(options =>
 {
@@ -93,6 +96,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

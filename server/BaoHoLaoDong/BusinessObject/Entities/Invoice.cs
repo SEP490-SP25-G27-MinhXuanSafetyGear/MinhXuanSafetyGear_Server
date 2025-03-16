@@ -21,8 +21,13 @@ public partial class Invoice
 
     public DateTime CreatedAt { get; set; }
 
-    public string Status { get; set; } = null!;
+    public DateTime? PaymentDate { get; set; }
+
+    public bool? PaymentConfirmOfCustomer { get; set; }
+
     public string? ImagePath { get; set; }
+
+    public string? FileName { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 }

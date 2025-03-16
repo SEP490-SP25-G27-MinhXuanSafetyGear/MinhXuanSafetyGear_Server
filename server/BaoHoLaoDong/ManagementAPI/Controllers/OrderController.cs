@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.X9;
 using System.Runtime.CompilerServices;
+using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ManagementAPI.Controllers
@@ -20,11 +21,12 @@ namespace ManagementAPI.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IConfiguration _configuration;
-
-        public OrderController(IOrderService orderService, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public OrderController(IOrderService orderService, IConfiguration configuration,IMapper mapper)
         {
             _orderService = orderService;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -39,6 +41,19 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.CreateNewOrderAsync(newOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("create-order-v2")]
+        public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
+        {
+            try
+            {
+                var result = await _orderService.CreateNewOrderV2Async(newOrder);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -120,12 +135,12 @@ namespace ManagementAPI.Controllers
             {
                 NewOrder orderRequest = new NewOrder
                 {
-                    OrderId = updateOrder.OrderId,
-                    CustomerId = updateOrder.CustomerId,
-                    TotalAmount = updateOrder.TotalAmount,
-                    Status = updateOrder.Status,
-                    OrderDate = updateOrder.OrderDate,
-                    UpdatedAt = updateOrder.UpdatedAt
+                    //OrderId = updateOrder.OrderId,
+                   // CustomerId = updateOrder.CustomerId,
+                   // TotalAmount = updateOrder.TotalAmount,
+                  //  Status = updateOrder.Status,
+                  //  OrderDate = updateOrder.OrderDate,
+                  //  UpdatedAt = updateOrder.UpdatedAt
                 };
 
                 var result = await _orderService.UpdateOrderAsync(updateOrder.OrderId, orderRequest);
@@ -282,7 +297,6 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.ConfirmOrderAsync(orderId);
-
                 return Ok();
             }
             catch (Exception)

@@ -33,7 +33,7 @@ public class ReportService :IReportService
             var totalOrder = await _orderRepo.CountOrdersAsync();
             var totalProductSale = await _productRepo.CountProductSaleAsync();
             var productSales = await _productRepo.GetProductSaleQualityAsync(5);
-            var invoices = await _invoiceRepo.GetAllReceiptsAsync()??new List<Invoice>();
+            var invoices = await _invoiceRepo.GetAllInvoicesAsync()??new List<Invoice>();
             invoices = invoices.Where(i => i.CreatedAt.Year == currentYear ).ToList();
             var mappedProductSale = productSales.Select(ps => new ProductSaleResponse
             {
@@ -48,7 +48,7 @@ public class ReportService :IReportService
                 {
                     Month = i,
                     Year = currentYear,
-                    Amount = invoices.Where(inv => inv.Status == "Paid" && inv.CreatedAt.Month == i ).Sum(inv => inv.Amount) 
+                    Amount = invoices.Where(inv => inv.PaymentStatus == "Completed" && inv.CreatedAt.Month == i ).Sum(inv => inv.Amount) 
                 });
             }
             var report = new Report()

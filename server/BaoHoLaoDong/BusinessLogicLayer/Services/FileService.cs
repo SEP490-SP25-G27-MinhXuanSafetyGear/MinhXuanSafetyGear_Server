@@ -84,4 +84,47 @@ public class FileService : IFileService
         });
     }
 
+    public async Task<string?> SaveFileBillAsync(string imageDirectory, IFormFile file, string fileName)
+    {
+        try
+        {
+            if (!Directory.Exists(imageDirectory))
+            {
+                Directory.CreateDirectory(imageDirectory);
+            }
+            var filePath = Path.Combine(imageDirectory, fileName);
+            using (var image = Image.Load(file.OpenReadStream())) 
+            {
+                // Giảm kích thước ảnh (tối đa 1080px chiều rộng hoặc cao)
+                int maxWidth = 1080;
+                int maxHeight = 1080;
+                image.Mutate(x => x.Resize(new ResizeOptions
+                {
+                    Mode = ResizeMode.Max,
+                    Size = new Size(maxWidth, maxHeight)
+                }));
+
+                int quality = 75; // Mặc định là 75%
+                long fileSizeKB = file.Length / 1024; // Kích thước file ban đầu (KB)
+
+                // Nếu file lớn hơn mức tối đa, giảm chất lượng xuống 50%
+                if (fileSizeKB > MAX_FILE_SIZE_KB)
+                {
+                    quality = 50;
+                }
+
+                var encoder = new WebpEncoder { Quality = quality };
+
+                await image.SaveAsync(filePath, encoder);
+            }
+
+            _logger.LogInformation($"Image saved as WebP to {imageDirectory}");
+            return fileName;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving WebP image.");
+            return null;
+        }
+    }
 }

@@ -5,6 +5,7 @@ namespace BusinessLogicLayer.Mappings.ResponseDTO
     public class InvoiceResponse
     {
         public int InvoiceId { get; set; }
+        public int OrderId { get; set; }
 
         public string InvoiceNumber { get; set; } = null!;
 
@@ -15,8 +16,13 @@ namespace BusinessLogicLayer.Mappings.ResponseDTO
         public string? QrcodeData { get; set; }
 
         public string PaymentStatus { get; set; } = null!;
+
         public DateTime CreatedAt { get; set; }
-        public string Status { get; set; } = null!;
-        public OrderResponse Order { get; set; } = null!;
+
+        public DateTime? PaymentDate { get; set; }
+
+        public bool? PaymentConfirmOfCustomer { get; set; }
+
+        public virtual OrderResponse Order { get; set; } = null!;
     }
 }
