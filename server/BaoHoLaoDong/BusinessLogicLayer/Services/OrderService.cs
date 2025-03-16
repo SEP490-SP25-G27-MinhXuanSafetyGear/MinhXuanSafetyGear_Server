@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using BusinessLogicLayer.Models;
 
 namespace BusinessLogicLayer.Services
 {
@@ -21,23 +21,16 @@ namespace BusinessLogicLayer.Services
         private readonly ILogger<OrderService> _logger;
         private readonly IOrderRepo _orderRepo;
         private readonly IProductRepo _productRepo;
-        private readonly IInvoiceRepo _invoiceRepo;
-        private readonly IUserRepo _userRepo;
-        private readonly INotificationRepo _notificationRepo;
-        private readonly IMailService _mailService;
-
-        public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger, IMailService mailService)
+        public readonly IConfiguration _configuration;
+        
+        public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger,IConfiguration configuration)
         {
             _orderRepo = new OrderRepo(context);
             _mapper = mapper;
             _logger = logger;
             _productRepo = new ProductRepo(context);
-            _invoiceRepo = new InvoiceRepo(context);
-            _userRepo = new UserRepo(context);
-            _notificationRepo = new NotificationRepo(context);
-            _mailService = mailService;
+            _configuration = configuration;
         }
-
 
         #region Order
         public async Task<List<OrderResponse>> GetAllOrdersAsync()
@@ -371,13 +364,13 @@ namespace BusinessLogicLayer.Services
         {
             return new OrderDetail
             {
-                OrderId = request.OrderId,
+                //OrderId = request.OrderId,
                 ProductId = request.ProductId,
-                ProductName = request.ProductName,
-                ProductPrice = request.ProductPrice,
-                ProductDiscount = request.ProductDiscount,
+               // ProductName = request.ProductName,
+                //ProductPrice = request.ProductPrice,
+               // ProductDiscount = request.ProductDiscount,
                 Quantity = request.Quantity,
-                TotalPrice = request.Quantity * request.ProductPrice - (request.ProductDiscount ?? 0),
+                //TotalPrice = request.Quantity * request.ProductPrice - (request.ProductDiscount ?? 0),
                 CreatedAt = DateTime.Now
             };
         }
@@ -398,10 +391,11 @@ namespace BusinessLogicLayer.Services
         private OrderDetail UpdateOrderDetailFromRequest(OrderDetail existingOrderDetail, NewOrderDetail orderDetailRequest)
         {
             existingOrderDetail.Quantity = orderDetailRequest.Quantity;
-            existingOrderDetail.ProductPrice = orderDetailRequest.ProductPrice;
-            existingOrderDetail.ProductDiscount = orderDetailRequest.ProductDiscount;
+            //existingOrderDetail.ProductPrice = orderDetailRequest.ProductPrice;
+            //existingOrderDetail.ProductDiscount = orderDetailRequest.ProductDiscount;
             return existingOrderDetail;
         }
+
 
         #endregion OrderDetail
 
@@ -432,7 +426,6 @@ namespace BusinessLogicLayer.Services
                 var order = new Order
                 {
                     CustomerId = model.CustomerId,
-                    CustomerInfo = JsonSerializer.Serialize(model.CustomerInfo),
                     TotalAmount = model.TotalPrice,
                     OrderDate = DateTime.Now,
                     Status = OrderStatus.Pending.ToString(),
@@ -449,7 +442,7 @@ namespace BusinessLogicLayer.Services
                         Color = od.Color,
                         CreatedAt = DateTime.Now
                     }).ToList(),
-                    Invoices = new List<Invoice>
+                    /*Invoices = new List<Invoice>
                     {
                         new Invoice
                         {
@@ -460,42 +453,12 @@ namespace BusinessLogicLayer.Services
                             PaymentStatus = InvoiceStatus.Pending.ToString(),
                             ImagePath = model.Invoice.ImagePath,
                             CreatedAt = DateTime.Now,
-                            Status = "Paid"
+                            //Status = "Paid"
                         }
-                    }
+                    }*/
                 };
 
                 var orderResponse = await _orderRepo.PayAsync(order);
-                if (orderResponse != null && model.CustomerId != null)
-                {
-                    var employees = await _userRepo.GetAllEmployeesAsync();
-                    List<Notification> notifications = new List<Notification>();
-                    if (employees != null && employees.Any())
-                    {
-                        employees.ForEach(x => notifications.Add(new Notification
-                        {
-                            CreatedAt = DateTime.Now,
-                            Title = $"Đơn hàng mới cần xác minh",
-                            Message = $"Đơn hàng từ khách hàng {model.CustomerInfo.Name} được tạo mới với mã số tiền là {model.TotalPrice}",
-                            RecipientId = x.EmployeeId,
-                            RecipientType = RecipientType.Employee.ToString(),
-                            IsRead = false,
-                            Status = NotificationStatus.Active.ToString()
-                        }));
-                        await _notificationRepo.CreateAsync(notifications);
-                    }
-                }
-                if (orderResponse != null)
-                {
-                    var orderDetails = order.OrderDetails;
-                    string htmlOrderDetails = string.Empty;
-                    foreach (var item in orderDetails)
-                    {
-                        htmlOrderDetails = htmlOrderDetails + $"<li title=\"Sản phẩm 1\">Tên mặt hàng: {item.ProductName} - Số lượng: {item.Quantity} - Giá: {item.ProductPrice}</li>";
-                    }
-                    string s = $"<ul>{htmlOrderDetails}</ul>";
-                    await _mailService.SendOrderConfirmationEmailAsync(model.CustomerInfo.Email, order.OrderId.ToString(), s, order.TotalAmount.ToString());
-                }
                 return true;
             }
             catch (Exception ex)
@@ -517,17 +480,17 @@ namespace BusinessLogicLayer.Services
 
                 order.Status = OrderStatus.Completed.ToString();
                 order.UpdatedAt = DateTime.Now;
-                var invoices = order.Invoices;
-                if (invoices == null || !invoices.Any())
+               // var invoices = order.Invoices;
+                //if (invoices == null || !invoices.Any())
                 {
                     return false;
                 }
 
-                foreach (var invoice in invoices)
-                {
-                    invoice.Status = InvoiceStatus.Paid.ToString();
-                }
-                return await _orderRepo.UpdateOrderWithInvoiceAsync(order, invoices);
+               // foreach (var invoice in invoices)
+             //   {
+                    //invoice.Status = InvoiceStatus.Paid.ToString();
+               // }
+                //return await _orderRepo.UpdateOrderWithInvoiceAsync(order, invoices);
             }
             catch (Exception ex)
             {
@@ -541,12 +504,12 @@ namespace BusinessLogicLayer.Services
             try
             {
                 var order = await _orderRepo.GetOrderByIdAsync(orderId);
-                if (order == null || order.Invoices?.Any() != true)
+                //if (order == null || order.Invoices?.Any() != true)
                 {
                     return String.Empty;
                 }
-                var invoices = order.Invoices.FirstOrDefault();
-                return invoices?.ImagePath != null ? invoices.ImagePath : String.Empty;
+               // var invoices = order.Invoices.FirstOrDefault();
+                //return invoices?.ImagePath != null ? invoices.ImagePath : String.Empty;
             }
             catch (Exception ex)
             {
@@ -554,5 +517,55 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
+        /// <summary>
+        ///  create order
+        /// author dinh linh
+        /// </summary>
+        /// <param name="newOrder"></param>
+        /// <returns></returns>
+        public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder)
+        {
+            try
+            {
+                var products = await _productRepo.GetAllProductsAsync();
+                var order = _mapper.Map<Order>(newOrder);
+                if (order.OrderDetails.Any())
+                {
+                    foreach (var odDetail in order.OrderDetails)
+                    {
+                        var p = products.FirstOrDefault(p => p.ProductId == odDetail.ProductId);
+                        if (p != null)
+                        {
+                            odDetail.ProductPrice = (decimal)(p.Price - (p.Price * p.Discount / 100) + (p.Price - (p.Price * p.Discount / 100)) * p.TotalTax / 100);
+                            odDetail.ProductDiscount = p.Discount;
+                            odDetail.TotalPrice =  odDetail.ProductPrice * odDetail.Quantity;
+                            odDetail.ProductName = p.ProductName;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+                order.TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice);
+                var invoiceNumber = Guid.NewGuid().ToString();
+                order.Invoice = new Invoice()
+                {
+                    InvoiceNumber = invoiceNumber,
+                    Amount = order.TotalAmount,
+                    PaymentConfirmOfCustomer = false,
+                    PaymentMethod = newOrder.PaymentMethod,
+                    QrcodeData = $"https://vietqr.co/api/generate/MB/0974841508/VIETQR.CO/{order.TotalAmount}/{invoiceNumber}"
+                };
+                order = await _orderRepo.CreateOrderAsync(order);
+                return _mapper.Map<OrderResponse>(order);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating new order.");
+                throw;
+            }
+        }
+        
     }
 }

@@ -4,8 +4,6 @@ using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
-using DataAccessObject.Repository.Interface;
-using DataAccessObject.Repository;
 using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
@@ -22,6 +20,9 @@ builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
 var jwtConfig = builder.Configuration.GetSection("Jwt");
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddEnvironmentVariables();  // Đọc từ biến môi trường (nếu có)
+
 // JWT
 builder.Services.AddAuthentication(options =>
 {
@@ -95,8 +96,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
-
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -154,6 +154,4 @@ if (app.Environment.IsDevelopment()!)
 
 app.MapHub<ProductHub>("/productHub");
 app.MapHub<BlogPostHub>("/blogHub");
-app.MapHub<NotificationHub>("/notificationHub");
-app.MapHub<OrderHub>("/orderHub");
 app.Run();
