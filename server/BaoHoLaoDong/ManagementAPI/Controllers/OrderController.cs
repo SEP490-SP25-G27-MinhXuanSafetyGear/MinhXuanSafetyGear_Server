@@ -23,12 +23,15 @@ namespace ManagementAPI.Controllers
         private readonly IOrderService _orderService;
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly IHubContext<OrderHub> _orderHub;
 
-        public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub)
+
+        public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub)
         {
             _orderService = orderService;
             _configuration = configuration;
             _notificationHub = notificationHub;
+            _orderHub = orderHub;
         }
 
         /// <summary>
@@ -104,6 +107,7 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.UpdateOrderStatusAsync(orderId, status);
+                await _orderHub.Clients.All.SendAsync("OrderStatusChanged", orderId, status);
                 return Ok(result);
             }
             catch (Exception ex)

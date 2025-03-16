@@ -155,4 +155,5 @@ if (app.Environment.IsDevelopment()!)
 app.MapHub<ProductHub>("/productHub");
 app.MapHub<BlogPostHub>("/blogHub");
 app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<OrderHub>("/orderHub");
 app.Run();
