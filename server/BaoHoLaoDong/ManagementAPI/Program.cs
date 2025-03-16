@@ -15,6 +15,7 @@ var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://lo
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
 var urlResetPassword = builder.Configuration["ApplicationSettings:UrlResetPassword"];
 var googleClientId = builder.Configuration["GoogleAuth:ClientId"];
+var imagePathBill = builder.Configuration["ApplicationSettings:FolderBill"];
 
 builder.WebHost.UseUrls(baseUrl);
 #region JWT
@@ -86,6 +87,9 @@ builder.Services.AddAutoMapper(cfg =>
 #region services
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+// Đọc cấu hình SMTP từ appsettings.json
+builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 // Add services from BusinessLogicLayer
 builder.Services.AddScoped<IUserService, UserService>();
 var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
@@ -97,9 +101,7 @@ builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-// Đọc cấu hình SMTP từ appsettings.json
-builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 // Đăng ký MailService
 builder.Services.AddScoped<IMailService, MailService>();
 // Add TokenService

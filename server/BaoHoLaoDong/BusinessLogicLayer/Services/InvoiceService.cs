@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services;
 
@@ -15,14 +18,15 @@ public class InvoiceService : IInvoiceService
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceService> _logger;
-    private readonly string _imagePathBill = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","Images", "bill");
-
-    public InvoiceService(MinhXuanDatabaseContext context, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger)
+    private ApplicationUrls _applicationUrls;
+    public InvoiceService(MinhXuanDatabaseContext context, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger,IOptions<ApplicationUrls> applicationUrls )
     {
         _invoiceRepo = new InvoiceRepo(context);
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
+        _applicationUrls = applicationUrls.Value;
+        
     }
     public async Task<InvoiceResponse?> ConFirmInvoiceByCustomerAsync(ConfirmInvoice confirmInvoice)
     {
@@ -30,14 +34,15 @@ public class InvoiceService : IInvoiceService
         {
             var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(confirmInvoice.InvoiceNumber);
             if(invoice == null) { return null; }
-
+            var _imagePathBill = _applicationUrls.FolderBill;
             var fileBill = confirmInvoice.File;
             if (fileBill != null)
             {
-                var fileName = invoice.InvoiceNumber + ".pdf";
+                var fileName = invoice.InvoiceNumber + ".jpg";
                 if (!string.IsNullOrEmpty(fileName))
                 {
                     invoice.FileName = await _fileService.SaveFileBillAsync(_imagePathBill,fileBill,fileName);
+                    _logger.LogInformation(_imagePathBill);
                 }
             }
 
