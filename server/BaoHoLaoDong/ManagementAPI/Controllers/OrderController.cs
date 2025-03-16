@@ -180,18 +180,26 @@ namespace ManagementAPI.Controllers
         /// <param name="pageSize"></param>
         /// <returns>List OrderResponse</returns>
         [HttpGet("get-orders-by-customer/{customerId}/{page}/{pageSize}")]
-        public async Task<IActionResult> GetOrdersByCustomerId([FromRoute] int customerId, [FromRoute] int page = 1, [FromRoute] int pageSize = 20)
+        public async Task<IActionResult> GetOrders([FromQuery] int? customerId, [FromQuery] string? customerName,
+            [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             try
             {
-                var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId, page, pageSize);
+                string? customerIdStr = customerId?.ToString();
+                var orders = await _orderService.GetOrdersAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
+                if (orders == null || !orders.Items.Any())
+                {
+                    return NotFound(new { message = "No orders found with the given criteria." });
+                }
+
                 return Ok(orders);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
             }
         }
+
 
         /// <summary>
         /// Search orders based on criteria

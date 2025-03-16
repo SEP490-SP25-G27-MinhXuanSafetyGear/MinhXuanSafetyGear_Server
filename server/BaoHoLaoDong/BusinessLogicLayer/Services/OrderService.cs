@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
@@ -76,33 +77,44 @@ namespace BusinessLogicLayer.Services
             }
         }
 
-        public async Task<List<OrderResponse>?> GetOrdersByCustomerIdAsync(int customerId, int page = 1, int pageSize = 20)
+        public async Task<Page<OrderResponse>?> GetOrdersAsync(DateTime? startDate, DateTime? endDate, string? customerName, int page = 1, int pageSize = 5)
         {
             try
             {
-                var orders = await _orderRepo.GetOrdersByCustomerIdAsync(customerId, page, pageSize);
-                return _mapper.Map<List<OrderResponse>>(orders);
+                if (!string.IsNullOrWhiteSpace(customerName))
+                {
+                    customerName = RemoveDiacritics(Regex.Replace(customerName.Trim().ToLower(), @"\s+", " "));
+                }
+                var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
+                var totalOrders = await _orderRepo.CountTotalOrdersByFilter(startDate, endDate, customerName);
+                var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize, totalOrders);
+                return orderPage;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving orders for customer with ID: {CustomerId}", customerId);
+                _logger.LogError(ex, "Error retrieving orders with filters - StartDate: {StartDate}, EndDate: {EndDate}, CustomerName: {CustomerName}", startDate, endDate, customerName);
                 throw;
             }
         }
 
-        public async Task<List<OrderResponse>?> GetOrdersByPageAsync(int page = 1, int pageSize = 20)
+
+        public async Task<Page<OrderResponse>?> GetOrdersByDateAsync(DateTime? startDate, DateTime? endDate, int page = 1, int pageSize = 5)
         {
             try
             {
-                var orders = await _orderRepo.GetOrdersByPageAsync(page, pageSize);
-                return _mapper.Map<List<OrderResponse>>(orders);
+                var orders = await _orderRepo.SearchAsync(startDate, endDate, null, page, pageSize);
+                orders = orders.OrderByDescending(o => o.OrderDate).ToList();
+                var totalOrders = await _orderRepo.CountTotalOrdersByDate(startDate, endDate);
+                var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize, totalOrders);
+                return orderPage;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving orders.");
+                _logger.LogError(ex, "Error retrieving orders between {StartDate} and {EndDate}", startDate, endDate);
                 throw;
             }
         }
+
 
         public async Task<OrderResponse?> UpdateOrderAsync(int orderId, NewOrder orderRequest)
         {
@@ -248,6 +260,29 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
+        public static string RemoveDiacritics(string text)
+        {
+            string[] vietnameseSigns = new string[]
+            {
+            "aáàảãạăắằẳẵặâấầẩẫậ", "AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬ",
+            "dđ", "DĐ",
+            "eéèẻẽẹêếềểễệ", "EÉÈẺẼẸÊẾỀỂỄỆ",
+            "iíìỉĩị", "IÍÌỈĨỊ",
+            "oóòỏõọôốồổỗộơớờởỡợ", "OÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ",
+            "uúùủũụưứừửữự", "UÚÙỦŨỤƯỨỪỬỮỰ",
+            "yýỳỷỹỵ", "YÝỲỶỸỴ"
+            };
+
+            foreach (var sign in vietnameseSigns)
+            {
+                foreach (var c in sign.Substring(1))
+                {
+                    text = text.Replace(c, sign[0]);
+                }
+            }
+            return text;
+        }
+
         #endregion Order
 
         #region OrderDetail

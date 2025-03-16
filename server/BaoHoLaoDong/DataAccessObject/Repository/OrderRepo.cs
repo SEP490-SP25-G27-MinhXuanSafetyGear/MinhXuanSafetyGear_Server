@@ -92,6 +92,19 @@ namespace DataAccessObject.Repository
         {
             return await _orderDao.CountAsync();
         }
+        public async Task<int> CountTotalOrder(string customerName)
+        {
+            return await _orderDao.CountTotalOrder(customerName);
+        }
+        public async Task<int> CountTotalOrdersByDate(DateTime? startDate, DateTime? endDate)
+        {
+            return await _orderDao.CountTotalOrdersByDate(startDate, endDate);
+        }
+        public async Task<int> CountTotalOrdersByFilter(DateTime? startDate, DateTime? endDate, string customerName)
+        {
+            return await _orderDao.CountTotalOrdersByFilter(startDate, endDate, customerName);
+        }
+
 
         #endregion Order 
 
