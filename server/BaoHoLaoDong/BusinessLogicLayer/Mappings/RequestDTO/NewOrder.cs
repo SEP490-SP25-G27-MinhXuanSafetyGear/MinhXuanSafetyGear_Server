@@ -1,16 +1,30 @@
-﻿using BusinessLogicLayer.Mappings.ResponseDTO;
+﻿using System.ComponentModel.DataAnnotations;
+using BusinessLogicLayer.Mappings.ResponseDTO;
 using System.Text.Json.Serialization;
+using BusinessObject.Entities;
 
 namespace BusinessLogicLayer.Mappings.RequestDTO;
 
 public class NewOrder
 {
-    [JsonIgnore]
-    public int OrderId { get; set; }
-    public int CustomerId { get; set; }
-    public decimal TotalAmount { get; set; }
-    public string Status { get; set; } = null!;
-    public DateTime OrderDate { get; set; }
-    public DateTime? UpdatedAt { get; set; }
 
+    public int? CustomerId { get; set; }
+    [Required]
+    public string CustomerName { get; set; } = null!;
+    [Required]
+    [Phone]
+    public string CustomerPhone { get; set; } = null!;
+    [EmailAddress]
+    public string? CustomerEmail { get; set; }
+    [Required]
+    public string CustomerAddress { get; set; } = null!;
+
+    private string _paymentMethod = "Cash"; // Giá trị mặc định
+
+    public string PaymentMethod
+    {
+        get => string.IsNullOrWhiteSpace(_paymentMethod) ? "Cash" : _paymentMethod;
+        set => _paymentMethod = string.IsNullOrWhiteSpace(value) ? "Cash" : value;
+    }
+    public virtual ICollection<NewOrderDetail> OrderDetails { get; set; } = new List<NewOrderDetail>();
 }

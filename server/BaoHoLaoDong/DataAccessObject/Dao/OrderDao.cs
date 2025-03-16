@@ -17,7 +17,7 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
-            .Include(x => x.Invoices)
+            .Include(x => x.Invoice)
             .ToListAsync();
     }
     // Get Order by ID
@@ -26,7 +26,7 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
-            .Include(x => x.Invoices)
+            .Include(x => x.Invoice)
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
@@ -37,25 +37,17 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
-            .Include(x => x.Invoices)
+            .Include(x => x.Invoice)
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 
     // Create a new Order
     public async Task<Order?> CreateAsync(Order entity)
     {
-        var order = new Order
-        {
-            CustomerId = entity.CustomerId,
-            TotalAmount = entity.TotalAmount,
-            Status = entity.Status,
-            OrderDate = entity.OrderDate,
-            UpdatedAt = entity.UpdatedAt
-        };
-
-        await _context.Orders.AddAsync(order);
+        await _context.Orders.AddAsync(entity);
         await _context.SaveChangesAsync();
-        return order;
+    
+        return entity;
     }
 
 
@@ -97,7 +89,7 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(order => order.Customer)
             .Include(order => order.OrderDetails)
-            .Include(order => order.Invoices)
+            .Include(order => order.Invoice)
             .AsNoTracking()
             .ToListAsync();
     }

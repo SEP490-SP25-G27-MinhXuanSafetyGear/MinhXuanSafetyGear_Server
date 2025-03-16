@@ -10,9 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.X9;
 using System.Runtime.CompilerServices;
+using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
-using ManagementAPI.Hubs;
-using Microsoft.AspNetCore.SignalR;
 
 namespace ManagementAPI.Controllers
 {
@@ -22,16 +21,12 @@ namespace ManagementAPI.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IConfiguration _configuration;
-        private readonly IHubContext<NotificationHub> _notificationHub;
-        private readonly IHubContext<OrderHub> _orderHub;
-
-
-        public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub)
+        private readonly IMapper _mapper;
+        public OrderController(IOrderService orderService, IConfiguration configuration,IMapper mapper)
         {
             _orderService = orderService;
             _configuration = configuration;
-            _notificationHub = notificationHub;
-            _orderHub = orderHub;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -46,6 +41,19 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.CreateNewOrderAsync(newOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("create-order-v2")]
+        public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
+        {
+            try
+            {
+                var result = await _orderService.CreateNewOrderV2Async(newOrder);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -107,7 +115,6 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.UpdateOrderStatusAsync(orderId, status);
-                await _orderHub.Clients.All.SendAsync("OrderStatusChanged", orderId, status);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -128,12 +135,12 @@ namespace ManagementAPI.Controllers
             {
                 NewOrder orderRequest = new NewOrder
                 {
-                    OrderId = updateOrder.OrderId,
-                    CustomerId = updateOrder.CustomerId,
-                    TotalAmount = updateOrder.TotalAmount,
-                    Status = updateOrder.Status,
-                    OrderDate = updateOrder.OrderDate,
-                    UpdatedAt = updateOrder.UpdatedAt
+                    //OrderId = updateOrder.OrderId,
+                   // CustomerId = updateOrder.CustomerId,
+                   // TotalAmount = updateOrder.TotalAmount,
+                  //  Status = updateOrder.Status,
+                  //  OrderDate = updateOrder.OrderDate,
+                  //  UpdatedAt = updateOrder.UpdatedAt
                 };
 
                 var result = await _orderService.UpdateOrderAsync(updateOrder.OrderId, orderRequest);
@@ -208,6 +215,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost("payment")]
         public async Task<IActionResult> Payment([FromForm] PaymentInfo model)
         {
@@ -242,9 +250,7 @@ namespace ManagementAPI.Controllers
                         Directory.CreateDirectory(pathFolder);
                     }
                     string fileExtension = Path.GetExtension(model.InvoiceImage.FileName);
-
                     var fileName = orderInfo.CustomerInfo.Name.Replace(" ", "-") + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
-
                     var filePath = Path.Combine(pathFolder, fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -254,7 +260,7 @@ namespace ManagementAPI.Controllers
                 }
 
                 var result = await _orderService.PayAsync(orderInfo);
-                await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString()).SendAsync("ReceiveNotification", orderInfo);
+
                 return Ok();
             }
             catch (Exception ex)
@@ -262,6 +268,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("img/invoice")]
         public async Task<IActionResult> GetImage(int orderId)
         {
@@ -290,7 +297,6 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.ConfirmOrderAsync(orderId);
-
                 return Ok();
             }
             catch (Exception)

@@ -9,6 +9,14 @@ public partial class Order
 
     public int? CustomerId { get; set; }
 
+    public string CustomerName { get; set; } = null!;
+
+    public string CustomerPhone { get; set; } = null!;
+
+    public string? CustomerEmail { get; set; }
+
+    public string? CustomerAddress { get; set; }
+
     public decimal TotalAmount { get; set; }
 
     public string Status { get; set; } = null!;
@@ -17,11 +25,9 @@ public partial class Order
 
     public DateTime? UpdatedAt { get; set; }
 
-    public string? CustomerInfo { get; set; }
-
     public virtual Customer? Customer { get; set; }
 
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    public virtual Invoice? Invoice { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }

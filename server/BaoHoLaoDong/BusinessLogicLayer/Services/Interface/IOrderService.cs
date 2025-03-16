@@ -36,5 +36,8 @@ namespace BusinessLogicLayer.Services.Interface
         Task<bool> ConfirmOrderAsync(int orderId);
         Task<string> GetInvoiceImageAsync(int orderId);
         #endregion
+
+        Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder);
+ 
     }
 }
