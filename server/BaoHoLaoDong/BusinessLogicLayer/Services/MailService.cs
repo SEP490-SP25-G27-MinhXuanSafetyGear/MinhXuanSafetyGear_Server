@@ -167,6 +167,7 @@ namespace BusinessLogicLayer.Services
                 return false;
             }
         }
+
         public async Task<bool> SendAccountCreatedEmailAsync(string toEmail, string username) 
         { 
             try 
@@ -264,6 +265,49 @@ namespace BusinessLogicLayer.Services
                 return false;
             }
         }
+        public async Task<bool> SendOrderConfirmationEmailAsync(string toEmail, string orderNumber, string orderDetails, string total)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("No Reply", _emailSettings.SmtpUser));
+                message.To.Add(new MailboxAddress("", toEmail));
+                message.Subject = "Xác nhận đơn hàng của bạn";
 
+                string htmlBody = $@"
+            <html>
+                <body>
+                    <h2>Chào bạn!</h2>
+                    <p>Chúng tôi đã nhận được đơn hàng của bạn với mã đơn hàng: <strong>{orderNumber}</strong>.</p>
+                    <p>Thông tin đơn hàng:</p>
+                    <pre>{orderDetails}</pre>
+                    <p>Tổng giá trị đơn hàng: <strong>{total}</strong>.</p>
+                    <p>Chúng tôi sẽ xử lý đơn hàng của bạn và thông báo khi đơn hàng được giao.</p>
+                    <p>Trân trọng,<br />Đội ngũ hỗ trợ</p>
+                </body>
+            </html>";
+
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true);
+                    await client.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending order confirmation email: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

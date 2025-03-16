@@ -18,7 +18,7 @@ public class NotificationService : INotificationService
         _mapper = mapper;
         _notificationRepo = new NotificationRepo(context);
     }
-    
+
     public async Task<List<NotificationResponse>?> GetAllNotificationsAsync(int userId)
     {
         var notifications = await _notificationRepo.GetAllByRecipientIdAsync(userId);
