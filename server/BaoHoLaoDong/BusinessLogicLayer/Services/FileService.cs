@@ -88,10 +88,6 @@ public class FileService : IFileService
     {
         try
         {
-            if (!Directory.Exists(imageDirectory))
-            {
-                Directory.CreateDirectory(imageDirectory);
-            }
             var filePath = Path.Combine(imageDirectory, fileName);
             using (var image = Image.Load(file.OpenReadStream())) 
             {
