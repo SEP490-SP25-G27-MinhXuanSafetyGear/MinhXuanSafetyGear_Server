@@ -295,6 +295,7 @@ namespace BusinessLogicLayer.Mappings
 
             CreateMap<OrderDetail, OrderPaymentResponseDetails>();
             CreateMap<OrderPaymentResponseDetails, OrderDetail>();
+
         }
     }
 }

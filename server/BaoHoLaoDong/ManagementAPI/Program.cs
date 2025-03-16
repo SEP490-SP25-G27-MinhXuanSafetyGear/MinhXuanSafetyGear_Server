@@ -4,6 +4,8 @@ using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using DataAccessObject.Repository.Interface;
+using DataAccessObject.Repository;
 using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
@@ -93,6 +95,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
+
 // Đọc cấu hình SMTP từ appsettings.json
 builder.Services.Configure<ApplicationUrls>(builder.Configuration.GetSection("ApplicationSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
