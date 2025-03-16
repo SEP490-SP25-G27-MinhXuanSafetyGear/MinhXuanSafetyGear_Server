@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.X9;
 using System.Runtime.CompilerServices;
 using Microsoft.IdentityModel.Tokens;
+using ManagementAPI.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ManagementAPI.Controllers
 {
@@ -20,11 +22,13 @@ namespace ManagementAPI.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IConfiguration _configuration;
+        private readonly IHubContext<NotificationHub> _notificationHub;
 
-        public OrderController(IOrderService orderService, IConfiguration configuration)
+        public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub)
         {
             _orderService = orderService;
             _configuration = configuration;
+            _notificationHub = notificationHub;
         }
 
         /// <summary>
@@ -200,7 +204,6 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpPost("payment")]
         public async Task<IActionResult> Payment([FromForm] PaymentInfo model)
         {
@@ -235,7 +238,9 @@ namespace ManagementAPI.Controllers
                         Directory.CreateDirectory(pathFolder);
                     }
                     string fileExtension = Path.GetExtension(model.InvoiceImage.FileName);
+
                     var fileName = orderInfo.CustomerInfo.Name.Replace(" ", "-") + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
+
                     var filePath = Path.Combine(pathFolder, fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -245,7 +250,7 @@ namespace ManagementAPI.Controllers
                 }
 
                 var result = await _orderService.PayAsync(orderInfo);
-
+                await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString()).SendAsync("ReceiveNotification", orderInfo);
                 return Ok();
             }
             catch (Exception ex)
@@ -253,7 +258,6 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpGet("img/invoice")]
         public async Task<IActionResult> GetImage(int orderId)
         {

@@ -10,7 +10,7 @@ namespace BusinessLogicLayer.Models
     {
         Pending,
         Paid,
-        Failed  
+        Failed
     }
 
     public enum OrderStatus
@@ -19,5 +19,22 @@ namespace BusinessLogicLayer.Models
         Processing,
         Completed,
         Cancelled
+    }
+
+    public enum RecipientType
+    {
+        Customer,
+        Employee
+    }
+
+    public enum NotificationStatus
+    {
+        Active,
+        DeActive
+    }
+
+    public enum NotificationGroup
+    {
+        Employee
     }
 }
