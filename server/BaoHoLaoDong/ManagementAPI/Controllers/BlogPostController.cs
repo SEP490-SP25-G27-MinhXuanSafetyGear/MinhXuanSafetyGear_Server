@@ -15,7 +15,6 @@ public class BlogPostController : ControllerBase
    
     /// <summary>
     /// get blog categories
-    /// 
     /// </summary>
     /// <returns></returns>
     [HttpGet("get-blog-categories")]
