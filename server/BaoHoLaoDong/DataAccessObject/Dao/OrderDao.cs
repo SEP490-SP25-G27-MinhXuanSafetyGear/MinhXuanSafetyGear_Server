@@ -111,14 +111,20 @@ public class OrderDao : IDao<Order>
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<Order>?> GetOrdersByCustomerIdAsync(int customerId, int page, int pageSize)
+    public async Task<List<Order>?> GetOrdersByCustomerNameAsync(string customerName, int page, int pageSize)
     {
         return await _context.Orders
-            .Where(order => order.CustomerId == customerId)
+            .Where(order => order.Customer.FullName.ToLower().Contains(customerName))
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
     }
+    public async Task<int> CountTotalOrder(string customerName)
+    {
+        return await _context.Orders
+          .CountAsync(o => o.Customer.FullName.Contains(customerName));
+    }
+
     public async Task<List<Order>?> GetOrdersByPageAsync(int page, int pageSize)
     {
         return await _context.Orders
@@ -126,25 +132,7 @@ public class OrderDao : IDao<Order>
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<Order>?> SearchAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
-    {
-        var query = _context.Orders.AsQueryable();
-
-        if (startDate.HasValue && endDate.HasValue)
-        {
-            query = query.Where(o => o.OrderDate >= startDate.Value && o.OrderDate <= endDate.Value);
-        }
-
-        if (!string.IsNullOrEmpty(customerName))
-        {
-            query = query.Where(o => o.Customer.FullName.Contains(customerName));
-        }
-        return await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-    }
-
+    
     public async Task<int> CountAsync()
     {
         return await _context.Orders.CountAsync();
@@ -185,4 +173,75 @@ public class OrderDao : IDao<Order>
             throw;
         }
     }
+    public async Task<List<Order>> SearchAsync(DateTime? startDate, DateTime? endDate, string? customerName, int? page = null, int? pageSize = null)
+    {
+        var query = _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.OrderDetails)
+            .AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(customerName))
+        {
+            query = query.Where(o => o.Customer.FullName.Contains(customerName));
+        }
+        if (page.HasValue && pageSize.HasValue)
+        {
+            query = query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value);
+        }
+
+        return await query.AsNoTracking().ToListAsync();
+    }
+    public async Task<int> CountTotalOrdersByFilter(DateTime? startDate, DateTime? endDate, string? customerName)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(customerName))
+        {
+            query = query.Where(o => o.Customer.FullName.Contains(customerName));
+        }
+
+        return await query.CountAsync();
+    }
+
+
+    public async Task<int> CountTotalOrdersByDate(DateTime? startDate, DateTime? endDate)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        return await query.CountAsync();
+    }
+
 }

@@ -3,12 +3,28 @@
   "WorkspaceRootPath": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\businesslogiclayer\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\managementapi\\hubs\\orderhub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\hubs\\orderhub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\businesslogiclayer\\services\\interface\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1BE995B-A8F7-48B5-873A-033D1BC23F9A}|BusinessLogicLayer\\BusinessLogicLayer.csproj|solutionrelative:businesslogiclayer\\services\\interface\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\dataaccessobject\\repository\\orderrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\repository\\orderrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\dao\\orderdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\dataaccessobject\\repository\\interface\\iorderrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2DD87486-FFAA-4E6C-BB97-34E571429C7A}|DataAccessObject\\DataAccessObject.csproj|solutionrelative:dataaccessobject\\repository\\interface\\iorderrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +34,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 116,
+          "SelectedChildIndex": 119,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OrderController.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
+              "RelativeDocumentMoniker": "ManagementAPI\\Controllers\\OrderController.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
+              "RelativeToolTip": "ManagementAPI\\Controllers\\OrderController.cs",
+              "ViewState": "AQIAAKUAAAAAAAAAAAAUwLYAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-16T11:11:40.63Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IOrderRepo.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\Interface\\IOrderRepo.cs",
+              "RelativeDocumentMoniker": "DataAccessObject\\Repository\\Interface\\IOrderRepo.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\Interface\\IOrderRepo.cs",
+              "RelativeToolTip": "DataAccessObject\\Repository\\Interface\\IOrderRepo.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwBwAAABoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-16T10:46:31.999Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
@@ -482,28 +524,54 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "OrderHub.cs",
-              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Hubs\\OrderHub.cs",
-              "RelativeDocumentMoniker": "ManagementAPI\\Hubs\\OrderHub.cs",
-              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Hubs\\OrderHub.cs",
-              "RelativeToolTip": "ManagementAPI\\Hubs\\OrderHub.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAJAAAA",
+              "DocumentIndex": 3,
+              "Title": "OrderRepo.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\OrderRepo.cs",
+              "RelativeDocumentMoniker": "DataAccessObject\\Repository\\OrderRepo.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\DataAccessObject\\Repository\\OrderRepo.cs",
+              "RelativeToolTip": "DataAccessObject\\Repository\\OrderRepo.cs",
+              "ViewState": "AQIAAFEAAAAAAAAAAAAgwGsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-16T05:50:54.077Z",
+              "WhenOpened": "2025-03-16T10:40:32.813Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "OrderDao.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
+              "RelativeDocumentMoniker": "DataAccessObject\\Dao\\OrderDao.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\DataAccessObject\\Dao\\OrderDao.cs",
+              "RelativeToolTip": "DataAccessObject\\Dao\\OrderDao.cs",
+              "ViewState": "AQIAALQAAAAAAAAAAAAqwM4AAABxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-16T10:36:06.663Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "OrderController.cs",
-              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
-              "RelativeDocumentMoniker": "ManagementAPI\\Controllers\\OrderController.cs",
-              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
-              "RelativeToolTip": "ManagementAPI\\Controllers\\OrderController.cs",
-              "ViewState": "AQIAAGkAAAAAAAAAAAAcwGwAAABQAAAA",
+              "Title": "OrderService.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Services\\OrderService.cs",
+              "RelativeDocumentMoniker": "BusinessLogicLayer\\Services\\OrderService.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Services\\OrderService.cs",
+              "RelativeToolTip": "BusinessLogicLayer\\Services\\OrderService.cs",
+              "ViewState": "AQIAAE0AAAAAAAAAAAAAAF8AAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-16T05:26:42.084Z",
+              "WhenOpened": "2025-03-16T10:34:05.094Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IOrderService.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Services\\Interface\\IOrderService.cs",
+              "RelativeDocumentMoniker": "BusinessLogicLayer\\Services\\Interface\\IOrderService.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\BusinessLogicLayer\\Services\\Interface\\IOrderService.cs",
+              "RelativeToolTip": "BusinessLogicLayer\\Services\\Interface\\IOrderService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwA8AAAAHAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-16T10:34:00.546Z",
               "EditorCaption": ""
             }
           ]

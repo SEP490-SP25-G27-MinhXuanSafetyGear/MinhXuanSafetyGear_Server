@@ -17,14 +17,16 @@ namespace DataAccessObject.Repository.Interface
         Task<bool> UpdateOrderStatusAsync(int orderId, string status);
         Task<List<OrderDetail>?> GetOrderDetailsPageAsync(int orderId, int page, int pageSize);
         Task<bool> CancelOrderAsync(int orderId);
-        Task<List<Order>?> GetOrdersByCustomerIdAsync(int customerId, int page, int pageSize);
+        Task<List<Order>?> GetOrdersByCustomerNameAsync(string customerName, int page, int pageSize);
         Task<List<Order>?> GetOrdersByPageAsync(int page, int pageSize);
         Task<List<Order>?> SearchAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20);
+       
+
 
         Task<int> CountOrdersAsync();
-
-
-
+        Task<int> CountTotalOrder(string customerName);
+        Task<int> CountTotalOrdersByDate(DateTime? startDate, DateTime? endDate);
+        Task<int> CountTotalOrdersByFilter(DateTime? startDate, DateTime? endDate, string customerName);
         // OrderDetail
         Task<OrderDetail?> GetOrderDetailByIdAsync(int orderDetailId);
         Task<OrderDetail?> CreateOrderDetailAsync(OrderDetail orderDetail);

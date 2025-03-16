@@ -13,11 +13,11 @@ namespace BusinessLogicLayer.Services;
 public class BlogPostService : IBlogPostService
 {
     private readonly IBlogPostRepo _blogPostRepo;
-    private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","blogs");
+    private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blogs");
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
     private readonly IFileService _fileService;
-    public BlogPostService(MinhXuanDatabaseContext context,IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(MinhXuanDatabaseContext context, IFileService fileService, IMapper mapper, ILogger<BlogPostService> logger)
     {
         _blogPostRepo = new BlogPostRepo(context);
         _fileService = fileService;
@@ -30,9 +30,9 @@ public class BlogPostService : IBlogPostService
         {
             var blogPost = _mapper.Map<BlogPost>(newBlogPost);
             var file = newBlogPost.File;
-            if (file != null && file.Length>0)
+            if (file != null && file.Length > 0)
             {
-                var fileName = await _fileService.SaveImageAsync(_imagePathBlog,file);
+                var fileName = await _fileService.SaveImageAsync(_imagePathBlog, file);
                 blogPost.FileName = fileName;
             }
             blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
@@ -40,24 +40,24 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while save blogpost");
+            _logger.LogError(ex, "Error while save blogpost");
             throw;
         }
     }
 
-    public async Task<Page<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
+    public async Task<Page<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId = 0, int page = 0, int pageSize = 5)
     {
         try
         {
-            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId,page, pageSize);
+            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId, page, pageSize);
             blogs = blogs.OrderByDescending(b => b.CreatedAt).ToList();
-            var totalBlogPosts = await _blogPostRepo.CountBlogPostByCategoryAsync(categoryId) ;
+            var totalBlogPosts = await _blogPostRepo.CountBlogPostByCategoryAsync(categoryId);
             var blogPage = new Page<BlogPostResponse>(_mapper.Map<List<BlogPostResponse>>(blogs), page, pageSize, totalBlogPosts);
             return blogPage;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while get blogpost by page");
+            _logger.LogError(ex, "Error while get blogpost by page");
             throw;
         }
     }
@@ -76,14 +76,14 @@ public class BlogPostService : IBlogPostService
                 var oldFileName = blogPostExit.FileName;
                 var fileName = await _fileService.SaveImageAsync(_imagePathBlog, newFile);
                 blogPostExit.FileName = fileName;
-                await _fileService.DeleteFileAsync(Path.Combine(_imagePathBlog,oldFileName));
+                await _fileService.DeleteFileAsync(Path.Combine(_imagePathBlog, oldFileName));
             }
             blogPostExit = await _blogPostRepo.UpdateBlogPostAsync(blogPostExit);
             return _mapper.Map<BlogPostResponse>(blogPostExit);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while update blog");
+            _logger.LogError(ex, "Error while update blog");
             throw;
         }
     }
@@ -101,7 +101,7 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while delete blog");
+            _logger.LogError(ex, "Error while delete blog");
             throw;
         }
     }
@@ -115,7 +115,7 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while get blog categories");
+            _logger.LogError(ex, "Error while get blog categories");
             throw;
         }
     }
@@ -158,7 +158,7 @@ public class BlogPostService : IBlogPostService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Error while get blog post");
+            _logger.LogError(ex, "Error while get blog post");
             throw;
         }
     }
