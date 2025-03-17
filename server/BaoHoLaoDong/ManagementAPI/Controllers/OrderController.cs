@@ -12,6 +12,8 @@ using Org.BouncyCastle.Asn1.X9;
 using System.Runtime.CompilerServices;
 using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.SignalR;
+using ManagementAPI.Hubs;
 
 namespace ManagementAPI.Controllers
 {
@@ -20,21 +22,21 @@ namespace ManagementAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-  private readonly IConfiguration _configuration;
-  private readonly IHubContext<NotificationHub> _notificationHub;
-  private readonly IHubContext<OrderHub> _orderHub;
+        private readonly IConfiguration _configuration;
+        private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly IHubContext<OrderHub> _orderHub;
 
-  public OrderController(IOrderService orderService, 
-      IConfiguration configuration, 
-      IHubContext<NotificationHub> notificationHub, 
-      IHubContext<OrderHub> orderHub
-      )
-  {
-      _orderService = orderService;
-      _configuration = configuration;
-      _notificationHub = notificationHub;
-      _orderHub = orderHub;
-  }
+        public OrderController(IOrderService orderService,
+            IConfiguration configuration,
+            IHubContext<NotificationHub> notificationHub,
+            IHubContext<OrderHub> orderHub
+            )
+        {
+            _orderService = orderService;
+            _configuration = configuration;
+            _notificationHub = notificationHub;
+            _orderHub = orderHub;
+        }
 
         /// <summary>
         /// Create new order
@@ -72,7 +74,7 @@ namespace ManagementAPI.Controllers
 
                 return Ok(new { message = "Order created successfully", order = createdOrder });
             }
-           
+
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -153,11 +155,11 @@ namespace ManagementAPI.Controllers
                 NewOrder orderRequest = new NewOrder
                 {
                     //OrderId = updateOrder.OrderId,
-                   // CustomerId = updateOrder.CustomerId,
-                   // TotalAmount = updateOrder.TotalAmount,
-                  //  Status = updateOrder.Status,
-                  //  OrderDate = updateOrder.OrderDate,
-                  //  UpdatedAt = updateOrder.UpdatedAt
+                    // CustomerId = updateOrder.CustomerId,
+                    // TotalAmount = updateOrder.TotalAmount,
+                    //  Status = updateOrder.Status,
+                    //  OrderDate = updateOrder.OrderDate,
+                    //  UpdatedAt = updateOrder.UpdatedAt
                 };
 
                 var result = await _orderService.UpdateOrderAsync(updateOrder.OrderId, orderRequest);
