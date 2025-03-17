@@ -20,14 +20,21 @@ namespace ManagementAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
-        public OrderController(IOrderService orderService, IConfiguration configuration,IMapper mapper)
-        {
-            _orderService = orderService;
-            _configuration = configuration;
-            _mapper = mapper;
-        }
+  private readonly IConfiguration _configuration;
+  private readonly IHubContext<NotificationHub> _notificationHub;
+  private readonly IHubContext<OrderHub> _orderHub;
+
+  public OrderController(IOrderService orderService, 
+      IConfiguration configuration, 
+      IHubContext<NotificationHub> notificationHub, 
+      IHubContext<OrderHub> orderHub
+      )
+  {
+      _orderService = orderService;
+      _configuration = configuration;
+      _notificationHub = notificationHub;
+      _orderHub = orderHub;
+  }
 
         /// <summary>
         /// Create new order
@@ -48,14 +55,24 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost("create-order-v2")]
         public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
         {
             try
             {
-                var result = await _orderService.CreateNewOrderV2Async(newOrder);
-                return Ok(result);
+                var createdOrder = await _orderService.CreateNewOrderV2Async(newOrder);
+
+                if (createdOrder == null)
+                {
+                    return BadRequest(new { message = "Failed to create order." });
+                }
+
+                await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder);
+
+                return Ok(new { message = "Order created successfully", order = createdOrder });
             }
+           
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -306,11 +323,20 @@ namespace ManagementAPI.Controllers
             {
                 var result = await _orderService.ConfirmOrderAsync(orderId);
                 return Ok();
+                if (!result)
+                {
+                    return BadRequest(new { message = "Failed to confirm order. Order may not exist or has been processed." });
+                }
+
+                await _orderHub.Clients.All.SendAsync("OrderConfirmed", new { orderId, OrderStatus.Completed });
+
+                return Ok(new { message = "Order confirmed successfully", orderId });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
         }
+
     }
 }
