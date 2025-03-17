@@ -101,6 +101,7 @@ builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Đăng ký MailService
 builder.Services.AddScoped<IMailService, MailService>();
@@ -111,7 +112,6 @@ builder.Services.AddScoped<TokenService>(provier =>
     return new TokenService(token);
 });
 #endregion services
-
 
 
 // Cấu hình CORS 
@@ -156,7 +156,6 @@ if (app.Environment.IsDevelopment()!)
 
 app.MapHub<ProductHub>("/productHub");
 app.MapHub<BlogPostHub>("/blogHub");
-
 app.MapHub<NotificationHub>("/notificationHub");
 app.MapHub<OrderHub>("/orderHub");
 app.MapHub<InvoiceHub>("/invoiceHub");

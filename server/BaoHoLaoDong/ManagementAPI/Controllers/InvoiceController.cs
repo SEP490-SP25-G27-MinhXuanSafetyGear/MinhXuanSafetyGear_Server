@@ -25,7 +25,7 @@ public class InvoiceController : ControllerBase
         _invoiceHub = invoiceHub;
     }
     [HttpPut("confirm-invoice-by-customer")]
-    public async Task<IActionResult> ConfirmInvoiceByCustomer([FromQuery] ConfirmInvoice confirmInvoice)
+    public async Task<IActionResult> ConfirmInvoiceByCustomer([FromForm] ConfirmInvoice confirmInvoice)
     {
         try
         {
@@ -45,11 +45,11 @@ public class InvoiceController : ControllerBase
         {
             if (status == "Confirmed")
             {
-                status = "Completed";
+                status = OrderStatus.Completed.ToString();
             }
             else
             {
-                status = "Canceled";
+                status = OrderStatus.Processing.ToString();
             }
             var invoice = await _invoiceService.ConFirmInvoiceByEmployeeAsync(invoiceNo, status);
             await _invoiceHub.Clients.All.SendAsync("InvoiceConfirmedByEmployee", invoiceNo, status);

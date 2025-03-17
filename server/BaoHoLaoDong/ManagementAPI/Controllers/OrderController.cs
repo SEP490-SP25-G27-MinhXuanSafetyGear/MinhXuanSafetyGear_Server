@@ -14,6 +14,7 @@ using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.SignalR;
 using ManagementAPI.Hubs;
+using BusinessLogicLayer.Services;
 
 namespace ManagementAPI.Controllers
 {
@@ -24,18 +25,20 @@ namespace ManagementAPI.Controllers
         private readonly IOrderService _orderService;
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly INotificationService _notificationService;
+        private readonly IMailService _mailService;
         private readonly IHubContext<OrderHub> _orderHub;
 
-        public OrderController(IOrderService orderService,
-            IConfiguration configuration,
-            IHubContext<NotificationHub> notificationHub,
-            IHubContext<OrderHub> orderHub
-            )
+        public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub, 
+            INotificationService notificationService
+            , IMailService mailService)
         {
             _orderService = orderService;
             _configuration = configuration;
             _notificationHub = notificationHub;
             _orderHub = orderHub;
+            _notificationService = notificationService;
+            _mailService = mailService;
         }
 
         /// <summary>
@@ -64,15 +67,38 @@ namespace ManagementAPI.Controllers
             try
             {
                 var createdOrder = await _orderService.CreateNewOrderV2Async(newOrder);
-
                 if (createdOrder == null)
                 {
                     return BadRequest(new { message = "Failed to create order." });
                 }
+                if (createdOrder != null && newOrder.CustomerId != null)
+                {
+                    NewNotification notification = new NewNotification()
+                    {
+                        Title = $"Đơn hàng mới cần xác minh",
+                        Message = $"Đơn hàng từ khách hàng {newOrder.CustomerName} được tạo mới với mã số tiền là {createdOrder.TotalAmount}",
+                        RecipientId = 1,
+                        RecipientType = RecipientType.Employee.ToString(),
+                        Status = NotificationStatus.Active.ToString()
+
+                    };
+                    var notis = await _notificationService.CreateNewNotificationAsync(notification);
+                    await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString()).SendAsync("ReceiveNotification", notis);
+                }
+                if (createdOrder != null)
+                {
+                    var orderDetails = createdOrder.OrderDetails;
+                    string htmlOrderDetails = string.Empty;
+                    foreach (var item in orderDetails)
+                    {
+                        htmlOrderDetails = htmlOrderDetails + $"<li title=\"Sản phẩm 1\">Tên mặt hàng: {item.ProductName} - Số lượng: {item.Quantity} - Giá: {item.ProductPrice}</li>";
+                    }
+                    string s = $"<ul>{htmlOrderDetails}</ul>";
+                    await _mailService.SendOrderConfirmationEmailAsync(newOrder.CustomerEmail, createdOrder.OrderId.ToString(), s, createdOrder.TotalAmount.ToString());
+                }
 
                 await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder);
-
-                return Ok(new { message = "Order created successfully", order = createdOrder });
+                return Ok(createdOrder);
             }
 
             catch (Exception ex)
@@ -80,6 +106,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
 
         /// <summary>
         /// Get all orders
@@ -96,6 +123,27 @@ namespace ManagementAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get-page-orders")]
+        public async Task<IActionResult> GetOrdersPageAsync([FromQuery] int? customerId, [FromQuery] string? customerName,
+           [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            try
+            {
+                string? customerIdStr = customerId?.ToString();
+                var orders = await _orderService.GetOrdersAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
+                if (orders == null || !orders.Items.Any())
+                {
+                    return NotFound(new { message = "No orders found with the given criteria." });
+                }
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
             }
         }
 

@@ -346,4 +346,10 @@ public class UserService : IUserService
             throw;
         }
     }
+    public async Task<UserResponse?> GetCustomerByIdAsync(int customerId)
+    {
+        var customer = await _userRepo.GetCustomerByIdAsync(customerId);
+        var customerResponse = _mapper.Map<UserResponse>(customer);
+        return customerResponse;
+    }
 }
