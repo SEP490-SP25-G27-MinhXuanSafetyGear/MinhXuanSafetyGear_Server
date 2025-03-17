@@ -72,5 +72,10 @@ namespace DataAccessObject.Repository
         {
             return await _blogPostDao.GetAllCategoriesAsync();
         }
+
+        public async Task<List<BlogPost>?> SearchBlogPostAsync(string? title = null)
+        {
+            return await _blogPostDao.SearchBlogPostAsync(title);
+        }
     }
 }

@@ -15,7 +15,12 @@ public interface IBlogPostService
     Task<List<BlogCategoryResponse>?> GetBlogCategoriesAsync();
     Task<BlogCategoryResponse?> CreateBlogCategoryAsync(NewBlogCategory blogCategoryRequest);
     Task<BlogCategoryResponse?> UpdateBlogCategoryAsync(UpdateBlogCategory updateBlogCategory);
+<<<<<<< Updated upstream
     Task<int> CountBlogByCategory(int category);
     Task<BlogPostResponse?> GetBlogsByIdAsync(int id);
     Task<List<BlogCategoryResponse>> GetAllCategoriesAsync();
+=======
+    Task<List<BlogPostResponse?>> SearchBlogPostAsync(string title);
+    Task<BlogPostResponse?> GetBlogPostByIdAsync(int id);
+>>>>>>> Stashed changes
 }

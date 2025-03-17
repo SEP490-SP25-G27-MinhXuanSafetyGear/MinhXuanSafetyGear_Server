@@ -95,7 +95,11 @@ public class BlogPostDao : IDao<BlogPost>
         }
 
         string normalizedTitle = RemoveDiacritics(
+<<<<<<< Updated upstream
             Regex.Replace(title.ToLower().Trim(), @"\s+", " ") 
+=======
+            Regex.Replace(title.ToLower().Trim(), @"\s+", " ")
+>>>>>>> Stashed changes
         );
 
         var blogPosts = await _context.BlogPosts
@@ -104,11 +108,16 @@ public class BlogPostDao : IDao<BlogPost>
 
         return blogPosts
             .Where(b => RemoveDiacritics(
+<<<<<<< Updated upstream
                 Regex.Replace(b.Title.ToLower().Trim(), @"\s+", " ") 
+=======
+                Regex.Replace(b.Title.ToLower().Trim(), @"\s+", " ")
+>>>>>>> Stashed changes
             ).Contains(normalizedTitle))
             .OrderByDescending(b => b.CreatedAt)
             .ToList();
     }
+<<<<<<< Updated upstream
     public async Task<List<BlogCategory>> GetAllCategoriesAsync()
     {
         return await _context.BlogCategories
@@ -120,6 +129,8 @@ public class BlogPostDao : IDao<BlogPost>
     {
         return await _context.BlogPosts.CountAsync(p => category == 0 || p.CategoryBlogId == category);
     }
+=======
+>>>>>>> Stashed changes
     public static string RemoveDiacritics(string text)
     {
         string[] vietnameseSigns = new string[]
@@ -138,8 +149,16 @@ public class BlogPostDao : IDao<BlogPost>
             foreach (var c in sign.Substring(1))
             {
                 text = text.Replace(c, sign[0]);
+<<<<<<< Updated upstream
             }   
         }
         return text;
     }
+=======
+            }
+        }
+        return text;
+    }
+
+>>>>>>> Stashed changes
 }
