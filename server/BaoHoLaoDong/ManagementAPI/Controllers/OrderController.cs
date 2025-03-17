@@ -10,9 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.X9;
 using System.Runtime.CompilerServices;
+using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
-using ManagementAPI.Hubs;
-using Microsoft.AspNetCore.SignalR;
 
 namespace ManagementAPI.Controllers
 {
@@ -21,29 +20,21 @@ namespace ManagementAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        private readonly IConfiguration _configuration;
-<<<<<<< Updated upstream
-        private readonly IHubContext<NotificationHub> _notificationHub;
-        private readonly IHubContext<OrderHub> _orderHub;
+  private readonly IConfiguration _configuration;
+  private readonly IHubContext<NotificationHub> _notificationHub;
+  private readonly IHubContext<OrderHub> _orderHub;
 
-
-        public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub)
-        {
-            _orderService = orderService;
-            _configuration = configuration;
-            _notificationHub = notificationHub;
-=======
-        private readonly IMapper _mapper;
-        private readonly IHubContext<OrderHub> _orderHub;
-
-        public OrderController(IOrderService orderService, IConfiguration configuration,IMapper mapper, IHubContext<OrderHub> orderHub)
-        {
-            _orderService = orderService;
-            _configuration = configuration;
-            _mapper = mapper;
->>>>>>> Stashed changes
-            _orderHub = orderHub;
-        }
+  public OrderController(IOrderService orderService, 
+      IConfiguration configuration, 
+      IHubContext<NotificationHub> notificationHub, 
+      IHubContext<OrderHub> orderHub
+      )
+  {
+      _orderService = orderService;
+      _configuration = configuration;
+      _notificationHub = notificationHub;
+      _orderHub = orderHub;
+  }
 
         /// <summary>
         /// Create new order
@@ -64,8 +55,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-<<<<<<< Updated upstream
-=======
+
         [HttpPost("create-order-v2")]
         public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
         {
@@ -82,13 +72,12 @@ namespace ManagementAPI.Controllers
 
                 return Ok(new { message = "Order created successfully", order = createdOrder });
             }
+           
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+                return BadRequest(ex.Message);
             }
         }
->>>>>>> Stashed changes
-
 
         /// <summary>
         /// Get all orders
@@ -143,7 +132,6 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.UpdateOrderStatusAsync(orderId, status);
-                await _orderHub.Clients.All.SendAsync("OrderStatusChanged", orderId, status);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -164,12 +152,12 @@ namespace ManagementAPI.Controllers
             {
                 NewOrder orderRequest = new NewOrder
                 {
-                    OrderId = updateOrder.OrderId,
-                    CustomerId = updateOrder.CustomerId,
-                    TotalAmount = updateOrder.TotalAmount,
-                    Status = updateOrder.Status,
-                    OrderDate = updateOrder.OrderDate,
-                    UpdatedAt = updateOrder.UpdatedAt
+                    //OrderId = updateOrder.OrderId,
+                   // CustomerId = updateOrder.CustomerId,
+                   // TotalAmount = updateOrder.TotalAmount,
+                  //  Status = updateOrder.Status,
+                  //  OrderDate = updateOrder.OrderDate,
+                  //  UpdatedAt = updateOrder.UpdatedAt
                 };
 
                 var result = await _orderService.UpdateOrderAsync(updateOrder.OrderId, orderRequest);
@@ -209,18 +197,26 @@ namespace ManagementAPI.Controllers
         /// <param name="pageSize"></param>
         /// <returns>List OrderResponse</returns>
         [HttpGet("get-orders-by-customer/{customerId}/{page}/{pageSize}")]
-        public async Task<IActionResult> GetOrdersByCustomerId([FromRoute] int customerId, [FromRoute] int page = 1, [FromRoute] int pageSize = 20)
+        public async Task<IActionResult> GetOrders([FromQuery] int? customerId, [FromQuery] string? customerName,
+            [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             try
             {
-                var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId, page, pageSize);
+                string? customerIdStr = customerId?.ToString();
+                var orders = await _orderService.GetOrdersAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
+                if (orders == null || !orders.Items.Any())
+                {
+                    return NotFound(new { message = "No orders found with the given criteria." });
+                }
+
                 return Ok(orders);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
             }
         }
+
 
         /// <summary>
         /// Search orders based on criteria
@@ -244,6 +240,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost("payment")]
         public async Task<IActionResult> Payment([FromForm] PaymentInfo model)
         {
@@ -278,9 +275,7 @@ namespace ManagementAPI.Controllers
                         Directory.CreateDirectory(pathFolder);
                     }
                     string fileExtension = Path.GetExtension(model.InvoiceImage.FileName);
-
                     var fileName = orderInfo.CustomerInfo.Name.Replace(" ", "-") + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
-
                     var filePath = Path.Combine(pathFolder, fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -290,7 +285,7 @@ namespace ManagementAPI.Controllers
                 }
 
                 var result = await _orderService.PayAsync(orderInfo);
-                await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString()).SendAsync("ReceiveNotification", orderInfo);
+
                 return Ok();
             }
             catch (Exception ex)
@@ -298,6 +293,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("img/invoice")]
         public async Task<IActionResult> GetImage(int orderId)
         {
@@ -326,10 +322,7 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.ConfirmOrderAsync(orderId);
-
-<<<<<<< Updated upstream
                 return Ok();
-=======
                 if (!result)
                 {
                     return BadRequest(new { message = "Failed to confirm order. Order may not exist or has been processed." });
@@ -338,7 +331,6 @@ namespace ManagementAPI.Controllers
                 await _orderHub.Clients.All.SendAsync("OrderConfirmed", new { orderId, OrderStatus.Completed });
 
                 return Ok(new { message = "Order confirmed successfully", orderId });
->>>>>>> Stashed changes
             }
             catch (Exception ex)
             {

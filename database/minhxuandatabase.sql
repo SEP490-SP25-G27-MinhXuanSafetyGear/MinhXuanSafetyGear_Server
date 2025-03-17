@@ -152,7 +152,11 @@ GO
 -- Tạo bảng Orders
 CREATE TABLE Orders (
     OrderId int primary key identity(1,1),      -- Khoá chính cho đơn hàng
-    CustomerId int not null,                    -- Mã khách hàng
+    CustomerId int null,                    -- Mã khách hàng
+	CustomerName nvarchar(100) not null,
+	CustomerPhone nvarchar(10) not null,
+	CustomerEmail nvarchar(100) null,
+	CustomerAddress nvarchar(500) null,
     TotalAmount decimal(18,2) not null,         -- Tổng giá trị đơn hàng
     [Status] varchar(50) not null default 'Pending', -- Trạng thái đơn hàng (Pending, Completed, etc.)
     OrderDate datetime not null default getdate(), -- Ngày tạo đơn hàng
@@ -182,14 +186,17 @@ GO
 -- Tạo bảng Receipts (Biên lai thanh toán qua API)
 CREATE TABLE Invoices (
     InvoiceId int primary key identity(1,1),    -- Khoá chính cho biên lai
-    OrderId int not null,                        -- Mã đơn hàng
+    OrderId int not null unique,                        -- Mã đơn hàng
     InvoiceNumber nvarchar(50) not null unique,  -- Số biên lai
     Amount decimal(18,2) not null,               -- Số tiền thanh toán
-    PaymentMethod nvarchar(50) not null,         -- Phương thức thanh toán (Cash, Card, VNPay, etc.)
+    PaymentMethod nvarchar(50) not null default 'Cash',         -- Phương thức thanh toán (Cash, Card, VNPay, etc.)
     QRCodeData nvarchar(max) null,               -- Dữ liệu mã QR (số tài khoản + giá tiền)
-    PaymentStatus nvarchar(50) not null,         -- Trạng thái thanh toán (Pending, Completed, Failed)
+    PaymentStatus nvarchar(50) not null default 'Pending',         -- Trạng thái thanh toán (Pending, Completed, Failed)
     CreatedAt datetime not null default getdate(), -- Thời gian tạo biên lai
-    [Status] varchar(50) not null default 'Paid',   -- Trạng thái biên lai (Paid, Unpaid)
+	PaymentDate datetime null , -- thời gian thanh toán
+	PaymentConfirmOfCustomer bit , -- xác nhận thanh toán của khách hàng
+	ImagePath varchar (4000) NULL,
+	[FileName] varchar (200) ,
     CONSTRAINT FK_Receipts_Orders FOREIGN KEY (OrderId) REFERENCES Orders(OrderId) ON DELETE CASCADE -- Khoá ngoại tới bảng Orders
 );
 GO

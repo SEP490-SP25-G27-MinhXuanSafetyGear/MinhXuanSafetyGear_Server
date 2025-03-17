@@ -17,7 +17,7 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
-            .Include(x => x.Invoices)
+            .Include(x => x.Invoice)
             .ToListAsync();
     }
     // Get Order by ID
@@ -26,7 +26,7 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
-            .Include(x => x.Invoices)
+            .Include(x => x.Invoice)
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
@@ -37,25 +37,17 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
-            .Include(x => x.Invoices)
+            .Include(x => x.Invoice)
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 
     // Create a new Order
     public async Task<Order?> CreateAsync(Order entity)
     {
-        var order = new Order
-        {
-            CustomerId = entity.CustomerId,
-            TotalAmount = entity.TotalAmount,
-            Status = entity.Status,
-            OrderDate = entity.OrderDate,
-            UpdatedAt = entity.UpdatedAt
-        };
-
-        await _context.Orders.AddAsync(order);
+        await _context.Orders.AddAsync(entity);
         await _context.SaveChangesAsync();
-        return order;
+    
+        return entity;
     }
 
 
@@ -97,7 +89,7 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(order => order.Customer)
             .Include(order => order.OrderDetails)
-            .Include(order => order.Invoices)
+            .Include(order => order.Invoice)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -126,28 +118,85 @@ public class OrderDao : IDao<Order>
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<Order>?> SearchAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
+    public async Task<List<Order>> SearchAsync(DateTime? startDate, DateTime? endDate, string? customerName, int? page = null, int? pageSize = null)
     {
-        var query = _context.Orders.AsQueryable();
+        var query = _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.OrderDetails)
+            .AsQueryable();
 
-        if (startDate.HasValue && endDate.HasValue)
+        if (startDate.HasValue)
         {
-            query = query.Where(o => o.OrderDate >= startDate.Value && o.OrderDate <= endDate.Value);
+            query = query.Where(o => o.OrderDate >= startDate.Value);
         }
 
-        if (!string.IsNullOrEmpty(customerName))
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(customerName))
         {
             query = query.Where(o => o.Customer.FullName.Contains(customerName));
         }
-        return await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+        if (page.HasValue && pageSize.HasValue)
+        {
+            query = query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value);
+        }
+
+        return await query.AsNoTracking().ToListAsync();
     }
 
     public async Task<int> CountAsync()
     {
         return await _context.Orders.CountAsync();
+    }
+    public async Task<int> CountTotalOrdersByFilter(DateTime? startDate, DateTime? endDate, string? customerName)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(customerName))
+        {
+            query = query.Where(o => o.Customer.FullName.Contains(customerName));
+        }
+
+        return await query.CountAsync();
+    }
+
+
+    public async Task<int> CountTotalOrdersByDate(DateTime? startDate, DateTime? endDate)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= endDate.Value);
+        }
+
+        return await query.CountAsync();
+    }
+    public async Task<int> CountTotalOrder(string customerName)
+    {
+        return await _context.Orders
+          .CountAsync(o => o.Customer.FullName.Contains(customerName));
     }
 
     // Create a new Order

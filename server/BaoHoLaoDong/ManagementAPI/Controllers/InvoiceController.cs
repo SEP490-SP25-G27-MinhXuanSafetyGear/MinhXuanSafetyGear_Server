@@ -6,6 +6,11 @@ using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
+using BusinessLogicLayer.Services.Interface;
+using DataAccessObject.Repository.Interface;
+using Microsoft.AspNetCore.Mvc;
+
+
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
@@ -39,13 +44,13 @@ public class InvoiceController : ControllerBase
         try
         {
             if (status == "Confirmed")
-            {
-                status = OrderStatus.Completed.ToString();
-            }
-            else
-            {
-                status = OrderStatus.Cancelled.ToString();
-            }
+         {
+            status = "Completed";
+         }
+         else
+         {
+            status = "Canceled";
+         }
             var invoice = await _invoiceService.ConFirmInvoiceByEmployeeAsync(invoiceNo, status);
             await _invoiceHub.Clients.All.SendAsync("InvoiceConfirmedByEmployee", invoiceNo, status);
 
@@ -56,4 +61,5 @@ public class InvoiceController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-}
+
+  

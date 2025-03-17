@@ -31,12 +31,12 @@ public class InvoiceDao : IDao<Invoice>
     // Update an existing Receipt
     public async Task<Invoice?> UpdateAsync(Invoice entity)
     {
-        var existingReceipt = await _context.Invoices.FindAsync(entity.InvoiceId);
-        if (existingReceipt == null)
+        var existingInvoice = await _context.Invoices.FindAsync(entity.InvoiceId);
+        if (existingInvoice == null)
         {
             throw new ArgumentException("Receipt not found");
         }
-
+        
         _context.Invoices.Update(entity);
         await _context.SaveChangesAsync();
         return entity;
@@ -72,5 +72,12 @@ public class InvoiceDao : IDao<Invoice>
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+    }
+
+    public async Task<Invoice?> GetInvoiceByNumberAsync(string invoiceNumber)
+    {
+        return await _context.Invoices
+            .Include(o => o.Order)
+            .FirstOrDefaultAsync(r => r.InvoiceNumber == invoiceNumber);
     }
 }
