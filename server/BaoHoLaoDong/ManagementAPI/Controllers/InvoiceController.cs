@@ -44,13 +44,13 @@ public class InvoiceController : ControllerBase
         try
         {
             if (status == "Confirmed")
-         {
-            status = "Completed";
-         }
-         else
-         {
-            status = "Canceled";
-         }
+            {
+                status = "Completed";
+            }
+            else
+            {
+                status = "Canceled";
+            }
             var invoice = await _invoiceService.ConFirmInvoiceByEmployeeAsync(invoiceNo, status);
             await _invoiceHub.Clients.All.SendAsync("InvoiceConfirmedByEmployee", invoiceNo, status);
 
@@ -61,5 +61,6 @@ public class InvoiceController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+}
 
   
