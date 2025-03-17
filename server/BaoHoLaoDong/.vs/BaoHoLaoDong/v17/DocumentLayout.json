@@ -7,8 +7,21 @@
       "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\managementapi\\hubs\\orderhub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\hubs\\orderhub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\managementapi\\controllers\\invoicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\controllers\\invoicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\managementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\managementapi\\managementapi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{175BF1C1-3DB9-48C5-B27C-68ED0966EF06}|ManagementAPI\\ManagementAPI.csproj|solutionrelative:managementapi\\managementapi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+>>>>>>> Stashed changes
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +31,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< Updated upstream
           "SelectedChildIndex": 116,
+=======
+          "SelectedChildIndex": 118,
+>>>>>>> Stashed changes
           "Children": [
             {
               "$type": "Bookmark",
@@ -482,6 +499,7 @@
             },
             {
               "$type": "Document",
+<<<<<<< Updated upstream
               "DocumentIndex": 1,
               "Title": "OrderHub.cs",
               "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Hubs\\OrderHub.cs",
@@ -491,6 +509,43 @@
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-16T05:50:54.077Z",
+=======
+              "DocumentIndex": 3,
+              "Title": "ManagementAPI.http",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\ManagementAPI.http",
+              "RelativeDocumentMoniker": "ManagementAPI\\ManagementAPI.http",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\ManagementAPI.http",
+              "RelativeToolTip": "ManagementAPI\\ManagementAPI.http",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-03-17T03:19:31.82Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InvoiceController.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\InvoiceController.cs",
+              "RelativeDocumentMoniker": "ManagementAPI\\Controllers\\InvoiceController.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\InvoiceController.cs",
+              "RelativeToolTip": "ManagementAPI\\Controllers\\InvoiceController.cs",
+              "ViewState": "AQIAAAoAAAAAAAAAAAAuwB4AAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-17T03:17:16.864Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Program.cs",
+              "RelativeDocumentMoniker": "ManagementAPI\\Program.cs",
+              "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Program.cs",
+              "RelativeToolTip": "ManagementAPI\\Program.cs",
+              "ViewState": "AQIAAJIAAAAAAAAAAAAAAKEAAAAKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-17T03:09:33.865Z",
+>>>>>>> Stashed changes
               "EditorCaption": ""
             },
             {
@@ -501,7 +556,11 @@
               "RelativeDocumentMoniker": "ManagementAPI\\Controllers\\OrderController.cs",
               "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\Controllers\\OrderController.cs",
               "RelativeToolTip": "ManagementAPI\\Controllers\\OrderController.cs",
+<<<<<<< Updated upstream
               "ViewState": "AQIAAGkAAAAAAAAAAAAcwGwAAABQAAAA",
+=======
+              "ViewState": "AQIAACYAAAAAAAAAAAAgwDsAAAAMAAAA",
+>>>>>>> Stashed changes
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-16T05:26:42.084Z",
               "EditorCaption": ""

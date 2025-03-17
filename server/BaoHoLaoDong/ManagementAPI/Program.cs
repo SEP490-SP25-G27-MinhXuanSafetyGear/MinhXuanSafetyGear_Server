@@ -156,4 +156,8 @@ app.MapHub<ProductHub>("/productHub");
 app.MapHub<BlogPostHub>("/blogHub");
 app.MapHub<NotificationHub>("/notificationHub");
 app.MapHub<OrderHub>("/orderHub");
+<<<<<<< Updated upstream
+=======
+app.MapHub<InvoiceHub>("/invoiceHub");
+>>>>>>> Stashed changes
 app.Run();

@@ -360,4 +360,8 @@ END;
 go
 -- password admin123
 insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
-('admin','linhndhe163822@fpt.edu.vn','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
+('admin','admin@fpt.edu.vn','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
+
+INSERT INTO Customers (FullName, Email, IsEmailVerified, PasswordHash, PhoneNumber, [Address], DateOfBirth, Gender, ImageUrl, UpdateAt)  
+VALUES  
+(N'Nguyễn Văn A', 'ngocquy@example.com', 1, '$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G', '0987654321', '123 Đường ABC, Quận 1, TP.HCM', '1995-05-20', 1, 'https://example.com/avatar.jpg', GETDATE());
