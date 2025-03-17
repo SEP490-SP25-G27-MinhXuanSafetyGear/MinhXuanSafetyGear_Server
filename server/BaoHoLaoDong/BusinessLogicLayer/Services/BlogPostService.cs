@@ -44,6 +44,20 @@ public class BlogPostService : IBlogPostService
             throw;
         }
     }
+    public async Task<List<BlogPostResponse>?> SearchBlogPostAsync(string title)
+    {
+        try
+        {
+            var blogPosts = await _blogPostRepo.SearchBlogPostAsync(title);
+            return _mapper.Map<List<BlogPostResponse>>(blogPosts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while searching blog posts");
+            throw;
+        }
+    }
+
 
     public async Task<Page<BlogPostResponse>?> GetBlogPostByPageAsync(int categoryId =0,int page = 0, int pageSize = 5)
     {

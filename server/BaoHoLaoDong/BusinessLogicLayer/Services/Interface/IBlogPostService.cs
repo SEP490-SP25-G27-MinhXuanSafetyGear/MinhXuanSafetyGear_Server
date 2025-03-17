@@ -13,6 +13,6 @@ public interface IBlogPostService
     Task<List<BlogCategoryResponse>?> GetBlogCategoriesAsync();
     Task<BlogCategoryResponse?> CreateBlogCategoryAsync(NewBlogCategory blogCategoryRequest);
     Task<BlogCategoryResponse?> UpdateBlogCategoryAsync(UpdateBlogCategory updateBlogCategory);
-
+    Task<List<BlogPostResponse?>> SearchBlogPostAsync(string title);
     Task<BlogPostResponse?> GetBlogPostByIdAsync(int id);
 }

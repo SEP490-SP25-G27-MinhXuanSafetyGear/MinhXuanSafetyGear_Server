@@ -154,4 +154,17 @@ public class BlogPostController : ControllerBase
             return BadRequest(ex);
         }
     }
+    [HttpGet("search-blog")]
+    public async Task<IActionResult> SearchBlog([FromQuery] string title)
+    {
+        try
+        {
+            var result = await _blogPostService.SearchBlogPostAsync(title);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
