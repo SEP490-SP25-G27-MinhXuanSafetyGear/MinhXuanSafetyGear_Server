@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
@@ -18,7 +19,7 @@ public class NotificationService : INotificationService
         _mapper = mapper;
         _notificationRepo = new NotificationRepo(context);
     }
-    
+
     public async Task<List<NotificationResponse>?> GetAllNotificationsAsync(int userId)
     {
         var notifications = await _notificationRepo.GetAllByRecipientIdAsync(userId);
@@ -28,7 +29,33 @@ public class NotificationService : INotificationService
     public async Task<NotificationResponse?> CreateNewNotificationAsync(NewNotification notification)
     {
         var newNotification = _mapper.Map<Notification>(notification);
+        newNotification.CreatedAt = DateTime.Now;
+        newNotification.IsRead = false;
         newNotification = await _notificationRepo.CreateAsync(newNotification);
         return _mapper.Map<NotificationResponse?>(newNotification);
     }
+
+    public async Task<List<NotificationResponse>?> GetAllAdminNotiAsync()
+    {
+        var notifications = await _notificationRepo.GetAllAdminNotiAsync(RecipientType.Employee.ToString());
+        return _mapper.Map<List<NotificationResponse>?>(notifications);
+    }
+
+    public async Task<bool?> MaskAsReadAsync(int notificationId, bool readAll)
+    {
+        return await _notificationRepo.MaskAsReadAsync(notificationId, readAll);
+    }
+
+    public async Task<List<NotificationResponse>?> CreateNewNotificationAsync(List<NewNotification> notifications)
+    {
+        var newNotification = _mapper.Map<List<Notification>>(notifications);
+        foreach (var notification in newNotification)
+        {
+            notification.CreatedAt = DateTime.Now;
+            notification.IsRead = false;
+        }
+        newNotification = await _notificationRepo.CreateAsync(newNotification);
+        return _mapper.Map<List<NotificationResponse>>(newNotification);
+    }
+
 }
