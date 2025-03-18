@@ -123,4 +123,21 @@ public class FileService : IFileService
             return null;
         }
     }
+    public async Task<FileStream?> GetFileAsStreamAsync(string filePath)
+    {
+        try
+        {
+            if (File.Exists(filePath))
+            {
+                return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error reading file: {filePath}");
+            return null;
+        }
+    }
+
 }

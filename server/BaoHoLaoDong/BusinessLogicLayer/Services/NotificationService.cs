@@ -31,6 +31,7 @@ public class NotificationService : INotificationService
         var newNotification = _mapper.Map<Notification>(notification);
         newNotification.CreatedAt = DateTime.Now;
         newNotification.IsRead = false;
+        newNotification.OrderId = notification.OrderId;
         newNotification = await _notificationRepo.CreateAsync(newNotification);
         return _mapper.Map<NotificationResponse?>(newNotification);
     }

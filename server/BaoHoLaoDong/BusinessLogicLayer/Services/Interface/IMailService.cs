@@ -1,4 +1,6 @@
-﻿namespace BusinessLogicLayer.Services.Interface;
+﻿using BusinessLogicLayer.Mappings.ResponseDTO;
+
+namespace BusinessLogicLayer.Services.Interface;
 
 public interface IMailService
 {
@@ -10,7 +12,7 @@ public interface IMailService
     /// <param name="verificationCode"></param>
     /// <returns></returns>
     public Task<bool> SendVerificationEmailAsync(string toEmail, string verificationCode);
-    public Task<bool> SendOrderConfirmationEmailAsync(string toEmail, string orderNumber, string orderDetails, string total);
+    public Task<bool> SendOrderConfirmationEmailAsync(OrderResponse orderResponse);
     public  Task<bool> SendAccountCreatedEmailAsync(string toEmail, string username);
     Task<bool> SendResetPasswordEmail(string userEmail, string resetUrl);
 }

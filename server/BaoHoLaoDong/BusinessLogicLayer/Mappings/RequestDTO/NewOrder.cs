@@ -7,8 +7,7 @@ namespace BusinessLogicLayer.Mappings.RequestDTO;
 
 public class NewOrder
 {
-
-    public int? CustomerId { get; set; }
+    
     [Required]
     public string CustomerName { get; set; } = null!;
     [Required]

@@ -69,12 +69,13 @@ GO
 CREATE TABLE Products (
     ProductId int primary key identity(1,1),     -- Khoá chính cho sản phẩm
     ProductName nvarchar(250) not null,           -- Tên sản phẩm
+	Slug nvarchar(250) not null unique,        
 	CategoryId int null,                          -- loại sản phẩm
     [Description] nvarchar(1200) null,               -- Mô tả sản phẩm
 	Material nvarchar(500) null,                  
 	Origin nvarchar(500) null,
     Quantity int not null,                        -- Số lượng sản phẩm có sẵn
-    Price decimal(18,2) not null,                 -- Giá sản phẩm
+    Price decimal(18,2) not null default 0,                 -- Giá sản phẩm
     Discount decimal(5,2) null default 0.00,      -- Giảm giá của sản phẩm
 	AverageRating DECIMAL(4,2) NULL DEFAULT 0.00,
 	TotalSale int null DEFAULT 0, -- Đã bán
@@ -141,7 +142,7 @@ CREATE TABLE ProductVariants (
     Color nvarchar(50) NULL,                              -- Màu sắc của sản phẩm (nếu có)
     Quantity int NOT NULL,                                -- Số lượng của biến thể này
     Price decimal(18,2) NULL,                             -- Giá của biến thể sản phẩm này (có thể khác so với giá mặc định)
-    Discount decimal(5,2) NULL DEFAULT 0.00,              -- Giảm giá của biến thể (nếu có)
+    Discount decimal(5,2) not NULL DEFAULT 0.00,              -- Giảm giá của biến thể (nếu có)
     [Status] bit NOT NULL DEFAULT 1,                        -- Trạng thái biến thể (1: Còn bán, 0: Ngừng bán)
     CreatedAt datetime NOT NULL DEFAULT GETDATE(),        -- Thời gian tạo biến thể
     UpdatedAt datetime NULL,                              -- Thời gian cập nhật biến thể
@@ -170,16 +171,17 @@ CREATE TABLE OrderDetails (
     OrderDetailId int PRIMARY KEY IDENTITY(1,1),     -- Khoá chính cho chi tiết đơn hàng
     OrderId int NOT NULL,                             -- Mã đơn hàng
     ProductId int NOT NULL,                           -- Mã sản phẩm
+	VariantId int null default null,                               -- Biến thể sản phẩm
     ProductName nvarchar(250) NOT NULL,               -- Tên sản phẩm tại thời điểm mua
     ProductPrice decimal(18,2) NOT NULL,              -- Giá sản phẩm tại thời điểm mua
-    ProductDiscount decimal(5,2) NULL DEFAULT 0.00,   -- Giảm giá sản phẩm tại thời điểm mua
+    ProductDiscount decimal(5,2) not NULL DEFAULT 0.00,   -- Giảm giá sản phẩm tại thời điểm mua
     Quantity int NOT NULL,                            -- Số lượng sản phẩm trong đơn hàng
     TotalPrice decimal(18,2) NOT NULL,               -- Tổng giá trị của sản phẩm trong đơn hàng
     Size nvarchar(50) NULL,                           -- Kích thước của sản phẩm
     Color nvarchar(50) NULL,                          -- Màu sắc của sản phẩm
     CreatedAt datetime NOT NULL DEFAULT GETDATE(),    -- Thời gian tạo chi tiết đơn hàng
     CONSTRAINT FK_OrderDetails_Orders FOREIGN KEY (OrderId) REFERENCES Orders(OrderId) ON DELETE CASCADE,  -- Ràng buộc khoá ngoại tới bảng Orders
-    CONSTRAINT FK_OrderDetails_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId) ON DELETE CASCADE -- Ràng buộc khoá ngoại tới bảng Products
+    CONSTRAINT FK_OrderDetails_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId) ON DELETE CASCADE, -- Ràng buộc khoá ngoại tới bảng Products
 );
 GO
 
@@ -232,12 +234,13 @@ GO
 CREATE TABLE Notifications (
     NotificationId int PRIMARY KEY IDENTITY(1,1),  -- Khoá chính cho thông báo
     Title nvarchar(255) NOT NULL,                    -- Tiêu đề thông báo
-    [Message] nvarchar(max) NOT NULL,                  -- Nội dung thông báo
+    [Message] nvarchar(max) NOT NULL,                -- Nội dung thông báo
     RecipientId int NOT NULL,                        -- Mã người nhận (khách hàng hoặc nhân viên)
     RecipientType nvarchar(50) NOT NULL CHECK (RecipientType IN ('Customer', 'Employee')),  -- Loại người nhận (Customer hoặc Employee)
     IsRead bit NOT NULL DEFAULT 0,                   -- Trạng thái đọc của thông báo (0: chưa đọc, 1: đã đọc)
     CreatedAt datetime NOT NULL DEFAULT GETDATE(),   -- Thời gian tạo thông báo
     UpdatedAt datetime NULL,                         -- Thời gian cập nhật thông báo
+	OrderId int  null ,                                -- Thông báo cho đơn hàng
     [Status] varchar(50) NOT NULL DEFAULT 'Active',    -- Trạng thái thông báo (Active, Inactive)
     CONSTRAINT FK_Notifications_Customers FOREIGN KEY (RecipientId) REFERENCES Customers(CustomerId) ON DELETE CASCADE, -- Khoá ngoại tới bảng Customers
     CONSTRAINT FK_Notifications_Employees FOREIGN KEY (RecipientId) REFERENCES Employees(EmployeeId) ON DELETE CASCADE  -- Khoá ngoại tới bảng Employees
@@ -367,7 +370,7 @@ END;
 go
 -- password admin123
 insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
-('admin','admin@fpt.edu.vn','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
+('admin','linhndhe163822@fpt.edu.vn','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
 
 INSERT INTO Customers (FullName, Email, IsEmailVerified, PasswordHash, PhoneNumber, [Address], DateOfBirth, Gender, ImageUrl, UpdateAt)  
 VALUES  

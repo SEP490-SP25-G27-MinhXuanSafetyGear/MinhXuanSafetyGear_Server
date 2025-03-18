@@ -7,6 +7,6 @@ public class NewNotification
     public string Message { get; set; } = null!;
     public int RecipientId { get; set; }
     public string RecipientType { get; set; } = null!;
-
+    public int OrderId { get; set; }
     public string Status { get; set; } = null!;
 }

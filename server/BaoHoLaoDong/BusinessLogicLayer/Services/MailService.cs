@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Models;
+﻿using BusinessLogicLayer.Mappings.ResponseDTO;
+using BusinessLogicLayer.Models;
 using MimeKit;
 using MailKit.Net.Smtp;
 using BusinessLogicLayer.Services.Interface;
@@ -122,52 +123,83 @@ namespace BusinessLogicLayer.Services
         Console.WriteLine($"Error sending verification email: {ex.Message}");
         return false;
     }
-}
+} 
+        public async Task<bool> SendOrderConfirmationEmailAsync(OrderResponse order)
+{
+    try
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("No Reply", _emailSettings.SmtpUser));
+        message.To.Add(new MailboxAddress("", order.Email));
+        message.Subject = "Xác nhận đơn hàng của bạn";
 
-        public async Task<bool> SendOrderConfirmationEmailAsync(string toEmail, string orderNumber, string orderDetails, string total)
+        // Tạo bảng danh sách sản phẩm
+        string orderDetailsTable = $@"
+            <table style='width:100%; border-collapse: collapse; font-family: Arial, sans-serif;'>
+                <thead>
+                    <tr style='background-color: #f2f2f2;'>
+                        <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Sản phẩm</th>
+                        <th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Số lượng</th>
+                        <th style='border: 1px solid #ddd; padding: 8px; text-align: right;'>Đơn giá</th>
+                        <th style='border: 1px solid #ddd; padding: 8px; text-align: right;'>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>";
+
+        foreach (var detail in order.OrderDetails)
         {
-            try
-            {
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("No Reply", _emailSettings.SmtpUser));
-                message.To.Add(new MailboxAddress("", toEmail));
-                message.Subject = "Xác nhận đơn hàng của bạn";
+            orderDetailsTable += $@"
+                    <tr>
+                        
+                        <td style='border: 1px solid #ddd; padding: 8px;'>{detail.ProductName}</td>
+                        <td style='border: 1px solid #ddd; padding: 8px; text-align: center;'>{detail.Quantity}</td>
+                        <td style='border: 1px solid #ddd; padding: 8px; text-align: right;'>{detail.ProductPrice:C}</td>
+                        <td style='border: 1px solid #ddd; padding: 8px; text-align: right;'>{(detail.Quantity * detail.ProductPrice):C}</td>
+                    </tr>"; 
+        }
+        orderDetailsTable += @"
+                </tbody>
+            </table>";
 
-                string htmlBody = $@"
+        // HTML email template
+        string htmlBody = $@"
             <html>
-                <body>
-                    <h2>Chào bạn!</h2>
-                    <p>Chúng tôi đã nhận được đơn hàng của bạn với mã đơn hàng: <strong>{orderNumber}</strong>.</p>
-                    <p>Thông tin đơn hàng:</p>
-                    <pre>{orderDetails}</pre>
-                    <p>Tổng giá trị đơn hàng: <strong>{total}</strong>.</p>
-                    <p>Chúng tôi sẽ xử lý đơn hàng của bạn và thông báo khi đơn hàng được giao.</p>
-                    <p>Trân trọng,<br />Đội ngũ hỗ trợ</p>
+                <body style='font-family: Arial, sans-serif; line-height: 1.6;'>
+                    <h2 style='color: #333;'>Chào {order.FullName},</h2>
+                    <p>Cảm ơn bạn đã đặt hàng! Chúng tôi đã nhận được đơn hàng của bạn với mã: <strong>{order.OrderId}</strong>.</p>
+                    
+                    <h3>Thông tin đơn hàng:</h3>
+                    {orderDetailsTable}
+                    
+                    <p style='font-size: 16px;'><strong>Tổng giá trị đơn hàng: {order.TotalAmount:C}</strong></p>
+                    
+                    <p>Chúng tôi sẽ xử lý đơn hàng và thông báo khi đơn hàng được giao.</p>
+                    
+                    <p>Trân trọng,<br /><strong>Đội ngũ hỗ trợ</strong></p>
                 </body>
             </html>";
 
-                var bodyBuilder = new BodyBuilder
-                {
-                    HtmlBody = htmlBody
-                };
-                message.Body = bodyBuilder.ToMessageBody();
+        var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
+        message.Body = bodyBuilder.ToMessageBody();
 
-                using (var client = new SmtpClient())
-                {
-                    await client.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true);
-                    await client.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword);
-                    await client.SendAsync(message);
-                    await client.DisconnectAsync(true);
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error sending order confirmation email: {ex.Message}");
-                return false;
-            }
+        using (var client = new SmtpClient())
+        {
+            await client.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true);
+            await client.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
         }
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error sending order confirmation email: {ex.Message}");
+        return false;
+    }
+}
+
+
         public async Task<bool> SendAccountCreatedEmailAsync(string toEmail, string username) 
         { 
             try 

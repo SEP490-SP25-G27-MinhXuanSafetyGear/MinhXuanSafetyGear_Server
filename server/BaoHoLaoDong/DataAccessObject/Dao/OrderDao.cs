@@ -26,6 +26,8 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
             .Include(x => x.Customer)
             .Include(x => x.OrderDetails)
+            .ThenInclude(p=>p.Product)
+            .ThenInclude(p=>p.ProductImages)
             .Include(x => x.Invoice)
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.OrderId == id);
@@ -46,8 +48,7 @@ public class OrderDao : IDao<Order>
     {
         await _context.Orders.AddAsync(entity);
         await _context.SaveChangesAsync();
-    
-        return entity;
+        return await GetByIdAsync(entity.OrderId);
     }
 
 

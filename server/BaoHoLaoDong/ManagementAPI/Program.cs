@@ -4,6 +4,7 @@ using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using ManagementAPI;
 using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
@@ -93,6 +94,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 // Add services from BusinessLogicLayer
 builder.Services.AddScoped<IUserService, UserService>();
 var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
 builder.Services.AddSingleton(imageDirectory);
 builder.Services.AddScoped<IFileService,FileService>();
 builder.Services.AddScoped<IProductService, ProductService>();

@@ -6,6 +6,8 @@ using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -78,6 +80,27 @@ public class InvoiceService : IInvoiceService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating order.");
+            throw;
+        }
+    }
+
+    public async Task<FileStream?> GetImageFileByInvoiceNumberAsync(string invoiceNo)
+    {
+        try
+        {
+            var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(invoiceNo);
+            if (invoice == null) return null;
+            if (!string.IsNullOrEmpty(invoice.FileName))
+            {
+                var filePath = $"{_applicationUrls.FolderBill}/{invoice.FileName}";
+                return await _fileService.GetFileAsStreamAsync(filePath);
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting image.");
             throw;
         }
     }

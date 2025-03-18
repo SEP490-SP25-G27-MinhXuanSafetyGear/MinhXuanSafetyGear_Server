@@ -21,6 +21,8 @@ public partial class Notification
 
     public DateTime? UpdatedAt { get; set; }
 
+    public int? OrderId { get; set; }
+
     public string Status { get; set; } = null!;
 
     public virtual Customer Recipient { get; set; } = null!;
