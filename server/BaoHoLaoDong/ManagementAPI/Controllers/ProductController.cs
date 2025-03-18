@@ -199,6 +199,19 @@ public class ProductController : ControllerBase
         }
     }
 
+    [HttpGet("get-product-by-slug/{slug}")]
+    public async Task<IActionResult> GetProductBySlug([FromRoute] string slug)
+    {
+        try
+        {
+            var product = await _productService.GetProductBySlugAsync(slug);
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
     /// <summary>
     /// Cập nhật hình ảnh sản phẩm
     /// </summary>

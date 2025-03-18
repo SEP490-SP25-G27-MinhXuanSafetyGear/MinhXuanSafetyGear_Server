@@ -271,6 +271,12 @@ namespace DataAccessObject.Repository
             var products = await _productDao.GetProductByIdsAsync(productIds);
             return products;
         }
+
+        public async Task<Product?> GetProductBySlugAsync(string slug)
+        {
+            return await _productDao.GetBySlugAsync(slug);
+        }
+
         #endregion ProductReview
     }
 }

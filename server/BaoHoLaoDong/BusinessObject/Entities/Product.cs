@@ -9,6 +9,8 @@ public partial class Product
 
     public string ProductName { get; set; } = null!;
 
+    public string Slug { get; set; } = null!;
+
     public int? CategoryId { get; set; }
 
     public string? Description { get; set; }

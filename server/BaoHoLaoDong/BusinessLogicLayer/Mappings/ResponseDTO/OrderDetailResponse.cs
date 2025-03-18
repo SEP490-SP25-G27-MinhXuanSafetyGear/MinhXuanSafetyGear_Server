@@ -9,6 +9,8 @@ public class OrderDetailResponse
     public int ProductId { get; set; }
 
     public string ProductName { get; set; } = null!;
+    
+    public string ProductImage { get; set; } = string.Empty;
 
     public decimal ProductPrice { get; set; }
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 
 using BusinessLogicLayer.Services.Interface;
 using DataAccessObject.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -61,6 +62,28 @@ public class InvoiceController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    //[Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền truy cập
+    [HttpGet("get-file-bill")]
+    public async Task<IActionResult> GetInvoice([FromQuery]string invoiceNo)
+    {
+        try
+        {
+            FileStream fileStream = await _invoiceService.GetImageFileByInvoiceNumberAsync(invoiceNo);
+            if (fileStream == null)
+            {
+                return NotFound("Invoice file not found.");
+            }
+
+            var contentType = "image/webp"; // Định dạng ảnh WebP
+            return File(fileStream, contentType);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+
 }
 
   

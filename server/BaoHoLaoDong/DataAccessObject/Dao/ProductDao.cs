@@ -206,4 +206,17 @@ public class ProductDao : IDao<Product>
             .AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<Product?> GetBySlugAsync(string slug)
+    {
+        return await _context.Products
+            .Include(p=>p.Category)
+            .Include(p=>p.ProductImages)
+            .Include(p=>p.ProductReviews)
+            .ThenInclude(c=>c.Customer)
+            .Include(p=>p.ProductVariants)
+            .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Slug == slug);
+    }
 }

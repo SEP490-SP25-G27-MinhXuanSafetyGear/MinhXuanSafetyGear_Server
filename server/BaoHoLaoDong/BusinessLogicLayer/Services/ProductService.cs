@@ -1,4 +1,6 @@
 ﻿
+using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
@@ -82,6 +84,7 @@ public class ProductService : IProductService
         try
         {
             var product = _mapper.Map<Product>(newProduct);
+            product.Slug = GenerateSlug(product.ProductName);
             product = await _productRepo.CreateProductAsync(product);
             var files = newProduct.Files;
             if (files != null && files.Count > 0)
@@ -110,7 +113,37 @@ public class ProductService : IProductService
             throw ex;
         }
     }
+    private string GenerateSlug(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return "";
 
+        // Chuẩn hóa chuỗi, bỏ dấu tiếng Việt
+        text = text.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+        foreach (char c in text)
+        {
+            UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (uc != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+
+        string normalizedString = sb.ToString().Normalize(NormalizationForm.FormC);
+
+        // Chuyển thành chữ thường và thay "đ" thành "d"
+        normalizedString = normalizedString.ToLower().Replace("đ", "d");
+
+        // Thay khoảng trắng và các ký tự đặc biệt bằng "-"
+        normalizedString = Regex.Replace(normalizedString, @"\s+", "-"); // Thay khoảng trắng
+        normalizedString = Regex.Replace(normalizedString, @"[^a-z0-9-]", ""); // Xóa ký tự không hợp lệ
+
+        // Loại bỏ dấu "-" dư thừa ở đầu và cuối
+        normalizedString = normalizedString.Trim('-');
+
+        return normalizedString;
+    }
     public async Task<int> CountProductByCategory(int category)
     {
         return await _productRepo.CountProductByCategory(0,category);
@@ -127,6 +160,7 @@ public class ProductService : IProductService
             }
 
             _mapper.Map(updateProduct, product);
+            product.Slug = GenerateSlug(product.ProductName);
             product = await _productRepo.UpdateProductAsync(product);
             _logger.LogInformation("Update product success");
             return _mapper.Map<ProductResponse>(product);
@@ -509,6 +543,20 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<ProductResponse?> GetProductBySlugAsync(string slug)
+    {
+        try
+        {
+            var product = await _productRepo.GetProductBySlugAsync(slug);
+            return _mapper.Map<ProductResponse>(product);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while get product by slug");
             throw;
         }
     }

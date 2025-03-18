@@ -45,5 +45,6 @@ public interface IProductRepo
     Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent);
 
     Task<List<Product>> GetProductByIdsAsync(List<int> productIds);
- 
+
+    Task<Product?> GetProductBySlugAsync(string slug);
 }

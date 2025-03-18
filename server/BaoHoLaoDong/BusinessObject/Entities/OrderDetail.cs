@@ -11,11 +11,13 @@ public partial class OrderDetail
 
     public int ProductId { get; set; }
 
+    public int? VariantId { get; set; }
+
     public string ProductName { get; set; } = null!;
 
     public decimal ProductPrice { get; set; }
 
-    public decimal? ProductDiscount { get; set; }
+    public decimal ProductDiscount { get; set; }
 
     public int Quantity { get; set; }
 
