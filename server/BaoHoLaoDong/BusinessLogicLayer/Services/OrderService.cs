@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,10 +25,11 @@ namespace BusinessLogicLayer.Services
         private readonly IOrderRepo _orderRepo;
         private readonly IProductRepo _productRepo;
         public readonly IConfiguration _configuration;
-        public readonly IUserRepo _userRepo;
+        private readonly IUserRepo _userRepo;
+        private readonly INotificationRepo _notificationRepo;
+        private readonly IMailService _mailService;
 
-        public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger,
-            IConfiguration configuration)
+        public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger, IConfiguration configuration, IMailService mailService)
         {
             _orderRepo = new OrderRepo(context);
             _mapper = mapper;
@@ -35,6 +37,8 @@ namespace BusinessLogicLayer.Services
             _productRepo = new ProductRepo(context);
             _configuration = configuration;
             _userRepo = new UserRepo(context);
+            _notificationRepo = new NotificationRepo(context);
+            _mailService = mailService;
         }
 
         #region Order
@@ -82,7 +86,36 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-
+        public async Task<Page<OrderResponse>?> GetOrdersWithStringDateTimeAsync(string? startDate, string? endDate, string? customerName, int page = 1, int pageSize = 5)
+        {
+            try
+            {
+                DateTime? start = null;
+                DateTime? end = null;
+                if (!string.IsNullOrEmpty(startDate))
+                {
+                    start = DateTime.ParseExact(startDate, "ddMMyyyy", CultureInfo.InvariantCulture);
+                }
+                if (!string.IsNullOrEmpty(endDate))
+                {
+                    end = DateTime.ParseExact(endDate, "ddMMyyyy", CultureInfo.InvariantCulture);
+                    end = end.Value.AddDays(1).AddSeconds(-1);
+                }
+                if (!string.IsNullOrWhiteSpace(customerName))
+                {
+                    customerName = RemoveDiacritics(Regex.Replace(customerName.Trim().ToLower(), @"\s+", " "));
+                }
+                var orders = await _orderRepo.SearchAsync(start, end, customerName, page, pageSize);
+                var totalOrders = await _orderRepo.CountTotalOrdersByFilter(start, end, customerName);
+                var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize, totalOrders);
+                return orderPage;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving orders with filters - StartDate: {StartDate}, EndDate: {EndDate}, CustomerName: {CustomerName}", startDate, endDate, customerName);
+                throw;
+            }
+        }
         public async Task<Page<OrderResponse>?> GetOrdersAsync(DateTime? startDate, DateTime? endDate,
             string? customerName, int page = 1, int pageSize = 5)
         {

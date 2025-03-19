@@ -118,39 +118,6 @@ namespace ManagementAPI.Controllers
             }
         }
 
-        [HttpGet("get-page-orders")]
-        public async Task<IActionResult> GetOrdersPageAsync([FromQuery] int? customerId, [FromQuery] string? customerName,
-           [FromQuery] string? startDate, [FromQuery] string? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
-        {
-            try
-            {
-                DateTime? start = null;
-                DateTime? end = null;
-                if (!string.IsNullOrEmpty(startDate))
-                {
-                    start = DateTime.ParseExact(startDate, "ddMMyyyy", CultureInfo.InvariantCulture);
-                }
-                if (!string.IsNullOrWhiteSpace(endDate) && DateTime.TryParseExact(endDate, "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedEnd))
-                {
-                    end = parsedEnd.Date.AddDays(1).AddSeconds(-1);
-                }
-                string? customerIdStr = customerId?.ToString();
-                var orders = await _orderService.GetOrdersAsync(start, end, customerName ?? customerIdStr, page, pageSize);
-                if (orders == null || !orders.Items.Any())
-                {
-                    return NotFound(new { message = "No orders found with the given criteria." });
-                }
-
-                return Ok(orders);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
-            }
-        }
-
-
-
         /// <summary>
         /// Get order by ID
         /// </summary>
@@ -376,21 +343,38 @@ namespace ManagementAPI.Controllers
             try
             {
                 var result = await _orderService.ConfirmOrderAsync(orderId);
-                return Ok();
                 if (!result)
                 {
                     return BadRequest(new { message = "Failed to confirm order. Order may not exist or has been processed." });
                 }
-
                 await _orderHub.Clients.All.SendAsync("OrderConfirmed", new { orderId, OrderStatus.Completed });
-
-                return Ok(new { message = "Order confirmed successfully", orderId });
+                //return Ok(new { message = "Order confirmed successfully", orderId });
+                return Ok();
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
         }
+        [HttpGet("get-page-orders")]
+        public async Task<IActionResult> GetOrdersPageAsync([FromQuery] int? customerId, [FromQuery] string? customerName,
+           [FromQuery] string? startDate, [FromQuery] string? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            try
+            {
+                string? customerIdStr = customerId?.ToString();
+                var orders = await _orderService.GetOrdersWithStringDateTimeAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
+                if (orders == null || !orders.Items.Any())
+                {
+                    return NotFound(new { message = "No orders found with the given criteria." });
+                }
 
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
+            }
+        }
     }
 }
