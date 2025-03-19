@@ -85,6 +85,7 @@ namespace BusinessLogicLayer.Services
                 {
                     customerName = RemoveDiacritics(Regex.Replace(customerName.Trim().ToLower(), @"\s+", " "));
                 }
+              
                 var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
                 var totalOrders = await _orderRepo.CountTotalOrdersByFilter(startDate, endDate, customerName);
                 var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize, totalOrders);
@@ -218,6 +219,10 @@ namespace BusinessLogicLayer.Services
 
         public async Task<List<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate, string customerName, int page = 1, int pageSize = 20)
         {
+            if (endDate.HasValue)
+            {
+                endDate = endDate.Value.AddDays(1).AddMilliseconds(-1);
+            }
             var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
 
             if (orders == null || !orders.Any())
