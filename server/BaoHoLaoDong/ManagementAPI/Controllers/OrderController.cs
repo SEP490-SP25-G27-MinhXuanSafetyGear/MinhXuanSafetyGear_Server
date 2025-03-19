@@ -14,7 +14,10 @@ using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.SignalR;
 using ManagementAPI.Hubs;
+<<<<<<< Updated upstream
 using BusinessLogicLayer.Services;
+=======
+>>>>>>> Stashed changes
 using System.Globalization;
 
 namespace ManagementAPI.Controllers
@@ -30,7 +33,11 @@ namespace ManagementAPI.Controllers
         private readonly IMailService _mailService;
         private readonly IHubContext<OrderHub> _orderHub;
 
+<<<<<<< Updated upstream
         public OrderController(IOrderService orderService, IConfiguration configuration, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub, 
+=======
+        public OrderController(IOrderService orderService, IConfiguration configuration, ILogger<OrderController> logger, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub,
+>>>>>>> Stashed changes
             INotificationService notificationService
             , IMailService mailService)
         {
@@ -67,6 +74,7 @@ namespace ManagementAPI.Controllers
         {
             try
             {
+<<<<<<< Updated upstream
                 var createdOrder = await _orderService.CreateNewOrderV2Async(newOrder);
                 if (createdOrder == null)
                 {
@@ -105,6 +113,43 @@ namespace ManagementAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+=======
+                if (newOrder == null || newOrder.OrderDetails == null || !newOrder.OrderDetails.Any())
+                    return BadRequest(new { message = "OrderDetails must have at least 1 item" });
+                var createdOrder = await _orderService.CreateNewOrderV2Async(newOrder);
+                if (createdOrder == null)
+                    return BadRequest(new { message = "Failed to create order." });
+                var notification = new NewNotification
+                {
+                    Title = "Đơn hàng mới cần xác minh",
+                    Message = $"Đơn hàng từ khách hàng {createdOrder.Email} được tạo mới với số tiền là {createdOrder.TotalAmount}",
+                    RecipientId = 1,
+                    RecipientType = RecipientType.Employee.ToString(),
+                    Status = NotificationStatus.Active.ToString(),
+                    OrderId = createdOrder.OrderId
+                };
+                var notifi = await _notificationService.CreateNewNotificationAsync(notification);
+                await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString()).SendAsync("ReceiveNotification", notifi);
+                await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder);
+                var createdOrderCopy = createdOrder;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _mailService.SendOrderConfirmationEmailAsync(createdOrderCopy);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error sending notifications and emails for CreateOrderV2.");
+                    }
+                });
+                return Ok(createdOrder);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in CreateOrderV2");
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+>>>>>>> Stashed changes
             }
         }
 
@@ -127,7 +172,41 @@ namespace ManagementAPI.Controllers
             }
         }
 
+<<<<<<< Updated upstream
      
+=======
+        [HttpGet("get-page-orders")]
+        public async Task<IActionResult> GetOrdersPageAsync([FromQuery] int? customerId, [FromQuery] string? customerName,
+             [FromQuery] string? startDate, [FromQuery] string? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            try
+            {
+                DateTime? start = null;
+                DateTime? end = null;
+                if (!string.IsNullOrEmpty(startDate))
+                {
+                    start = DateTime.ParseExact(startDate, "ddMMyyyy", CultureInfo.InvariantCulture);
+                }
+                if (!string.IsNullOrWhiteSpace(endDate) && DateTime.TryParseExact(endDate, "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedEnd))
+                {
+                    end = parsedEnd.Date.AddDays(1).AddSeconds(-1);
+                }
+                string? customerIdStr = customerId?.ToString();
+                var orders = await _orderService.GetOrdersAsync(start, end, customerName ?? customerIdStr, page, pageSize);
+                if (orders == null || !orders.Items.Any())
+                {
+                    return NotFound(new { message = "No orders found with the given criteria." });
+                }
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
+            }
+        }
+
+>>>>>>> Stashed changes
         /// <summary>
         /// Get order by ID
         /// </summary>
