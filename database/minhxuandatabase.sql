@@ -202,17 +202,31 @@ CREATE TABLE Invoices (
     CONSTRAINT FK_Receipts_Orders FOREIGN KEY (OrderId) REFERENCES Orders(OrderId) ON DELETE CASCADE -- Khoá ngoại tới bảng Orders
 );
 GO
+-- Tạo bảng BlogCategories
+CREATE TABLE BlogCategories (
+    CategoryBlogId int PRIMARY KEY IDENTITY(1,1),        -- Khoá chính cho danh mục bài viết
+    CategoryName nvarchar(100) NOT NULL,              -- Tên danh mục
+	Slug nvarchar(100) not null,
+    [Description] nvarchar(500) NULL ,                 -- Mô tả danh mục (tùy chọn)
+	UNIQUE(Slug),
+);
+GO
 
+GO
 -- Tạo bảng BlogPosts
 CREATE TABLE BlogPosts (
     PostId int primary key identity(1,1),             -- Khoá chính cho bài viết
     Title nvarchar(255) not null,                      -- Tiêu đề bài viết
+	Slug nvarchar(255) not null ,
+	CategoryBlogId int NULL, 
     Content nvarchar(max) not null,                    -- Nội dung bài viết
     CreatedAt datetime not null default getdate(),     -- Thời gian tạo bài viết
     UpdatedAt datetime null,                           -- Thời gian cập nhật bài viết
 	[FileName] nvarchar(250) null,                       -- Tên file của ảnh
 	ImageURL nvarchar(max) null,                       -- URL của hình ảnh bài viết
-    [Status] varchar(50) not null default 'Draft'        -- Trạng thái bài viết (Draft, Published)
+    [Status] varchar(50) not null default 'Draft'  ,      -- Trạng thái bài viết (Draft, Published)
+	UNIQUE(Slug),
+	CONSTRAINT FK_BlogPosts_BlogCategories FOREIGN KEY (CategoryBlogId) REFERENCES BlogCategories(CategoryBlogId) ON DELETE SET NULL  -- Khoá ngoại tới bảng BlogCategories
 );
 GO
 
@@ -246,18 +260,7 @@ CREATE TABLE Notifications (
     CONSTRAINT FK_Notifications_Employees FOREIGN KEY (RecipientId) REFERENCES Employees(EmployeeId) ON DELETE CASCADE  -- Khoá ngoại tới bảng Employees
 );
 GO
--- Tạo bảng BlogCategories
-CREATE TABLE BlogCategories (
-    CategoryBlogId int PRIMARY KEY IDENTITY(1,1),        -- Khoá chính cho danh mục bài viết
-    CategoryName nvarchar(100) NOT NULL,              -- Tên danh mục
-    [Description] nvarchar(500) NULL                  -- Mô tả danh mục (tùy chọn)
-);
-GO
--- Cập nhật bảng BlogPosts để thêm mối quan hệ với BlogCategories
-ALTER TABLE BlogPosts
-ADD CategoryBlogId int NULL,                            -- Thêm cột CategoryId vào bảng BlogPosts
-    CONSTRAINT FK_BlogPosts_BlogCategories FOREIGN KEY (CategoryBlogId) REFERENCES BlogCategories(CategoryBlogId) ON DELETE SET NULL; -- Khoá ngoại tới bảng BlogCategories
-GO
+
 
 CREATE TRIGGER trg_Update_AverageRating
 ON ProductReviews

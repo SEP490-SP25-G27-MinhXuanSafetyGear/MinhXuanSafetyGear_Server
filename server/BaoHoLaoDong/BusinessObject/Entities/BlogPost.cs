@@ -9,6 +9,10 @@ public partial class BlogPost
 
     public string Title { get; set; } = null!;
 
+    public string Slug { get; set; } = null!;
+
+    public int? CategoryBlogId { get; set; }
+
     public string Content { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
@@ -20,8 +24,6 @@ public partial class BlogPost
     public string? ImageUrl { get; set; }
 
     public string Status { get; set; } = null!;
-
-    public int? CategoryBlogId { get; set; }
 
     public virtual BlogCategory? CategoryBlog { get; set; }
 }
