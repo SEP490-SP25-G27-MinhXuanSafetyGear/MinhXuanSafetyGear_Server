@@ -25,7 +25,6 @@ public class FileService : IFileService
             {
                 Directory.CreateDirectory(imageDirectory);
             }
-
             var fileName = $"{Guid.NewGuid()}.webp"; 
             var filePath = Path.Combine(imageDirectory, fileName);
 

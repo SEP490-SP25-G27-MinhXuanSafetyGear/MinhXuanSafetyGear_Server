@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
+using AutoMapper;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Models;
@@ -35,6 +39,7 @@ public class BlogPostService : IBlogPostService
                 var fileName = await _fileService.SaveImageAsync(_imagePathBlog,file);
                 blogPost.FileName = fileName;
             }
+            blogPost.Slug = GenerateSlug(blogPost.Title);
             blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
             return _mapper.Map<BlogPostResponse>(blogPost);
         }
@@ -92,6 +97,8 @@ public class BlogPostService : IBlogPostService
                 blogPostExit.FileName = fileName;
                 await _fileService.DeleteFileAsync(Path.Combine(_imagePathBlog,oldFileName));
             }
+
+            blogPostExit.Slug = GenerateSlug(blogPostExit.Title);
             blogPostExit = await _blogPostRepo.UpdateBlogPostAsync(blogPostExit);
             return _mapper.Map<BlogPostResponse>(blogPostExit);
         }
@@ -138,6 +145,7 @@ public class BlogPostService : IBlogPostService
         try
         {
             var blogCategory = _mapper.Map<BlogCategory>(blogCategoryRequest);
+            blogCategory.Slug = GenerateSlug(blogCategory.CategoryName);
             blogCategory = await _blogPostRepo.CreateBlogCategoryAsync(blogCategory);
             return _mapper.Map<BlogCategoryResponse>(blogCategory);
         }
@@ -153,6 +161,7 @@ public class BlogPostService : IBlogPostService
         {
             var blogCategory = await _blogPostRepo.GetBlogCategoryByIdAsync(updateBlogCategory.Id);
             _mapper.Map(updateBlogCategory, blogCategory);
+            blogCategory.Slug = GenerateSlug(blogCategory.CategoryName);
             blogCategory = await _blogPostRepo.UpdateBlogCategoryAsync(blogCategory);
             return _mapper.Map<BlogCategoryResponse>(blogCategory);
         }
@@ -175,5 +184,50 @@ public class BlogPostService : IBlogPostService
             _logger.LogError(ex,"Error while get blog post");
             throw;
         }
+    }
+
+    public async Task<BlogPostResponse?> GetBlogPostBySlugAsync(string slug)
+    {
+        try
+        {
+            var blog = await _blogPostRepo.GetBlogPostBySlugAsync(slug);
+            return _mapper.Map<BlogPostResponse>(blog);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    private string GenerateSlug(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return "";
+
+        // Chuẩn hóa chuỗi, bỏ dấu tiếng Việt
+        text = text.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+        foreach (char c in text)
+        {
+            UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (uc != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+
+        string normalizedString = sb.ToString().Normalize(NormalizationForm.FormC);
+
+        // Chuyển thành chữ thường và thay "đ" thành "d"
+        normalizedString = normalizedString.ToLower().Replace("đ", "d");
+
+        // Thay khoảng trắng và các ký tự đặc biệt bằng "-"
+        normalizedString = Regex.Replace(normalizedString, @"\s+", "-"); // Thay khoảng trắng
+        normalizedString = Regex.Replace(normalizedString, @"[^a-z0-9-]", ""); // Xóa ký tự không hợp lệ
+
+        // Loại bỏ dấu "-" dư thừa ở đầu và cuối
+        normalizedString = normalizedString.Trim('-');
+
+        return normalizedString;
     }
 }

@@ -78,5 +78,12 @@ namespace DataAccessObject.Dao
                 .Take(pageSize)
                 .ToListAsync();
         }
+
+        public async Task<BlogPost?> GetBySlugAsync(string slug)
+        {
+            return await _context.BlogPosts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(b => b.Slug == slug);
+        }
     }
 }

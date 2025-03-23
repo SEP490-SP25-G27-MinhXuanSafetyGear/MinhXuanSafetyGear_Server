@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Mappings.RequestDTO;
+﻿using System;
+using System.Threading.Tasks;
+using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -154,6 +156,20 @@ public class BlogPostController : ControllerBase
             return BadRequest(ex);
         }
     }
+
+    [HttpGet("get-blog-by-slug/{slug}")]
+    public async Task<IActionResult> GetBlogBySlug([FromRoute] string slug)
+    {
+        try
+        {
+            var blog = await _blogPostService.GetBlogPostBySlugAsync(slug);
+            return Ok(blog);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }    
     [HttpGet("search-blog")]
     public async Task<IActionResult> SearchBlog([FromQuery] string title)
     {
