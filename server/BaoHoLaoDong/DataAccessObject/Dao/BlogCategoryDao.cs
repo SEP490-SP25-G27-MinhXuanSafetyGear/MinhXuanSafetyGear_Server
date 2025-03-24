@@ -85,5 +85,14 @@ namespace DataAccessObject.Dao
                 .AsNoTracking()
                 .FirstOrDefaultAsync(b => b.Slug == slug);
         }
+
+        public async Task<List<BlogPost>> GetBlogPostBySlugOfCategoryAsync(string slug)
+        {
+            return await _context.BlogPosts
+                .AsNoTracking()
+                .Include(b=>b.CategoryBlog)
+                .Where(b=> string.IsNullOrEmpty(slug)|| b.CategoryBlog.Slug.ToLower().Contains(slug.ToLower()))
+                .ToListAsync();
+        }
     }
 }

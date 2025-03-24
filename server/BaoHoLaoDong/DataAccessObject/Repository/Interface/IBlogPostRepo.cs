@@ -17,5 +17,6 @@ namespace DataAccessObject.Repository.Interface
         Task<int> CountBlogPostByCategoryAsync(int categoryId);
         Task<List<BlogPost>?> SearchBlogPostAsync(string? title = null);
         Task<BlogPost?> GetBlogPostBySlugAsync(string slug);
+        Task<List<BlogPost>?> GetBlogPostBySlugCategoryAsync(string slug);
     }
 }
