@@ -16,4 +16,5 @@ public interface IBlogPostService
     Task<List<BlogPostResponse?>> SearchBlogPostAsync(string title);
     Task<BlogPostResponse?> GetBlogPostByIdAsync(int id);
     Task<BlogPostResponse?> GetBlogPostBySlugAsync(string slug);
+    Task<List<BlogPostResponse>?> GetBlogPostBySlugCategoryAsync(string slug);
 }

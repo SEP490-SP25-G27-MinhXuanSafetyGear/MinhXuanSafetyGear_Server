@@ -74,5 +74,10 @@ namespace DataAccessObject.Repository
         {
             return await _blogCategoryDao.GetBySlugAsync(slug);
         }
+
+        public async Task<List<BlogPost>> GetBlogPostBySlugCategoryAsync(string slug)
+        {
+            return await _blogCategoryDao.GetBlogPostBySlugOfCategoryAsync(slug);
+        }
     }
 }

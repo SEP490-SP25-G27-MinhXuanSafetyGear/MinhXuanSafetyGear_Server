@@ -183,4 +183,18 @@ public class BlogPostController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet("get-blog-by-category/{slug}")]
+    public async Task<IActionResult> GetBlogsBySlugOfCategory([FromRoute] string slug)
+    {
+        try
+        {
+            var blogs = await _blogPostService.GetBlogPostBySlugCategoryAsync(slug);
+            return Ok(blogs);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

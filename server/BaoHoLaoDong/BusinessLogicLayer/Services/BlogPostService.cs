@@ -199,6 +199,19 @@ public class BlogPostService : IBlogPostService
         }
     }
 
+    public async Task<List<BlogPostResponse>?> GetBlogPostBySlugCategoryAsync(string slug)
+    {
+        try
+        {
+            var blogs = await _blogPostRepo.GetBlogPostBySlugCategoryAsync(slug);
+            return _mapper.Map<List<BlogPostResponse>>(blogs);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
     private string GenerateSlug(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
