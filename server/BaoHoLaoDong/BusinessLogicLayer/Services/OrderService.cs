@@ -86,7 +86,7 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-        public async Task<Page<OrderResponse>?> GetOrdersWithStringDateTimeAsync(string? startDate, string? endDate, string? customerName, int page = 1, int pageSize = 5)
+        public async Task<Page<OrderResponse>?> GetOrdersWithStringDateTimeAsync(string? startDate, string? endDate, string? customerName,string status, int page = 1, int pageSize = 5)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace BusinessLogicLayer.Services
                 {
                     customerName = RemoveDiacritics(Regex.Replace(customerName.Trim().ToLower(), @"\s+", " "));
                 }
-                var orders = await _orderRepo.SearchAsync(start, end, customerName, page, pageSize);
+                var orders = await _orderRepo.SearchAsync(start, end, customerName,status, page, pageSize);
                 var totalOrders = await _orderRepo.CountTotalOrdersByFilter(start, end, customerName);
                 var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize, totalOrders);
                 return orderPage;
@@ -116,38 +116,41 @@ namespace BusinessLogicLayer.Services
                 throw;
             }
         }
-        public async Task<Page<OrderResponse>?> GetOrdersAsync(DateTime? startDate, DateTime? endDate,
-            string? customerName, int page = 1, int pageSize = 5)
+        //public async Task<Page<OrderResponse>?> GetOrdersAsync(DateTime? startDate, DateTime? endDate,
+        //    string? customerName, int page = 1, int pageSize = 5)
+        //{
+        //    try
+        //    {
+        //        if (!string.IsNullOrWhiteSpace(customerName))
+        //        {
+        //            customerName = RemoveDiacritics(Regex.Replace(customerName.Trim().ToLower(), @"\s+", " "));
+        //        }
+
+        //        var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
+        //        var totalOrders = await _orderRepo.CountTotalOrdersByFilter(startDate, endDate, customerName);
+        //        var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize,
+        //            totalOrders);
+        //        return orderPage;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex,
+        //            "Error retrieving orders with filters - StartDate: {StartDate}, EndDate: {EndDate}, CustomerName: {CustomerName}",
+        //            startDate, endDate, customerName);
+        //        throw;
+        //    }
+        //}
+        public async Task<Page<OrderResponse>?> GetOrdersAsync(DateTime? startDate, DateTime? endDate, string? customerName, int page = 1, int pageSize = 5)
         {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(customerName))
-                {
-                    customerName = RemoveDiacritics(Regex.Replace(customerName.Trim().ToLower(), @"\s+", " "));
-                }
-
-                var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
-                var totalOrders = await _orderRepo.CountTotalOrdersByFilter(startDate, endDate, customerName);
-                var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize,
-                    totalOrders);
-                return orderPage;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Error retrieving orders with filters - StartDate: {StartDate}, EndDate: {EndDate}, CustomerName: {CustomerName}",
-                    startDate, endDate, customerName);
-                throw;
-            }
+            throw new NotImplementedException();
         }
-
 
         public async Task<Page<OrderResponse>?> GetOrdersByDateAsync(DateTime? startDate, DateTime? endDate,
             int page = 1, int pageSize = 5)
         {
             try
             {
-                var orders = await _orderRepo.SearchAsync(startDate, endDate, null, page, pageSize);
+                var orders = await _orderRepo.SearchAsync(startDate, endDate, null,null, page, pageSize);
                 orders = orders.OrderByDescending(o => o.OrderDate).ToList();
                 var totalOrders = await _orderRepo.CountTotalOrdersByDate(startDate, endDate);
                 var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize,
@@ -264,9 +267,9 @@ namespace BusinessLogicLayer.Services
         }
 
         public async Task<List<OrderResponse>?> SearchOrdersAsync(DateTime? startDate, DateTime? endDate,
-            string customerName, int page = 1, int pageSize = 20)
+            string customerName, string status, int page = 1, int pageSize = 20)
         {
-            var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName, page, pageSize);
+            var orders = await _orderRepo.SearchAsync(startDate, endDate, customerName,status, page, pageSize);
 
             if (orders == null || !orders.Any())
             {

@@ -223,26 +223,28 @@ namespace ManagementAPI.Controllers
         /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns>List OrderResponse</returns>
-        [HttpGet("get-orders-by-customer/{customerId}/{page}/{pageSize}")]
-        public async Task<IActionResult> GetOrders([FromQuery] int? customerId, [FromQuery] string? customerName,
-            [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
-        {
-            try
-            {
-                string? customerIdStr = customerId?.ToString();
-                var orders = await _orderService.GetOrdersAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
-                if (orders == null || !orders.Items.Any())
-                {
-                    return NotFound(new { message = "No orders found with the given criteria." });
-                }
 
-                return Ok(orders);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
-            }
-        }
+
+        //[HttpGet("get-orders-by-customer/{customerId}/{page}/{pageSize}")]
+        //public async Task<IActionResult> GetOrders([FromQuery] int? customerId, [FromQuery] string? customerName,
+        //    [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        //{
+        //    try
+        //    {
+        //        string? customerIdStr = customerId?.ToString();
+        //        var orders = await _orderService.GetOrdersAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
+        //        if (orders == null || !orders.Items.Any())
+        //        {
+        //            return NotFound(new { message = "No orders found with the given criteria." });
+        //        }
+
+        //        return Ok(orders);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
+        //    }
+        //}
 
 
         /// <summary>
@@ -259,7 +261,7 @@ namespace ManagementAPI.Controllers
         {
             try
             {
-                var orders = await _orderService.SearchOrdersAsync(startDate, endDate, customerName, page, pageSize);
+                var orders = await _orderService.SearchOrdersAsync(startDate, endDate, customerName,null, page, pageSize);
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -362,14 +364,17 @@ namespace ManagementAPI.Controllers
                 return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
         }
+
+
+
         [HttpGet("get-page-orders")]
         public async Task<IActionResult> GetOrdersPageAsync([FromQuery] int? customerId, [FromQuery] string? customerName,
-           [FromQuery] string? startDate, [FromQuery] string? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+           [FromQuery] string? startDate, [FromQuery] string? endDate,string status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             try
             {
                 string? customerIdStr = customerId?.ToString();
-                var orders = await _orderService.GetOrdersWithStringDateTimeAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
+                var orders = await _orderService.GetOrdersWithStringDateTimeAsync(startDate, endDate, customerName ?? customerIdStr,status, page, pageSize);
                 if (orders == null || !orders.Items.Any())
                 {
                     return NotFound(new { message = "No orders found with the given criteria." });

@@ -58,5 +58,9 @@ public class NotificationService : INotificationService
         newNotification = await _notificationRepo.CreateAsync(newNotification);
         return _mapper.Map<List<NotificationResponse>>(newNotification);
     }
-
+    public async Task<List<NotificationResponse>?> GetCustomerNotificationAsync(int? RecipientId, bool? isRead)
+    {
+        var notifications = await _notificationRepo.GetCustomerNotificationAsync(RecipientId, isRead, RecipientType.Customer.ToString());
+        return _mapper.Map<List<NotificationResponse>>(notifications);
+    }
 }
