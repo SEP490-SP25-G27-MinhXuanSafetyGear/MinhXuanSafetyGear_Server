@@ -45,4 +45,17 @@ public class NotificationController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    [HttpGet("get-noti-customer")]
+    public async Task<IActionResult> GetCustomerNotificationAsync(int? customerid, bool? isRead)
+    {
+        try
+        {
+            var notifications = await _notificationService.GetCustomerNotificationAsync(customerid, isRead);
+            return Ok(notifications);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

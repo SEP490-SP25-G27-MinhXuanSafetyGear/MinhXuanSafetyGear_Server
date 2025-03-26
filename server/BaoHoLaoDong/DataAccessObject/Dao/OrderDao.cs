@@ -119,7 +119,7 @@ public class OrderDao : IDao<Order>
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<Order>> SearchAsync(DateTime? startDate, DateTime? endDate, string? customerName, int? page = null, int? pageSize = null)
+    public async Task<List<Order>> SearchAsync(DateTime? startDate, DateTime? endDate, string? customerName,string status, int? page = null, int? pageSize = null)
     {
         var query = _context.Orders
             .Include(o => o.Customer)
@@ -140,6 +140,11 @@ public class OrderDao : IDao<Order>
         {
             query = query.Where(o => o.Customer.FullName.Contains(customerName));
         }
+        if (!string.IsNullOrEmpty(status) && status != "all")
+        {
+            query = query.Where(o => o.Status == status);
+        }
+
         if (page.HasValue && pageSize.HasValue)
         {
             query = query
@@ -199,7 +204,6 @@ public class OrderDao : IDao<Order>
         return await _context.Orders
           .CountAsync(o => o.Customer.FullName.Contains(customerName));
     }
-
     // Create a new Order
     public async Task<Order?> PayAsync(Order entity)
     {
@@ -217,7 +221,6 @@ public class OrderDao : IDao<Order>
             throw;
         }
     }
-
     public async Task<bool> UpdateOrderWithInvoiceAsync(Order order, ICollection<Invoice> invoices)
     {
         using var transaction = _context.Database.BeginTransaction();
@@ -235,4 +238,5 @@ public class OrderDao : IDao<Order>
             throw;
         }
     }
+
 }
