@@ -84,6 +84,12 @@ public class OrderQueueWorker : BackgroundService
                                         _logger.LogError($"❌ Lỗi khi gửi thông báo và email: {ex.Message}");
                                     }
                                 }
+                                else
+                                {
+                                    _logger.LogWarning($"⛔ Đơn hàng của {newOrder.CustomerEmail} thất bại do hết hàng!");
+                                    // ✅ Chỉ gửi email thất bại nếu đơn hàng thực sự thất bại
+                                    _ = Task.Run(() => mailService.SendOrderFailureEmailAsync(newOrder), stoppingToken);
+                                }
                             }
                             catch (Exception ex)
                             {

@@ -86,9 +86,7 @@ public class BlogPostService : IBlogPostService
         try
         {
             var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(updateBlogPost.Id);
-            blogPostExit.Title = updateBlogPost.Title;
-            blogPostExit.Content = updateBlogPost.Content;
-            blogPostExit.Status = updateBlogPost.Status;
+            _mapper.Map(updateBlogPost, blogPostExit);
             var newFile = updateBlogPost.File;
             if (newFile != null && newFile.Length > 0)
             {

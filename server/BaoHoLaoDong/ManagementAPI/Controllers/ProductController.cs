@@ -16,12 +16,15 @@ namespace ManagementAPI.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
+    private readonly IBlogPostService _blogPostService;
     private readonly IHubContext<ProductHub> _productHub;
     private readonly IMapper _mapper;
 
-    public ProductController(IProductService productService, IHubContext<ProductHub> productHub, IMapper mapper)
+    public ProductController(IProductService productService, IBlogPostService blogPostService,
+        IHubContext<ProductHub> productHub, IMapper mapper)
     {
         _productService = productService;
+        _blogPostService = blogPostService;
         _productHub = productHub;
         _mapper = mapper;
     }
@@ -198,14 +201,43 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
     [HttpGet("get-product-by-slug/{slug}")]
     public async Task<IActionResult> GetProductBySlug([FromRoute] string slug)
     {
         try
         {
             var product = await _productService.GetProductBySlugAsync(slug);
-            return Ok(product);
+            if(product!=null)
+              return Ok(product);
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpGet("get-product-by-slug-for-page-detail/{slug}")]
+    public async Task<IActionResult> GetProductBySlugForPageDetail([FromRoute] string slug,[FromQuery] int size=20)
+    {
+        try
+        {
+            var product = await _productService.GetProductBySlugAsync(slug);
+            if (product != null)
+            {
+                var topSaleProducts = await _productService.GetTopSaleProduct(size)?? new List<ProductResponse>();
+                var relatedProducts = await _productService.GetRelatedProducts(product.Id,size)?? new List<ProductResponse>();
+                var review = await _productService.GetReviewAsync(product.Id,size);
+                var blogTransport = await _blogPostService.GetBlogPostBySlugAsync("chinh-sach-van-chuyen")?? new BlogPostResponse();
+                return Ok(new ProductDetailPage()
+                {
+                    Product = product,
+                    TopSaleProducts = topSaleProducts,
+                    RelatedProducts = relatedProducts,
+                    Review = review,
+                    BlogTransport = blogTransport,
+                });
+            }
+            return NotFound();
         }
         catch (Exception ex)
         {

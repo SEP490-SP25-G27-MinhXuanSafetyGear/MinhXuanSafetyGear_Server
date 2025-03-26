@@ -365,26 +365,71 @@ public class ProductService : IProductService
         return text;
     }
 
-    public async Task<List<ProductResponse>?> SearchProductAsync(string title)
+  public async Task<List<ProductResponse>?> SearchProductAsync(string title)
+{
+    try
     {
-        try
+        if (string.IsNullOrWhiteSpace(title) || title.Length > 100)
         {
-            title = RemoveDiacritics(Regex.Replace(title.Trim().ToLower(), @"\s+", " "));
-
-            var products = await _productRepo.GetAllProductsAsync() ?? new List<Product>();
-
-            var filteredProducts = products
-                .Where(p => RemoveDiacritics(p.ProductName.ToLower()).Contains(title))
-                .ToList();
-
-            return _mapper.Map<List<ProductResponse>>(filteredProducts);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while searching products with title: {Title}", title);
+            _logger.LogWarning("Invalid search title: {Title}", title);
             return new List<ProductResponse>();
         }
+
+        // Loại bỏ ký tự đặc biệt
+        title = Regex.Replace(title, @"[^\w\s]", "").Trim().ToLower();
+        
+        // Danh sách từ khóa không hợp lệ
+        var forbiddenKeywords = new List<string> { "drop", "delete", "truncate", "script", "select", "insert", "update" };
+        if (forbiddenKeywords.Any(keyword => title.Contains(keyword)))
+        {
+            _logger.LogWarning("Blocked search query due to forbidden keyword: {Title}", title);
+            return new List<ProductResponse>();
+        }
+
+        // Chuẩn hóa tiêu đề (loại bỏ dấu tiếng Việt)
+        title = RemoveDiacritics(Regex.Replace(title, @"\s+", " "));
+
+        // Danh sách từ không có ý nghĩa (stopwords)
+        var stopWords = new HashSet<string> { "và", "hoặc", "của", "là", "có", "với", "bởi", "cho", "trong", "một", "những", "các", "the", "an", "or", "is", "on", "at" };
+
+        // Lấy danh sách sản phẩm từ database
+        var products = await _productRepo.GetAllProductsAsync() ?? new List<Product>();
+
+        // Tự động tạo danh sách từ khóa hợp lệ từ tên sản phẩm
+        var validKeywords = products
+            .SelectMany(p => RemoveDiacritics(p.ProductName.ToLower()).Split(' '))
+            .Where(word => word.Length > 1 && !stopWords.Contains(word))
+            .Distinct()
+            .ToHashSet();
+
+        // Tách từ khóa tìm kiếm, chỉ giữ lại từ có trong danh sách hợp lệ
+        var keywords = title.Split(' ')
+                            .Where(k => validKeywords.Contains(k))
+                            .ToList();
+
+        if (!keywords.Any())
+        {
+            _logger.LogWarning("Search query contains only invalid words: {Title}", title);
+            return new List<ProductResponse>();
+        }
+
+        // Lọc sản phẩm dựa trên từ khóa hợp lệ
+        var filteredProducts = products.Where(p =>
+        {
+            var productName = RemoveDiacritics(p.ProductName.ToLower());
+            return keywords.All(keyword => productName.Contains(keyword));
+        }).ToList();
+
+        return _mapper.Map<List<ProductResponse>>(filteredProducts);
     }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error while searching products with title: {Title}", title);
+        return new List<ProductResponse>();
+    }
+}
+
+
 
     public async Task<ProductResponse?> GetProductByIdAsync(int id)
     {
@@ -560,4 +605,39 @@ public class ProductService : IProductService
             throw;
         }
     }
+
+    public async Task<(ProductResponse product, ProductVariantResponse variant, bool isStock)> CheckStockAsync(int productId, int variantId)
+    {
+        Product product = null;
+        ProductVariant variant = null;
+        bool isStock = false;
+
+        try
+        { 
+            product = await _productRepo.GetProductByIdAsync(productId);
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"❌ Không tìm thấy sản phẩm có ID: {productId}");
+            }
+
+            variant = product.ProductVariants.FirstOrDefault(v => v.VariantId == variantId);
+            if (variant != null)
+            {
+                isStock = variant.Quantity > 0; // Kiểm tra tồn kho của biến thể
+            }
+            else
+            {
+                isStock = product.Quantity > 0; // Nếu không có biến thể, kiểm tra tồn kho sản phẩm gốc
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Lỗi khi kiểm tra tồn kho: {ex.Message}");
+        }
+
+        var productResponse = _mapper.Map<ProductResponse>(product);
+        var variantResponse = _mapper.Map<ProductVariantResponse>(variant);
+        return (productResponse, variantResponse, isStock);
+    }
+
 }

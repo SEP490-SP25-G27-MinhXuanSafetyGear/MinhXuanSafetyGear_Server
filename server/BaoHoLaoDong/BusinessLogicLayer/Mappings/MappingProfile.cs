@@ -143,8 +143,6 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.TotalSale, otp => otp.MapFrom(src => src.TotalSale))
                 .ForMember(dest => dest.FreeShip, otp => otp.MapFrom(src => src.FreeShip))
                 .ForMember(dest => dest.Guarantee, otp => otp.MapFrom(src => src.Guarantee))
-                .ForMember(dest => dest.PriceDiscount,
-                    otp => otp.MapFrom(src => src.Price - src.Price * src.Discount / 100))
                 .ForMember(dest => dest.Discount, otp => otp.MapFrom(src => (src.Discount)))
                 .ForMember(dest => dest.AverageRating,
                     otp => otp.MapFrom(src =>
@@ -204,9 +202,12 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.PostId, otp => otp.MapFrom(src => src.Id))
                 .ForMember(dest => dest.CategoryBlogId, otp => otp.MapFrom(src => src.Category))
                 .ForMember(dest => dest.Title, otp => otp.MapFrom(src => src.Title))
+                .ForMember(dest=>dest.Summary,otp=>otp.MapFrom(src=>src.Summary))
+                .ForMember(dest=>dest.Tags, otp => otp.MapFrom(src => src.Tags))
                 .ForMember(dest => dest.Content, otp => otp.MapFrom(src => src.Content))
                 .ForMember(dest => dest.Status, otp => otp.MapFrom(src => src.Status))
-                .ForMember(dest => dest.FileName, opt => opt.Ignore());
+                .ForMember(dest => dest.FileName, opt => opt.Ignore())
+                .ReverseMap();
 
             CreateMap<NewBlogCategory, BlogCategory>()
                 .ForMember(d => d.CategoryName, otp => otp.MapFrom(s => s.Name))

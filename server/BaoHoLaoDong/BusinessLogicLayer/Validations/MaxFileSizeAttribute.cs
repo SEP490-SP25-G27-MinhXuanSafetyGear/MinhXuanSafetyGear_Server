@@ -1,36 +1,46 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace BusinessLogicLayer.Validations;
-
-public class MaxFileSizeAttribute : ValidationAttribute
+namespace BusinessLogicLayer.Validations
 {
-    private readonly int _maxFileSizeInMB;
-
-    public MaxFileSizeAttribute(int maxFileSizeInMB)
+    public class MaxFileSizeAttribute : ValidationAttribute
     {
-        _maxFileSizeInMB = maxFileSizeInMB;
-    }
+        private readonly int _maxFileSizeInBytes;
 
-    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
-    {
-        if (value is List<IFormFile> files)
+        public MaxFileSizeAttribute(int maxFileSizeInMB)
         {
-            foreach (var file in files)
+            _maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024; 
+        }
+
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is List<IFormFile> files)
             {
-                if (file.Length > _maxFileSizeInMB * 1024 * 1024)
+                foreach (var file in files)
                 {
-                    return new ValidationResult($"File {file.FileName} quá lớn, chỉ cho phép tối đa {_maxFileSizeInMB}MB.");
+                    if (file.Length > _maxFileSizeInBytes)
+                    {
+                        return new ValidationResult(GetErrorMessage(file.FileName));
+                    }
                 }
             }
-        }
-        else if (value is IFormFile file)
-        {
-            if (file.Length > _maxFileSizeInMB * 1024 * 1024)
+            else if (value is IFormFile file)
             {
-                return new ValidationResult($"File {file.FileName} quá lớn, chỉ cho phép tối đa {_maxFileSizeInMB}MB.");
+                if (file.Length > _maxFileSizeInBytes)
+                {
+                    return new ValidationResult(GetErrorMessage(file.FileName));
+                }
             }
+            return ValidationResult.Success;
         }
-        return ValidationResult.Success;
+
+        private string GetErrorMessage(string fileName)
+        {
+            if (_maxFileSizeInBytes < 1024 * 1024)
+            {
+                return $"File {fileName} quá lớn, chỉ cho phép tối đa {_maxFileSizeInBytes / 1024}KB.";
+            }
+            return $"File {fileName} quá lớn, chỉ cho phép tối đa {_maxFileSizeInBytes / (1024 * 1024)}MB.";
+        }
     }
 }

@@ -28,9 +28,9 @@ namespace BusinessLogicLayer.Services
         private readonly IUserRepo _userRepo;
         private readonly INotificationRepo _notificationRepo;
         private readonly IMailService _mailService;
-
+        private readonly IProductService _productService;
         public OrderService(IOrderRepo orderRepo,IProductRepo productRepo,IUserRepo userRepo, 
-            INotificationRepo notificationRepo,
+            INotificationRepo notificationRepo,IProductService productService,
             IMapper mapper, ILogger<OrderService> logger, IConfiguration configuration,
             IMailService mailService)
         {
@@ -39,6 +39,7 @@ namespace BusinessLogicLayer.Services
             _logger = logger;
             _productRepo =productRepo;
             _configuration = configuration;
+            _productService =productService;
             _userRepo = userRepo;
             _notificationRepo = notificationRepo;
             _mailService = mailService;
@@ -632,49 +633,22 @@ namespace BusinessLogicLayer.Services
             {
                 var cus = await _userRepo.GetCustomerByEmailAsync(newOrder.CustomerEmail);
                 var order = _mapper.Map<Order>(newOrder);
-
-                if (order == null)
-                {
-                    _logger.LogError("Order is null");
-                    throw new Exception("Order is null");
-                }
-
                 if (order.OrderDetails.Any())
                 {
                     foreach (var odDetail in order.OrderDetails)
                     {
-                        var p = await _productRepo.GetProductByIdAsync(odDetail.ProductId);
-                        if (p == null)
-                        {
-                            _logger.LogWarning($"Product with ID {odDetail.ProductId} not found.");
-                            throw new Exception($"Product with ID {odDetail.ProductId} not found.");
-                        }
-                        var variant = p.ProductVariants.FirstOrDefault(v=>v.VariantId == odDetail.VariantId);
-                        if (variant != null)
-                        {
-                            if (variant.Quantity != 0 && variant.Quantity < odDetail.Quantity)
-                            {
-                                return null;
-                                //throw new Exception("Quantity is less than or equal to quantity.");
-                            }
-                        }
-                        else
-                        {
-                            if (p.Quantity != 0 && p.Quantity < odDetail.Quantity)
-                            {
-                                return null;
-                                //throw new Exception("Quantity is less than or equal to quantity.");
-                            }
-                        }
-                        var price = variant ==null ?p.Price :variant.Price.GetValueOrDefault(0); 
-                        var discount = variant == null? p.Discount.GetValueOrDefault(0):variant.Discount; 
-                        var tax = p.TotalTax.GetValueOrDefault(0); 
+                        
+                        var (product,variant,isStock) = await _productService.CheckStockAsync(odDetail.ProductId,odDetail.VariantId.GetValueOrDefault(0));
+                        if (!isStock) return null;
+                        var price = variant == null ?product.Price :variant.Price.GetValueOrDefault(0); 
+                        var discount = variant == null? product.Discount.GetValueOrDefault(0):variant.Discount; 
+                        var tax = product.TotalTax.GetValueOrDefault(0); 
                         var priceAfterDiscount = price * (1 - discount / 100);
                         var finalPrice = priceAfterDiscount * (1 + tax / 100);
-                        odDetail.ProductPrice = finalPrice;
-                        odDetail.ProductDiscount = discount;
-                        odDetail.TotalPrice = finalPrice * odDetail.Quantity;
-                        odDetail.ProductName = p.ProductName;
+                        odDetail.ProductPrice = finalPrice.GetValueOrDefault(0);
+                        odDetail.ProductDiscount = discount.GetValueOrDefault(0);
+                        odDetail.TotalPrice = finalPrice.GetValueOrDefault(0) * odDetail.Quantity;
+                        odDetail.ProductName = product.Name;
                         odDetail.VariantId = odDetail.VariantId;
                         odDetail.Size = variant?.Size ;
                         odDetail.Color = variant?.Color;
@@ -689,8 +663,7 @@ namespace BusinessLogicLayer.Services
                     Amount = order.TotalAmount,
                     PaymentConfirmOfCustomer = false,
                     PaymentMethod = newOrder.PaymentMethod,
-                    QrcodeData =
-                        $"https://vietqr.co/api/generate/MB/0974841508/VIETQR.CO/{order.TotalAmount}/{invoiceNumber}"
+                    QrcodeData = $"https://vietqr.co/api/generate/MB/0974841508/VIETQR.CO/{order.TotalAmount}/{invoiceNumber}"
                 };
                 order.CustomerId = cus?.CustomerId;
                 order = await _orderRepo.CreateOrderAsync(order);
@@ -699,7 +672,7 @@ namespace BusinessLogicLayer.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating new order.");
-                throw new Exception($"Error creating new order: {ex.Message}"); ;
+                return null;
             }
         }
     }
