@@ -14,10 +14,10 @@ public class NotificationService : INotificationService
     private readonly IMapper _mapper;
     private readonly INotificationRepo _notificationRepo;
 
-    public NotificationService(IMapper mapper, MinhXuanDatabaseContext context)
+    public NotificationService(IMapper mapper, INotificationRepo notificationRepo)
     {
         _mapper = mapper;
-        _notificationRepo = new NotificationRepo(context);
+        _notificationRepo = notificationRepo;
     }
 
     public async Task<List<NotificationResponse>?> GetAllNotificationsAsync(int userId)

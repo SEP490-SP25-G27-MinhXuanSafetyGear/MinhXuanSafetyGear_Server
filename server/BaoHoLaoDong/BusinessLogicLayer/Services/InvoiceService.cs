@@ -21,9 +21,9 @@ public class InvoiceService : IInvoiceService
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceService> _logger;
     private ApplicationUrls _applicationUrls;
-    public InvoiceService(MinhXuanDatabaseContext context, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger,IOptions<ApplicationUrls> applicationUrls )
+    public InvoiceService(IInvoiceRepo invoiceRepo, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger,IOptions<ApplicationUrls> applicationUrls )
     {
-        _invoiceRepo = new InvoiceRepo(context);
+        _invoiceRepo = invoiceRepo;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;

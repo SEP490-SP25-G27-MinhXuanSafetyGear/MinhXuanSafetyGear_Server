@@ -29,15 +29,18 @@ namespace BusinessLogicLayer.Services
         private readonly INotificationRepo _notificationRepo;
         private readonly IMailService _mailService;
 
-        public OrderService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<OrderService> logger, IConfiguration configuration, IMailService mailService)
+        public OrderService(IOrderRepo orderRepo,IProductRepo productRepo,IUserRepo userRepo, 
+            INotificationRepo notificationRepo,
+            IMapper mapper, ILogger<OrderService> logger, IConfiguration configuration,
+            IMailService mailService)
         {
-            _orderRepo = new OrderRepo(context);
+            _orderRepo = orderRepo;
             _mapper = mapper;
             _logger = logger;
-            _productRepo = new ProductRepo(context);
+            _productRepo =productRepo;
             _configuration = configuration;
-            _userRepo = new UserRepo(context);
-            _notificationRepo = new NotificationRepo(context);
+            _userRepo = userRepo;
+            _notificationRepo = notificationRepo;
             _mailService = mailService;
         }
 
@@ -644,6 +647,22 @@ namespace BusinessLogicLayer.Services
                             throw new Exception($"Product with ID {odDetail.ProductId} not found.");
                         }
                         var variant = p.ProductVariants.FirstOrDefault(v=>v.VariantId == odDetail.VariantId);
+                        if (variant != null)
+                        {
+                            if (variant.Quantity != 0 && variant.Quantity < odDetail.Quantity)
+                            {
+                                return null;
+                                //throw new Exception("Quantity is less than or equal to quantity.");
+                            }
+                        }
+                        else
+                        {
+                            if (p.Quantity != 0 && p.Quantity < odDetail.Quantity)
+                            {
+                                return null;
+                                //throw new Exception("Quantity is less than or equal to quantity.");
+                            }
+                        }
                         var price = variant ==null ?p.Price :variant.Price.GetValueOrDefault(0); 
                         var discount = variant == null? p.Discount.GetValueOrDefault(0):variant.Discount; 
                         var tax = p.TotalTax.GetValueOrDefault(0); 
@@ -661,7 +680,6 @@ namespace BusinessLogicLayer.Services
 
                 order.TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice);
                 var invoiceNumber = Guid.NewGuid().ToString();
-
                 order.Invoice = new Invoice()
                 {
                     InvoiceNumber = invoiceNumber,
@@ -671,18 +689,14 @@ namespace BusinessLogicLayer.Services
                     QrcodeData =
                         $"https://vietqr.co/api/generate/MB/0974841508/VIETQR.CO/{order.TotalAmount}/{invoiceNumber}"
                 };
-
                 order.CustomerId = cus?.CustomerId;
-                _logger.LogInformation($"NewOrder Data: {JsonConvert.SerializeObject(order)}");
-
                 order = await _orderRepo.CreateOrderAsync(order);
-
                 return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating new order.");
-                throw;
+                throw new Exception($"Error creating new order: {ex.Message}"); ;
             }
         }
     }

@@ -1,10 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using AutoMapper;
+using BusinessLogicLayer.Hubs;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
-using ManagementAPI.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.SignalR;

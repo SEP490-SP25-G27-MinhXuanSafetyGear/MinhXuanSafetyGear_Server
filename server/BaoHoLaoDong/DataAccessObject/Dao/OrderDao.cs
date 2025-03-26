@@ -47,9 +47,42 @@ public class OrderDao : IDao<Order>
     public async Task<Order?> CreateAsync(Order entity)
     {
         await _context.Orders.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        var result = await _context.SaveChangesAsync();
+    
+        if (result > 0)
+        {
+            var products = entity.OrderDetails.Select(p => new
+            {
+                productId = p.ProductId,
+                variantId = p.VariantId,
+                quantity = p.Quantity,
+            }).ToList();
+            foreach (var p in products)
+            {
+                if (p.variantId != null && p.variantId != 0)
+                {
+                    var variant = await _context.ProductVariants
+                        .FirstOrDefaultAsync(v => v.ProductId == p.productId && v.VariantId == p.variantId);
+                    if (variant != null)
+                    {
+                        variant.Quantity -= p.quantity; 
+                    }
+                }
+                else
+                {
+                    var product = await _context.Products.FirstOrDefaultAsync(pr => pr.ProductId == p.productId);
+                    if (product != null)
+                    {
+                        product.Quantity -= p.quantity;
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+
         return await GetByIdAsync(entity.OrderId);
     }
+
 
 
     // Update an existing Order
