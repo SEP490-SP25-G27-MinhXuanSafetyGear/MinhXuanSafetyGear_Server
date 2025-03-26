@@ -15,13 +15,13 @@ public class ReportService :IReportService
     private readonly IInvoiceRepo _invoiceRepo;
     private readonly IMapper _mapper;
 
-    public ReportService(MinhXuanDatabaseContext context, IMapper mapper)
+    public ReportService( IProductRepo productRepo,IUserRepo userRepo,IOrderRepo orderRepo,IInvoiceRepo invoiceRepo, IMapper mapper)
     {
-        _productRepo = new ProductRepo(context);
-        _userRepo = new UserRepo(context);
-        _orderRepo = new OrderRepo(context);
+        _productRepo = productRepo;
+        _userRepo =userRepo;
+        _orderRepo = orderRepo;
         _mapper = mapper;
-        _invoiceRepo = new InvoiceRepo(context);
+        _invoiceRepo =  invoiceRepo;
     }
 
     public async Task<Report> GetReport()

@@ -22,9 +22,9 @@ public class UserService : IUserService
     private readonly IMapper _mapper;
     private readonly ILogger<UserService> _logger;
     // Inject ILogger vào constructor
-    public UserService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
+    public UserService(IUserRepo userRepo, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
     {
-        _userRepo = new UserRepo(context);
+        _userRepo =userRepo;
         _mapper = mapper;
         _logger = logger;
         _mailService = mailService;

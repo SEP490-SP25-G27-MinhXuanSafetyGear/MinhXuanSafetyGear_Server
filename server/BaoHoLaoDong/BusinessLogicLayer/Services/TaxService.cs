@@ -14,9 +14,9 @@ public class TaxService :ITaxService
     private readonly ITaxRepo _taxRepo;
     private readonly IMapper _mapper;
     private readonly ILogger<TaxService> _logger;
-    public TaxService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<TaxService> logger)
+    public TaxService(ITaxRepo taxRepo , IMapper mapper, ILogger<TaxService> logger)
     {
-        _taxRepo = new TaxRepo(context);
+        _taxRepo = taxRepo;
         _mapper = mapper;
         _logger = logger;
     }

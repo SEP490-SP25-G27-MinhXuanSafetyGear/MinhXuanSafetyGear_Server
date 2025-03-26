@@ -1,11 +1,12 @@
 using System.Text;
+using BusinessLogicLayer.Hubs;
 using BusinessLogicLayer.Mappings;
 using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
-using ManagementAPI;
-using ManagementAPI.Hubs;
+using DataAccessObject.Repository;
+using DataAccessObject.Repository.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -73,8 +74,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 // Add database context
-var connectionString = builder.Configuration.GetConnectionString("DbConnections");
-builder.Services.AddDbContext<MinhXuanDatabaseContext>(options=>options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<MinhXuanDatabaseContext>(options=>options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnections")));
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -84,7 +84,17 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile(new MappingProfile(applicationUrl));
 });
 
+#region repository
 
+builder.Services.AddScoped<IBlogPostRepo,BlogPostRepo>();
+builder.Services.AddScoped<IInvoiceRepo,InvoiceRepo>();
+builder.Services.AddScoped<INotificationRepo,NotificationRepo>();
+builder.Services.AddScoped<IOrderRepo,OrderRepo>();
+builder.Services.AddScoped<IProductRepo,ProductRepo>();
+builder.Services.AddScoped<ITaxRepo,TaxRepo>();
+builder.Services.AddScoped<IUserRepo,UserRepo>();
+
+#endregion
 #region services
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -94,7 +104,11 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 // Add services from BusinessLogicLayer
 builder.Services.AddScoped<IUserService, UserService>();
 var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-
+builder.Services.AddSingleton<IOrderQueueService>(provider =>
+{
+    var redisConnection = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+    return new OrderQueueService(redisConnection);
+});
 builder.Services.AddSingleton(imageDirectory);
 builder.Services.AddScoped<IFileService,FileService>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -104,7 +118,7 @@ builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-
+builder.Services.AddHostedService<OrderQueueWorker>();
 // Đăng ký MailService
 builder.Services.AddScoped<IMailService, MailService>();
 // Add TokenService

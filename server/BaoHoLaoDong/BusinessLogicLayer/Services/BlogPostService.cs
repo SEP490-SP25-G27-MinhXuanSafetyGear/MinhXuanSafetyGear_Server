@@ -21,9 +21,9 @@ public class BlogPostService : IBlogPostService
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
     private readonly IFileService _fileService;
-    public BlogPostService(MinhXuanDatabaseContext context,IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(IBlogPostRepo blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
     {
-        _blogPostRepo = new BlogPostRepo(context);
+        _blogPostRepo = blogPostRepo;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;

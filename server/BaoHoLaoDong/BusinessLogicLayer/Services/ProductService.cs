@@ -23,13 +23,13 @@ public class ProductService : IProductService
     private readonly ITaxRepo _taxRepo;
     private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","products");
     private readonly IFileService _fileService;
-    public ProductService(MinhXuanDatabaseContext context, IMapper mapper, ILogger<ProductService> logger,IFileService fileService)
+    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper, ILogger<ProductService> logger,IFileService fileService)
     {
-        _productRepo = new ProductRepo(context);
+        _productRepo = productRepo;
         _mapper = mapper;
         _logger = logger;
         _fileService = fileService;
-        _taxRepo = new TaxRepo(context);
+        _taxRepo = taxRepo;
     }
 
 

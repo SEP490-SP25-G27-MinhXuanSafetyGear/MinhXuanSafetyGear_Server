@@ -1,4 +1,5 @@
 ﻿using System;
+using BusinessLogicLayer.Hubs;
 using BusinessLogicLayer.Services.Interface;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
@@ -7,13 +8,6 @@ using ManagementAPI.ModelHelper;
 using BusinessLogicLayer.Models;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
-using ManagementAPI.Hubs;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace ManagementAPI.Controllers
 {
@@ -28,9 +22,9 @@ namespace ManagementAPI.Controllers
         private readonly IMailService _mailService;
         private readonly IHubContext<OrderHub> _orderHub;
         private readonly ILogger<OrderController> _logger;
-
+        private readonly IOrderQueueService _orderQueueService;
         public OrderController(IOrderService orderService, IConfiguration configuration, ILogger<OrderController> logger, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub,
-            INotificationService notificationService
+            INotificationService notificationService,IOrderQueueService orderQueueService
             , IMailService mailService)
         {
             _orderService = orderService;
@@ -38,6 +32,7 @@ namespace ManagementAPI.Controllers
             _notificationHub = notificationHub;
             _orderHub = orderHub;
             _notificationService = notificationService;
+            _orderQueueService = orderQueueService;
             _mailService = mailService;
             _logger = logger;
         }
@@ -65,6 +60,7 @@ namespace ManagementAPI.Controllers
         [HttpPost("create-order-v2")]
         public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
         {
+            /*
             try
             {
                 if (newOrder == null || newOrder.OrderDetails == null || !newOrder.OrderDetails.Any())
@@ -102,6 +98,16 @@ namespace ManagementAPI.Controllers
             {
                 _logger.LogError(ex, "Error in CreateOrderV2");
                 return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
+            */
+            try
+            {
+                await _orderQueueService.EnqueueOrder(newOrder);
+                return Ok("chung toi da ghi nhan đơn hàng của bạn!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
