@@ -104,11 +104,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 // Add services from BusinessLogicLayer
 builder.Services.AddScoped<IUserService, UserService>();
 var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-builder.Services.AddSingleton<IOrderQueueService>(provider =>
-{
-    var redisConnection = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
-    return new OrderQueueService(redisConnection);
-});
+builder.Services.AddSingleton<IOrderQueueService,OrderQueueService>();
 builder.Services.AddSingleton(imageDirectory);
 builder.Services.AddScoped<IFileService,FileService>();
 builder.Services.AddScoped<IProductService, ProductService>();

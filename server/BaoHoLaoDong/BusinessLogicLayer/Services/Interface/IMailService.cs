@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Mappings.ResponseDTO;
+﻿using BusinessLogicLayer.Mappings.RequestDTO;
+using BusinessLogicLayer.Mappings.ResponseDTO;
 
 namespace BusinessLogicLayer.Services.Interface;
 
@@ -15,4 +16,5 @@ public interface IMailService
     public Task<bool> SendOrderConfirmationEmailAsync(OrderResponse orderResponse);
     public  Task<bool> SendAccountCreatedEmailAsync(string toEmail, string username);
     Task<bool> SendResetPasswordEmail(string userEmail, string resetUrl);
+    Task SendOrderFailureEmailAsync(NewOrder order);
 }

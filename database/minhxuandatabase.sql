@@ -142,10 +142,11 @@ CREATE TABLE ProductVariants (
     Color nvarchar(50) NULL,                              -- Màu sắc của sản phẩm (nếu có)
     Quantity int NOT NULL,                                -- Số lượng của biến thể này
     Price decimal(18,2) NULL,                             -- Giá của biến thể sản phẩm này (có thể khác so với giá mặc định)
-    Discount decimal(5,2) not NULL DEFAULT 0.00,              -- Giảm giá của biến thể (nếu có)
-    [Status] bit NOT NULL DEFAULT 1,                        -- Trạng thái biến thể (1: Còn bán, 0: Ngừng bán)
+    Discount decimal(5,2) not NULL DEFAULT 0.00,          -- Giảm giá của biến thể (nếu có)
+    [Status] bit NOT NULL DEFAULT 1,                      -- Trạng thái biến thể (1: Còn bán, 0: Ngừng bán)
     CreatedAt datetime NOT NULL DEFAULT GETDATE(),        -- Thời gian tạo biến thể
     UpdatedAt datetime NULL,                              -- Thời gian cập nhật biến thể
+	Unique(ProductId,Size,Color),                         
     CONSTRAINT FK_ProductVariants_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId) ON DELETE CASCADE
 );
 GO
@@ -213,23 +214,21 @@ CREATE TABLE BlogCategories (
 GO
 
 GO
--- Tạo bảng BlogPosts
 CREATE TABLE BlogPosts (
-    PostId int primary key identity(1,1),             -- Khoá chính cho bài viết
-    Title nvarchar(255) not null,                      -- Tiêu đề bài viết
-	Slug nvarchar(255) not null ,
-	CategoryBlogId int NULL, 
-    Content nvarchar(max) not null,                    -- Nội dung bài viết
-    CreatedAt datetime not null default getdate(),     -- Thời gian tạo bài viết
-    UpdatedAt datetime null,                           -- Thời gian cập nhật bài viết
-	[FileName] nvarchar(250) null,                       -- Tên file của ảnh
-	ImageURL nvarchar(max) null,                       -- URL của hình ảnh bài viết
-    [Status] varchar(50) not null default 'Draft'  ,      -- Trạng thái bài viết (Draft, Published)
-	UNIQUE(Slug),
-	CONSTRAINT FK_BlogPosts_BlogCategories FOREIGN KEY (CategoryBlogId) REFERENCES BlogCategories(CategoryBlogId) ON DELETE SET NULL  -- Khoá ngoại tới bảng BlogCategories
+    PostId INT PRIMARY KEY IDENTITY(1,1),             -- ID bài viết
+    Title NVARCHAR(255) NOT NULL,                      -- Tiêu đề bài viết
+	PostURL NVARCHAR(500) NULL,                        --  Đường dẫn đến bài viết
+    Slug NVARCHAR(255) NOT NULL UNIQUE,                -- Đường dẫn thân thiện (SEO)
+    CategoryBlogId INT NULL,                           -- ID danh mục bài viết
+    Content NVARCHAR(MAX) NOT NULL,                    -- Nội dung bài viết
+    Summary NVARCHAR(500) NULL,                        -- Tóm tắt bài viết
+    Tags NVARCHAR(255) NULL,                           -- Thẻ (tags) để phân loại bài viết
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),     -- Thời gian tạo bài viết
+    UpdatedAt DATETIME NULL,                           -- Thời gian cập nhật bài viết
+    Status VARCHAR(50) NOT NULL DEFAULT 'Draft',       -- Trạng thái (Draft, Published, Archived)
+    FileName NVARCHAR(250) NULL                       -- Tên file hình ảnh chính
+    CONSTRAINT FK_BlogPosts_BlogCategories FOREIGN KEY (CategoryBlogId) REFERENCES BlogCategories(CategoryBlogId) ON DELETE SET NULL
 );
-GO
-
 -- Tạo bảng AccountVerifications
 CREATE TABLE AccountVerifications (
     VerificationId int PRIMARY KEY IDENTITY(1,1),   -- Khoá chính cho xác minh
@@ -384,7 +383,9 @@ VALUES
 (N'Liên hệ', 'lien-he'),
 (N'Chính Sách', 'chinh-sach'),
 (N'Hướng Dẫn', 'huong-dan'),
-(N'KIẾN THỨC AN TOÀN LAO ĐỘNG', 'kien-thuc-an-toan-lao-dong');
+(N'KIẾN THỨC AN TOÀN LAO ĐỘNG', 'kien-thuc-an-toan-lao-dong'),
+(N'Quảng cáo', 'quang-cao')
+;
 INSERT INTO BlogPosts (Title, Content, CategoryBlogId, Slug)
 VALUES 
 (N'Địa chỉ', N'Hai Bà Trưng, Hà Nội', 1, 'dia-chi'),
@@ -460,3 +461,28 @@ WHERE CategoryId IN (14);  -- Các sản phẩm thuộc nhóm "Thiết bị phò
 UPDATE ProductCategory
 SET GroupId = 6
 WHERE CategoryId IN (15, 16);  -- Các sản phẩm thuộc nhóm "Phòng cháy chữa cháy"
+INSERT INTO Products (ProductName, Slug, CategoryId, [Description], Material, Origin, Quantity, Price, Discount, FreeShip, Guarantee)
+VALUES 
+(N'Mũ bảo hộ', 'mu-bao-ho', 1, N'Mũ bảo hộ chất lượng cao, bảo vệ đầu khỏi va đập.', N'Nhựa', N'Việt Nam', 100, 150000, 0, 1, 12),
+(N'Găng tay bảo hộ', 'gang-tay-bao-ho', 2, N'Găng tay bảo hộ chống cắt, an toàn cho người sử dụng.', N'Vải', N'Việt Nam', 200, 50000, 5, 1, 6),
+(N'Kính bảo hộ', 'kinh-bao-ho', 3, N'Kính bảo hộ chống bụi và tia UV.', N'Kính', N'Việt Nam', 150, 75000, 0, 1, 12),
+(N'Giày bảo hộ', 'giay-bao-ho', 4, N'Giày bảo hộ chống đinh và trơn trượt.', N'Da', N'Việt Nam', 80, 300000, 10, 1, 24),
+(N'Quần áo bảo hộ', 'quan-ao-bao-ho', 5, N'Quần áo bảo hộ chống tĩnh điện.', N'Thun', N'Việt Nam', 50, 200000, 15, 1, 12),
+(N'Khẩu trang bảo hộ', 'khau-trang-bao-ho', 6, N'Khẩu trang bảo vệ sức khỏe, chống bụi mịn.', N'Vải', N'Việt Nam', 500, 20000, 0, 1, 0),
+(N'Bịt tai chống ồn', 'bit-tai-chong-on', 7, N'Bịt tai giảm tiếng ồn khi làm việc.', N'Nhựa', N'Việt Nam', 300, 30000, 0, 1, 0),
+(N'Áo phản quang', 'ao-phan-quang', 8, N'Áo phản quang giúp tăng khả năng nhận diện.', N'Thun', N'Việt Nam', 100, 120000, 5, 1, 12),
+(N'Dây đai an toàn', 'day-dai-an-toan', 9, N'Dây đai bảo vệ khi làm việc trên cao.', N'Vải', N'Việt Nam', 150, 80000, 0, 1, 12),
+(N'Mặt nạ phòng độc', 'mat-na-phong-doc', 10, N'Mặt nạ bảo vệ khỏi khí độc.', N'Nhựa', N'Việt Nam', 60, 100000, 0, 1, 12);
+
+INSERT INTO ProductVariants (ProductId, Size, Color, Quantity, Price, Discount)
+VALUES 
+(1, 'M', 'Đen', 50, 150000, 0),
+(1, 'L', 'Xanh', 100, 150000, 5),
+(2, 'M', 'Trắng', 75, 50000, 0),
+(2, 'L', 'Đỏ', 50, 50000, 10),
+(3, 'M', 'Xám', 60, 75000, 0),
+(3, 'L', 'Vàng', 40, 75000, 5),
+(4, '42', 'Nâu', 30, 300000, 10),
+(4, '43', 'Đen', 20, 300000, 15),
+(5, 'M', 'Xanh dương', 20, 200000, 0),
+(5, 'L', 'Hồng', 15, 200000, 5);

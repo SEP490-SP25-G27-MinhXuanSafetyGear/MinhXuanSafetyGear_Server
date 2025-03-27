@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Mappings.ResponseDTO;
+﻿using BusinessLogicLayer.Mappings.RequestDTO;
+using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Models;
 using MimeKit;
 using MailKit.Net.Smtp;
@@ -140,6 +141,7 @@ namespace BusinessLogicLayer.Services
                     <table style='width:100%; border-collapse: collapse; font-family: Arial, sans-serif;'>
                         <thead>
                             <tr style='background-color: #f2f2f2;'>
+                                <th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Ảnh</th>
                                 <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Sản phẩm</th>
                                 <th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Số lượng</th>
                                 <th style='border: 1px solid #ddd; padding: 8px; text-align: right;'>Đơn giá</th>
@@ -152,6 +154,9 @@ namespace BusinessLogicLayer.Services
                 {
                     orderDetailsTable += $@"
                             <tr>
+                                <td style='border: 1px solid #ddd; padding: 8px; text-align: center;'>
+                                <img src='{detail.ProductImage}' alt='{detail.ProductName}' style='width: 50px; height: 50px; object-fit: cover; border-radius: 5px;' />
+                                </td>
                                 <td style='border: 1px solid #ddd; padding: 8px;'>{detail.ProductName}</td>
                                 <td style='border: 1px solid #ddd; padding: 8px; text-align: center;'>{detail.Quantity}</td>
                                 <td style='border: 1px solid #ddd; padding: 8px; text-align: right;'>{detail.ProductPrice:C}</td>
@@ -305,5 +310,14 @@ namespace BusinessLogicLayer.Services
                 return false;
             }
         }
+
+        public async Task SendOrderFailureEmailAsync(NewOrder order)
+        {
+            var subject = "Đơn hàng không thành công";
+            var body = $"Xin chào {order.CustomerEmail},<br><br>Chúng tôi rất tiếc thông báo rằng đơn hàng của bạn không thể hoàn thành do một số sản phẩm đã hết hàng.<br><br>Vui lòng thử đặt hàng lại sau.<br><br>Trân trọng, <br>Đội ngũ hỗ trợ.";
+    
+            await SendEmailAsync(order.CustomerEmail, subject, body);
+        }
+
     }
 }
