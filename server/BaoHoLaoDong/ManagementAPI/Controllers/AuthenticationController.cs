@@ -212,7 +212,7 @@ namespace ManagementAPI.Controllers
                 return NotFound("User not found.");
             }
             var resetToken = _tokenService.GenerateJwtTokenByMinutes(user.Email, user.Id, user.Role,1);
-            var resetUrl = $"{_configuration["ApplicationSettings:UrlResetPassword"]}?email={email}&token={resetToken}&time={DateTime.Now.AddMinutes(5)}";
+            var resetUrl = $"{_configuration["ApplicationSettings:ClientUrl"]}/reset-password?email={email}&token={resetToken}&time={DateTime.Now.AddMinutes(5)}";
             await _mailService.SendResetPasswordEmail(user.Email, resetUrl);
             return Ok(new
             {

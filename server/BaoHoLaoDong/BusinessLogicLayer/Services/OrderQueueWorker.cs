@@ -17,12 +17,15 @@ public class OrderQueueWorker : BackgroundService
     private readonly ILogger<OrderQueueWorker> _logger;
     private readonly IHubContext<NotificationHub> _notificationHub;
     private readonly IHubContext<OrderHub> _orderHub;
+    private readonly IHubContext<ProductHub> _productHub;
 
     public OrderQueueWorker(IServiceScopeFactory serviceScopeFactory, ILogger<OrderQueueWorker> logger,
-          IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub)
+          IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub,IHubContext<ProductHub> productHub
+          )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _notificationHub = notificationHub;
+        _productHub = productHub;
         _orderHub = orderHub;
         _logger = logger;
     }
@@ -43,7 +46,7 @@ public class OrderQueueWorker : BackgroundService
                     var notificationService = services.GetRequiredService<INotificationService>();
                     var mailService = services.GetRequiredService<IMailService>();
                     var orderQueueService = services.GetRequiredService<IOrderQueueService>();
-
+                    var productService = services.GetRequiredService<IProductService>();
                     try
                     {
                         var newOrder = await orderQueueService.DequeueOrder();
@@ -70,13 +73,13 @@ public class OrderQueueWorker : BackgroundService
                                         await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString())
                                             .SendAsync("ReceiveNotification", notifi);
                                         await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder);
-
-                                        // Xử lý gửi email không chặn vòng lặp
+                                        foreach (var odl in createdOrder.OrderDetails)
+                                        {
+                                            var product = await productService.GetProductByIdAsync(odl.ProductId);
+                                            await _productHub.Clients.All.SendAsync("ProductUpdated",product );
+                                        }
                                         _ = Task.Run(() => mailService.SendOrderConfirmationEmailAsync(createdOrder), stoppingToken);
-
                                         _logger.LogInformation($"✅ Xử lý đơn hàng thành công của: {createdOrder.Email}");
-
-                                        // Reset delay nếu có đơn hàng
                                         delayMilliseconds = 1000;
                                     }
                                     catch (Exception ex)

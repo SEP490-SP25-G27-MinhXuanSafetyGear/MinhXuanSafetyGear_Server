@@ -631,6 +631,34 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
+                var order = await CreateOrderEntityAsync(newOrder);
+                order = await _orderRepo.CreateOrderAsync(order);
+                return _mapper.Map<OrderResponse>(order);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating new order.");
+                return null;
+            }
+        }
+
+        public async Task<OrderResponse?> CalculateOrderAsync(NewOrder newOrder)
+        {
+            try
+            {
+                var order = await CreateOrderEntityAsync(newOrder);
+                return _mapper.Map<OrderResponse>(order);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Order> CreateOrderEntityAsync(NewOrder newOrder)
+        {
+            try
+            {   
                 var cus = await _userRepo.GetCustomerByEmailAsync(newOrder.CustomerEmail);
                 var order = _mapper.Map<Order>(newOrder);
                 if (order.OrderDetails.Any())
@@ -641,7 +669,7 @@ namespace BusinessLogicLayer.Services
                         var (product,variant,isStock) = await _productService.CheckStockAsync(odDetail.ProductId,odDetail.VariantId.GetValueOrDefault(0));
                         if (!isStock) return null;
                         var price = variant == null ?product.Price :variant.Price.GetValueOrDefault(0); 
-                        var discount = variant == null? product.Discount.GetValueOrDefault(0):variant.Discount; 
+                        var discount =  product.Discount; 
                         var tax = product.TotalTax.GetValueOrDefault(0); 
                         var priceAfterDiscount = price * (1 - discount / 100);
                         var finalPrice = priceAfterDiscount * (1 + tax / 100);
@@ -666,12 +694,10 @@ namespace BusinessLogicLayer.Services
                     QrcodeData = $"https://vietqr.co/api/generate/MB/0974841508/VIETQR.CO/{order.TotalAmount}/{invoiceNumber}"
                 };
                 order.CustomerId = cus?.CustomerId;
-                order = await _orderRepo.CreateOrderAsync(order);
-                return _mapper.Map<OrderResponse>(order);
+                return order;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating new order.");
                 return null;
             }
         }

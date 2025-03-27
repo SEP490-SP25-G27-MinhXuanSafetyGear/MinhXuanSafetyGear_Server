@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-
+using System.Threading.Channels;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Services.Interface;
 
@@ -7,17 +7,20 @@ namespace BusinessLogicLayer.Services;
 
 public class OrderQueueService : IOrderQueueService
 {
-    private readonly ConcurrentQueue<NewOrder> _orderQueue = new();
-    
-    public Task EnqueueOrder(NewOrder order)
+    private readonly Channel<NewOrder> _orderChannel;
+
+    public OrderQueueService()
     {
-        _orderQueue.Enqueue(order);
-        return Task.CompletedTask;
+        _orderChannel = Channel.CreateUnbounded<NewOrder>();
     }
 
-    public Task<NewOrder?> DequeueOrder()
+    public async Task EnqueueOrder(NewOrder order)
     {
-        bool success = _orderQueue.TryDequeue(out var order);
-        return Task.FromResult(order);
+        await _orderChannel.Writer.WriteAsync(order);
+    }
+
+    public async Task<NewOrder?> DequeueOrder()
+    {
+        return await _orderChannel.Reader.ReadAsync();
     }
 }
