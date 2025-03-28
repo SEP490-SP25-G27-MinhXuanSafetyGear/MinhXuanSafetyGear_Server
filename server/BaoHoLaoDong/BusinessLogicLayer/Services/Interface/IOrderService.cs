@@ -42,5 +42,6 @@ namespace BusinessLogicLayer.Services.Interface
         #endregion
 
         Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder);
+        Task<OrderResponse?> CalculateOrderAsync(NewOrder order);
     }
 }

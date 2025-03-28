@@ -6,6 +6,7 @@ using BusinessLogicLayer.Mappings.ResponseDTO;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.ModelHelper;
 using BusinessLogicLayer.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 
@@ -391,6 +392,20 @@ namespace ManagementAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
+            }
+        }
+
+        [HttpPost("calculate-order")]
+        public async Task<IActionResult> CalculateOrder([FromBody] NewOrder order)
+        {
+            try
+            {
+                var orders = await _orderService.CalculateOrderAsync(order);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
