@@ -50,7 +50,7 @@ public class InvoiceController : ControllerBase
             }
             else
             {
-                status = OrderStatus.Processing.ToString();
+                status = OrderStatus.Cancelled.ToString();
             }
             var invoice = await _invoiceService.ConFirmInvoiceByEmployeeAsync(invoiceNo, status);
             await _invoiceHub.Clients.All.SendAsync("InvoiceConfirmedByEmployee", invoiceNo, status);

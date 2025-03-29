@@ -25,7 +25,7 @@ namespace ManagementAPI.Controllers
         private readonly ILogger<OrderController> _logger;
         private readonly IOrderQueueService _orderQueueService;
         public OrderController(IOrderService orderService, IConfiguration configuration, ILogger<OrderController> logger, IHubContext<NotificationHub> notificationHub, IHubContext<OrderHub> orderHub,
-            INotificationService notificationService,IOrderQueueService orderQueueService
+            INotificationService notificationService, IOrderQueueService orderQueueService
             , IMailService mailService)
         {
             _orderService = orderService;
@@ -264,11 +264,11 @@ namespace ManagementAPI.Controllers
         /// <param name="pageSize"></param>
         /// <returns>List OrderResponse</returns>
         [HttpGet("search-orders")]
-        public async Task<IActionResult> SearchOrders([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string customerName, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        public async Task<IActionResult> SearchOrders([FromQuery] string? emailOrPhone, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string customerName, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             try
             {
-                var orders = await _orderService.SearchOrdersAsync(startDate, endDate, customerName,null, page, pageSize);
+                var orders = await _orderService.SearchOrdersAsync(emailOrPhone, startDate, endDate, customerName, null, page, pageSize);
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -375,13 +375,14 @@ namespace ManagementAPI.Controllers
 
 
         [HttpGet("get-page-orders")]
-        public async Task<IActionResult> GetOrdersPageAsync([FromQuery] int? customerId, [FromQuery] string? customerName,
-           [FromQuery] string? startDate, [FromQuery] string? endDate,string status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        public async Task<IActionResult> GetOrdersPageAsync([FromQuery] string? emailOrPhone,[FromQuery] int? customerId,[FromQuery] string? customerName,[FromQuery] string? startDate,[FromQuery] string? endDate,
+            string? status,
+            [FromQuery] int page = 1,[FromQuery] int pageSize = 20)
         {
             try
             {
                 string? customerIdStr = customerId?.ToString();
-                var orders = await _orderService.GetOrdersWithStringDateTimeAsync(startDate, endDate, customerName ?? customerIdStr,status, page, pageSize);
+                var orders = await _orderService.GetOrdersWithStringDateTimeAsync(emailOrPhone, startDate, endDate, customerName, customerIdStr, status, page, pageSize);
                 if (orders == null || !orders.Items.Any())
                 {
                     return NotFound(new { message = "No orders found with the given criteria." });
@@ -392,8 +393,9 @@ namespace ManagementAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
-            }
+            
         }
+    }
 
         [HttpPost("calculate-order")]
         public async Task<IActionResult> CalculateOrder([FromBody] NewOrder order)
