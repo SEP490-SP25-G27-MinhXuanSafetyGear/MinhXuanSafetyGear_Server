@@ -606,7 +606,8 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<(ProductResponse product, ProductVariantResponse variant, bool isStock)> CheckStockAsync(int productId, int variantId)
+    public async Task<(Product product, ProductVariant variant, bool isStock)> CheckStockAsync(int productId,
+        int variantId)
     {
         Product product = null;
         ProductVariant variant = null;
@@ -634,10 +635,7 @@ public class ProductService : IProductService
         {
             Console.WriteLine($"❌ Lỗi khi kiểm tra tồn kho: {ex.Message}");
         }
-
-        var productResponse = _mapper.Map<ProductResponse>(product);
-        var variantResponse = _mapper.Map<ProductVariantResponse>(variant);
-        return (productResponse, variantResponse, isStock);
+        return (product, variant, isStock);
     }
 
 }
