@@ -21,6 +21,8 @@ public class OrderResponse
     public DateTime CreatedAt { get; set; }
     public DateTime UpdateAt { get; set; }
     
+    public string Notes { get; set; } = String.Empty;
+    
     public List<OrderDetailResponse>? OrderDetails { get; set; } = new List<OrderDetailResponse>();
     
     public InvoiceResponse? Invoice { get; set; } = new InvoiceResponse();

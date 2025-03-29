@@ -7,7 +7,7 @@ namespace BusinessLogicLayer.Mappings.RequestDTO;
 
 public class NewOrder
 {
-    
+    public Guid TrackingId { get; set; } = new Guid();
     [Required]
     public string CustomerName { get; set; } = null!;
     [Required]

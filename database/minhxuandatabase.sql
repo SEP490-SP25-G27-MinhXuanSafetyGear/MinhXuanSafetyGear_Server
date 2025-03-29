@@ -159,6 +159,7 @@ CREATE TABLE Orders (
 	CustomerPhone nvarchar(10) not null,
 	CustomerEmail nvarchar(100) null,
 	CustomerAddress nvarchar(500) null,
+	Notes NVARCHAR(500) null,
     TotalAmount decimal(18,2) not null,         -- Tổng giá trị đơn hàng
     [Status] varchar(50) not null default 'Pending', -- Trạng thái đơn hàng (Pending, Completed, etc.)
     OrderDate datetime not null default getdate(), -- Ngày tạo đơn hàng

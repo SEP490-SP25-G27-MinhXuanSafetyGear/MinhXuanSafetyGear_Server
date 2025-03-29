@@ -635,21 +635,89 @@ namespace BusinessLogicLayer.Services
         /// </summary>
         /// <param name="newOrder"></param>
         /// <returns></returns>
-        public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder)
-        {
-            try
-            {
-                var order = await CreateOrderEntityAsync(newOrder);
-                order = await _orderRepo.CreateOrderAsync(order);
-                return _mapper.Map<OrderResponse>(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating new order.");
-                return null;
-            }
-        }
+     public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder) 
+        { 
+            try 
+            { 
+                var order = await CreateOrderEntityAsync(newOrder); 
+                if (order != null) 
+                { 
+                    order = await _orderRepo.CreateOrderAsync(order); 
+                    if (order != null) 
+                    { 
+                        var products = order.OrderDetails.Select(p => new 
+                        { 
+                            productId = p.ProductId, 
+                            variantId = p.VariantId, 
+                            quantity = p.Quantity 
+                        }).ToList();
+                        bool isStockAvailable = true; 
+                        List<string> outOfStockProducts = new List<string>();
+                
+                        foreach (var p in products) 
+                        { 
+                            var product = await _productRepo.GetProductByIdAsync(p.productId); 
+                            var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
+                            if (p.variantId != null && p.variantId != 0) 
+                            { 
+                                if (variant == null || variant.Quantity < p.quantity) 
+                                { 
+                                    isStockAvailable = false; 
+                                    outOfStockProducts.Add($"Sản phẩm {product.ProductName} {variant?.Size} - {variant?.Color} không đủ hàng."); 
+                                } 
+                            }
+                            else 
+                            { 
+                                if (product == null || product.Quantity < p.quantity) 
+                                { 
+                                    isStockAvailable = false; 
+                                    outOfStockProducts.Add($"Sản phẩm {product?.ProductName} không đủ hàng."); 
+                                } 
+                            }
+                        }
 
+                        // 🔹 **Nếu có sản phẩm hết hàng, cập nhật ghi chú & không trừ tồn kho**
+                        
+                        if (!isStockAvailable) 
+                        { 
+                            order.Notes = string.Join("; ", outOfStockProducts); 
+                            await _orderRepo.UpdateOrderAsync(order);  // Cập nhật ghi chú vào đơn hàng
+                            return _mapper.Map<OrderResponse>(order);
+                        } 
+                        // 🔹 **Trừ tồn kho nếu đủ hàng**
+                        foreach (var p in products) 
+                        { 
+                            if (p.variantId != null && p.variantId != 0) 
+                            { 
+                                var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
+                                if (variant != null && variant.Quantity > p.quantity) 
+                                { 
+                                    variant.Quantity -= p.quantity; 
+                                    await _productRepo.UpdateProductVariantAsync(variant); // Cập nhật DB
+                                }
+                            }
+                            else 
+                            { 
+                                var product = await _productRepo.GetProductByIdAsync(p.productId); 
+                                if (product != null && product.Quantity > p.quantity) 
+                                { 
+                                    product.Quantity -= p.quantity; 
+                                    await _productRepo.UpdateProductAsync(product); // Cập nhật DB
+                                } 
+                            } 
+                        }
+                        return _mapper.Map<OrderResponse>(order); 
+                    } 
+                } 
+                return null; 
+            }
+            catch (Exception ex) 
+            { 
+                _logger.LogError(ex, "Error creating new order."); 
+                return null; 
+            } 
+        }
+        
         public async Task<OrderResponse?> CalculateOrderAsync(NewOrder newOrder)
         {
             try
@@ -663,20 +731,22 @@ namespace BusinessLogicLayer.Services
             }
         }
 
-        public async Task<Order> CreateOrderEntityAsync(NewOrder newOrder)
+        private async Task<Order?> CreateOrderEntityAsync(NewOrder newOrder)
         {
             try
             {   
-                var cus = await _userRepo.GetCustomerByEmailAsync(newOrder.CustomerEmail);
+                var cus = await _userRepo.GetCustomerByEmailAsync(newOrder.CustomerEmail??"");
                 var order = _mapper.Map<Order>(newOrder);
                 if (order.OrderDetails.Any())
                 {
                     foreach (var odDetail in order.OrderDetails)
                     {
-                        
                         var (product,variant,isStock) = await _productService.CheckStockAsync(odDetail.ProductId,odDetail.VariantId.GetValueOrDefault(0));
-                        if (!isStock) return null;
-                        var price = variant == null ?product.Price :variant.Price.GetValueOrDefault(0); 
+                        if (!isStock)
+                        {
+                            order.Notes += $"{product.ProductName} {(variant != null ? $"{variant.Size} - {variant.Color}" : "")} tồn kho không đủ để lên đơn.";
+                        }
+                        var price = variant == null ? product.Price :variant.Price; 
                         var discount =  product.Discount; 
                         var tax = product.TotalTax.GetValueOrDefault(0); 
                         var priceAfterDiscount = price * (1 - discount / 100);
@@ -684,13 +754,12 @@ namespace BusinessLogicLayer.Services
                         odDetail.ProductPrice = finalPrice.GetValueOrDefault(0);
                         odDetail.ProductDiscount = discount.GetValueOrDefault(0);
                         odDetail.TotalPrice = finalPrice.GetValueOrDefault(0) * odDetail.Quantity;
-                        odDetail.ProductName = product.Name;
+                        odDetail.ProductName = product.ProductName;
                         odDetail.VariantId = odDetail.VariantId;
                         odDetail.Size = variant?.Size ;
                         odDetail.Color = variant?.Color;
                     }
                 }
-
                 order.TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice);
                 var invoiceNumber = Guid.NewGuid().ToString();
                 order.Invoice = new Invoice()

@@ -38,73 +38,22 @@ namespace ManagementAPI.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Create new order
-        /// </summary>
-        /// <param name="newOrder"></param>
-        /// <returns>OrderResponse</returns>
-        /// 
-        [HttpPost("create-order")]
-        public async Task<IActionResult> CreateOrder([FromBody] NewOrder newOrder)
-        {
-            try
-            {
-                var result = await _orderService.CreateNewOrderAsync(newOrder);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpPost("create-order-v2")]
         public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
         {
-            /*
             try
             {
-                if (newOrder == null || newOrder.OrderDetails == null || !newOrder.OrderDetails.Any())
-                    return BadRequest(new { message = "OrderDetails must have at least 1 item" });
-                var createdOrder = await _orderService.CreateNewOrderV2Async(newOrder);
-                if (createdOrder == null)
-                    return BadRequest(new { message = "Failed to create order." });
-                var notification = new NewNotification
+                var orderId = await _orderQueueService.EnqueueOrder(newOrder);
+                var timeoutTask = Task.Delay(3000);
+                if (_orderQueueService.TryGetPendingOrder(orderId, out var tcs))
                 {
-                    Title = "Đơn hàng mới cần xác minh",
-                    Message = $"Đơn hàng từ khách hàng {createdOrder.Email} được tạo mới với số tiền là {createdOrder.TotalAmount}",
-                    RecipientId = 1,
-                    RecipientType = RecipientType.Employee.ToString(),
-                    Status = NotificationStatus.Active.ToString(),
-                    OrderId = createdOrder.OrderId
-                };
-                var notifi = await _notificationService.CreateNewNotificationAsync(notification);
-                await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString()).SendAsync("ReceiveNotification", notifi);
-                await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder);
-                var createdOrderCopy = createdOrder;
-                _ = Task.Run(async () =>
-                {
-                    try
+                    var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+                    if (completedTask == tcs.Task)
                     {
-                        await _mailService.SendOrderConfirmationEmailAsync(createdOrderCopy);
+                        return Ok(await tcs.Task);
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error sending notifications and emails for CreateOrderV2.");
-                    }
-                });
-                return Ok(createdOrder);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in CreateOrderV2");
-                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
-            }
-            */
-            try
-            {
-                await _orderQueueService.EnqueueOrder(newOrder);
-                return Ok("chung toi da ghi nhan đơn hàng của bạn!");
+                }
+                return Accepted(new { Message = "Chúng tôi đã nhận đơn hàng, vui lòng đợi xác nhận." });
             }
             catch (Exception ex)
             {
