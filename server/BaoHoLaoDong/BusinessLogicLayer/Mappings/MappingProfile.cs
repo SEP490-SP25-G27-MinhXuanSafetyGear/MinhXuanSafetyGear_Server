@@ -235,12 +235,12 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Invoice, otp => otp.MapFrom(src => src.Invoice));
 
             CreateMap<OrderDetail, OrderDetailResponse>()
-                .ForMember(dest => dest.ProductImage,
-                    otp => otp.MapFrom(src =>
-                        src.Product.ProductImages != null
-                            ? (
-                                $"{applicationUrl}/images/products/{src.Product.ProductImages.FirstOrDefault().FileName}")
-                            : ""));
+              .ForMember(dest => dest.ProductImage,
+                  otp => otp.MapFrom(src =>
+                      (src.Product != null && src.Product.ProductImages != null && src.Product.ProductImages.Any())
+                          ? $"{applicationUrl}/images/products/{src.Product.ProductImages.First().FileName}"
+                          : string.Empty
+                  ));
             CreateMap<Invoice, InvoiceResponse>()
                 .ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.InvoiceId))
                 .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderId))
@@ -251,9 +251,9 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.PaymentDate, opt => opt.MapFrom(src => src.PaymentDate))
-                .ForMember(dest => dest.PaymentConfirmOfCustomer,
-                    opt => opt.MapFrom(src => src.PaymentConfirmOfCustomer))
+                .ForMember(dest => dest.PaymentConfirmOfCustomer,opt => opt.MapFrom(src => src.PaymentConfirmOfCustomer))
                 .ForMember(dest => dest.Order, opt => opt.Ignore());
+
             CreateMap<NewOrder, Order>()
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())
                 .ForMember(dest => dest.OrderDetails, otp => otp.MapFrom(src => src.OrderDetails))

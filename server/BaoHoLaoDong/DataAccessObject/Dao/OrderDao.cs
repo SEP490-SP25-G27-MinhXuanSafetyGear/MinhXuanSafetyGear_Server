@@ -120,11 +120,27 @@ public class OrderDao : IDao<Order>
             .Take(pageSize)
             .ToListAsync();
     }
-    public async Task<List<Order>> SearchAsync(DateTime? startDate, DateTime? endDate, string? customerName,string status, int? page = null, int? pageSize = null)
+    public async Task<List<Order>> SearchAsync(string? emailOrPhone, DateTime? startDate, DateTime? endDate, string? customerName, int? customerId, string? status, int? page = null, int? pageSize = null)
+    {
+        var query = GetQuerySearch(emailOrPhone, startDate, endDate, customerName, customerId, status);
+
+        if (page.HasValue && pageSize.HasValue)
+        {
+            query = query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value);
+        }
+
+        return await query.AsNoTracking().ToListAsync();
+    }
+    IQueryable<Order> GetQuerySearch(string? emailOrPhone, DateTime? startDate, DateTime? endDate, string? customerName, int? customerId, string? status)
     {
         var query = _context.Orders
             .Include(o => o.Customer)
+            .Include(o => o.Invoice)
             .Include(o => o.OrderDetails)
+            .ThenInclude(o => o.Product)
             .AsQueryable();
 
         if (startDate.HasValue)
@@ -137,51 +153,38 @@ public class OrderDao : IDao<Order>
             query = query.Where(o => o.OrderDate <= endDate.Value);
         }
 
+        if (customerId != null)
+        {
+            query = query.Where(o => o.CustomerId == customerId);
+        }
+
         if (!string.IsNullOrWhiteSpace(customerName))
         {
-            query = query.Where(o => o.Customer.FullName.Contains(customerName));
+            query = query.Where(o => o.CustomerName.Contains(customerName));
         }
         if (!string.IsNullOrEmpty(status) && status != "all")
         {
             query = query.Where(o => o.Status == status);
         }
-
-        if (page.HasValue && pageSize.HasValue)
+        if (!string.IsNullOrEmpty(emailOrPhone))
         {
-            query = query
-                .OrderByDescending(o => o.OrderDate)
-                .Skip((page.Value - 1) * pageSize.Value)
-                .Take(pageSize.Value);
+            query = query.Where(o => o.CustomerPhone.Contains(emailOrPhone) || o.CustomerEmail.Contains(emailOrPhone));
         }
 
-        return await query.AsNoTracking().ToListAsync();
+        return query;
     }
 
     public async Task<int> CountAsync()
     {
         return await _context.Orders.CountAsync();
     }
-    public async Task<int> CountTotalOrdersByFilter(DateTime? startDate, DateTime? endDate, string? customerName)
+    public async Task<int> CountTotalOrdersByFilter(string? emailOrPhone, DateTime? startDate, DateTime? endDate, string? customerName, int? customerId, string? status)
     {
-        var query = _context.Orders.AsQueryable();
-
-        if (startDate.HasValue)
-        {
-            query = query.Where(o => o.OrderDate >= startDate.Value);
-        }
-
-        if (endDate.HasValue)
-        {
-            query = query.Where(o => o.OrderDate <= endDate.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(customerName))
-        {
-            query = query.Where(o => o.Customer.FullName.Contains(customerName));
-        }
+        var query = GetQuerySearch(emailOrPhone, startDate, endDate, customerName, customerId, status);
 
         return await query.CountAsync();
     }
+
 
 
     public async Task<int> CountTotalOrdersByDate(DateTime? startDate, DateTime? endDate)
