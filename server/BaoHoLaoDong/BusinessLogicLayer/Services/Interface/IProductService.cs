@@ -35,5 +35,6 @@ public interface IProductService
      Task<List<ProductResponse>?> GetRelatedProducts(int id, int size);
      Task<Review> GetReviewAsync(int id, int size);
      Task<ProductResponse?> GetProductBySlugAsync(string slug);
-     Task<(Product product, ProductVariant variant, bool isStock)> CheckStockAsync(int productId, int variantId);
+     Task<(Product? product, ProductVariant? variant, bool isStock)> CheckStockAsync(int productId, int variantId);
+     Task<ProductReviewResponse> SendFeedBackAsync(NewFeedBack feedBack);
 }

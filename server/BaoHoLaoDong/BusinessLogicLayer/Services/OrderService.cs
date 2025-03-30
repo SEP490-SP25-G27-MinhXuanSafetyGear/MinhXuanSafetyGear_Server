@@ -639,7 +639,7 @@ namespace BusinessLogicLayer.Services
         { 
             try 
             { 
-                var order = await CreateOrderEntityAsync(newOrder); 
+                var order = await CreateOrderEntityAsync(newOrder);
                 if (order != null) 
                 { 
                     order = await _orderRepo.CreateOrderAsync(order); 

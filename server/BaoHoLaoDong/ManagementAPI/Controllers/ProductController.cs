@@ -477,4 +477,18 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPost("feedback")]
+    public async Task<IActionResult> FeedBack([FromBody] NewFeedBack feedBack)
+    {
+        try
+        {
+            var feedback= await _productService.SendFeedBackAsync(feedBack);
+            return Ok(feedback);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

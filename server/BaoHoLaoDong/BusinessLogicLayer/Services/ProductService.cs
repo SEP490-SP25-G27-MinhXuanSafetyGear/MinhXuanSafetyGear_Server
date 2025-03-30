@@ -23,11 +23,14 @@ public class ProductService : IProductService
     private readonly ITaxRepo _taxRepo;
     private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","products");
     private readonly IFileService _fileService;
-    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper, ILogger<ProductService> logger,IFileService fileService)
+    private readonly IUserRepo _userRepo;
+    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper,
+        ILogger<ProductService> logger,IFileService fileService ,IUserRepo userRepo)
     {
         _productRepo = productRepo;
         _mapper = mapper;
         _logger = logger;
+        _userRepo = userRepo;
         _fileService = fileService;
         _taxRepo = taxRepo;
     }
@@ -606,11 +609,11 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<(Product product, ProductVariant variant, bool isStock)> CheckStockAsync(int productId,
+    public async Task<(Product? product, ProductVariant? variant, bool isStock)> CheckStockAsync(int productId,
         int variantId)
     {
-        Product product = null;
-        ProductVariant variant = null;
+        var product = new Product();
+        var variant = new ProductVariant();
         bool isStock = false;
 
         try
@@ -636,6 +639,27 @@ public class ProductService : IProductService
             Console.WriteLine($"❌ Lỗi khi kiểm tra tồn kho: {ex.Message}");
         }
         return (product, variant, isStock);
+    }
+    public async Task<ProductReviewResponse> SendFeedBackAsync(NewFeedBack feedBack)
+    {
+        try
+        {
+            var customer = await _userRepo.GetCustomerByEmailAsync(feedBack.Email);
+            if (customer != null)
+            {
+                var newFeedBack = new ProductReview()
+                {
+                    CustomerId = customer.CustomerId, ProductId = feedBack.ProductId, Rating = feedBack.Rating, Comment = feedBack.Comment
+                };
+                var productReview=  await _productRepo.CreateProductReviewAsync(newFeedBack);
+                return _mapper.Map<ProductReviewResponse>(productReview);
+            }
+            return null;
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
 }
