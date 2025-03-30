@@ -2,6 +2,8 @@
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
+using BusinessObject.Entities;
+using DataAccessObject.Repository.Interface;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +45,7 @@ public class OrderQueueWorker : BackgroundService
                     var mailService = services.GetRequiredService<IMailService>();
                     var orderQueueService = services.GetRequiredService<IOrderQueueService>();
                     var productService = services.GetRequiredService<IProductService>();
+                    var userRepo = services.GetRequiredService<IUserRepo>();
                     try
                     {
                         var newOrder = await orderQueueService.DequeueOrder();
@@ -72,8 +75,31 @@ public class OrderQueueWorker : BackgroundService
                                         {
                                             var product = await productService.GetProductByIdAsync(odl.ProductId);
                                             await _productHub.Clients.All.SendAsync("ProductUpdated", product, cancellationToken: stoppingToken);
+                                        } 
+                                    if (createdOrder.CustomerId == null)
+                                    {
+                                        var newCus = new Customer
+                                        {
+                                            Email = createdOrder.Email,
+                                            FullName = createdOrder.FullName,
+                                            PhoneNumber = createdOrder.PhoneNumber,
+                                            Address = createdOrder.Address,
+                                            CreatedAt = DateTime.Now
+                                        };
+
+                                        try
+                                        {
+                                            _logger.LogInformation($"🔍 Đang tạo khách hàng {newCus.Email}...");
+                                            await userRepo.CreateCustomerAsync(newCus);
+                                            _logger.LogInformation("✅ Khách hàng được tạo thành công.");
                                         }
-                                    _ = Task.Run(() => mailService.SendOrderConfirmationEmailAsync(createdOrder), stoppingToken);
+                                        catch (Exception ex)
+                                        {
+                                            _logger.LogError($"❌ Lỗi khi tạo khách hàng: {ex.Message}");
+                                        }
+                                    }
+                                    await mailService.SendOrderConfirmationEmailAsync(createdOrder);
+
                                     _logger.LogInformation($"✅ Xử lý đơn hàng thành công của: {createdOrder.Email}");
                                 }
                                 else
