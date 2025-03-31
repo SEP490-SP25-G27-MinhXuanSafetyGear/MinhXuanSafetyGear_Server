@@ -276,6 +276,15 @@ namespace DataAccessObject.Repository
         {
             return await _productDao.GetBySlugAsync(slug);
         }
+        public async Task<List<ProductReview>?> GetTopProductReviewsAsync(int size)
+        {
+            var feedbacks = await _productReviewDao.GetAllAsync()??new List<ProductReview>();
+            feedbacks = feedbacks
+                .Where(f=>f.Rating>2)
+                .OrderBy(f => f.Rating) 
+                .Take(size).ToList();
+            return feedbacks;
+        }
 
         #endregion ProductReview
     }

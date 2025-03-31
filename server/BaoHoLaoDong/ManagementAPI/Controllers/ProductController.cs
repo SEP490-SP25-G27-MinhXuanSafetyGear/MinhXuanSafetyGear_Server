@@ -507,5 +507,18 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    
+
+    [HttpGet("get-top-feedbacks")]
+    public async Task<IActionResult> GetTopFeedback([FromQuery] int size)
+    {
+        try
+        {
+            var feedbacks = await _productService.GetTopFeedBackAsync(size);
+            return Ok(feedbacks);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
+    }
 }

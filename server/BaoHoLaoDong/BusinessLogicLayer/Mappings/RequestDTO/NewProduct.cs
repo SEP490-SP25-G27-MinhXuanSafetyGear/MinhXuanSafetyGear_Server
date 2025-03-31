@@ -38,6 +38,7 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
         [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".gif" })]
         [MaxFileSize(1)]
         public List<IFormFile> Files { get; set; } = null!;
+        [UniqueProductVariants]
         public ICollection<NewProductVariant> ProductVariants { get; set; } = new List<NewProductVariant>();
     }
 }
