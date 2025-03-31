@@ -220,28 +220,28 @@ namespace ManagementAPI.Controllers
                 resetUrl = resetUrl,
             });
         }
-
-        [HttpPost("authenticate/reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword resetPassword)
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword request)
         {
-            try
+            var user = await _userService.GetUserByEmailAsync(request.Email);
+            if (user == null)
             {
-                var isToken = _tokenService.IsValidToken(resetPassword.Token);
-                if (isToken)
-                {
-                    var result = await _userService.ResetPasswordAsync( resetPassword);
-                    if (result)
-                    {
-                        return Ok("Reset password successfully.");
-                    }
-                    return BadRequest("Reset password failed.");
-                }
-               return BadRequest("Invalid token.");
+                return NotFound(new { message = "User not found" });
             }
-            catch (Exception ex)
+
+            if (!_tokenService.IsValidToken(request.Token))
             {
-                return BadRequest(ex.Message);
+                return NotFound(new { message = "Invalid token" }); 
             }
+
+            var result = await _userService.ResetPasswordAsync(request);
+            if (!result)
+            {
+                return NotFound(new { message = "Reset password failed" });
+            }
+
+            return Ok(new { message = "Password reset successful" });
         }
+
     }
 }

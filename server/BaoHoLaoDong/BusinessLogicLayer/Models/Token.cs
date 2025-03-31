@@ -2,8 +2,8 @@
 
 public class Token
 {
-    public string key { get; set; }
-    public string issuer { get; set; }
-    public string audience { get; set; }
-    public int  expriryInDay { get; set; }
+    public virtual string key { get; set; }
+    public virtual string issuer { get; set; }
+    public virtual string audience { get; set; }
+    public virtual int expriryInDay { get; set; }
 }
