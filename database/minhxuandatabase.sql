@@ -20,7 +20,7 @@ CREATE TABLE Customers (
     Email nvarchar(100) NOT NULL UNIQUE,           -- Email của khách hàng, duy nhất
     IsEmailVerified bit NOT NULL DEFAULT 0,        -- Trạng thái xác minh email (0: chưa xác minh, 1: đã xác minh)
     PasswordHash varchar(150) NULL,                -- Mật khẩu của khách hàng (đã mã hoá)
-    PhoneNumber varchar(10) NULL,              -- Số điện thoại của khách hàng
+    PhoneNumber varchar(10) NULL,                  -- Số điện thoại của khách hàng
     [Address] nvarchar(400) NULL,                    -- Địa chỉ của khách hàng
     DateOfBirth date NULL,                         -- Ngày sinh của khách hàng
     Gender bit NULL,                               -- Giới tính của khách hàng (0: Nữ, 1: Nam)

@@ -19,7 +19,7 @@ public class UpdateBlogPost
     
     [MaxLength(255)]
     public string? Tags { get; set; }
-   
+    public string? PostUrl { get; set; }
     [Required]
     public string Status { get; set; } = null!;
    

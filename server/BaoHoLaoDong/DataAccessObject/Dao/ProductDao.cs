@@ -186,7 +186,7 @@ public class ProductDao : IDao<Product>
         return productSales;
     }
 
-    public async Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent )
+    public async Task<List<Product>> GetTopDiscountAsync(int page,int size )
     {
         return await _context.Products
             .Include(p=>p.Category)
@@ -195,7 +195,8 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.ProductVariants)
             .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
             .AsNoTracking()
-            .Where(p=>p.Discount >= minDiscountPercent)
+            .OrderByDescending(p=>p.Discount)
+            .Skip((page - 1) * size)
             .Take(size)
             .ToListAsync();
     }
