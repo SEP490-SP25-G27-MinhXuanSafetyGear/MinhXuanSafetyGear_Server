@@ -8,6 +8,7 @@ using BusinessObject.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.SignalR;
+using Exception = System.Exception;
 
 namespace ManagementAPI.Controllers;
 
@@ -19,7 +20,11 @@ public class ProductController : ControllerBase
     private readonly IBlogPostService _blogPostService;
     private readonly IHubContext<ProductHub> _productHub;
     private readonly IMapper _mapper;
-
+    private List<string> topics = new List<string>()
+    {
+        "top_sale",
+        "top_deal"
+    };
     public ProductController(IProductService productService, IBlogPostService blogPostService,
         IHubContext<ProductHub> productHub, IMapper mapper)
     {
@@ -224,7 +229,7 @@ public class ProductController : ControllerBase
             var product = await _productService.GetProductBySlugAsync(slug);
             if (product != null)
             {
-                var topSaleProducts = await _productService.GetTopSaleProduct(size)?? new List<ProductResponse>();
+                var topSaleProducts = await _productService.GetTopSaleProduct(1, size)??new List<ProductResponse>();
                 var relatedProducts = await _productService.GetRelatedProducts(product.Id,size)?? new List<ProductResponse>();
                 var review = await _productService.GetReviewAsync(product.Id,size);
                 var blogTransport = await _blogPostService.GetBlogPostBySlugAsync("chinh-sach-van-chuyen")?? new BlogPostResponse();
@@ -296,19 +301,7 @@ public class ProductController : ControllerBase
             return BadRequest(ex);
         }
     }
-    [HttpGet("top-sale-product")]
-    public async Task<IActionResult> GetTopSaleProduct([FromQuery] int size =10)
-    {
-        try
-        {
-            var result = await _productService.GetTopSaleProduct(size);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
-    }
+    
     [HttpPost("create-image")]
     public async Task<IActionResult> CreateImage([FromForm] NewProductImage productImage)
     {
@@ -491,4 +484,28 @@ public class ProductController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet("get-products-by-topic")]
+    public async Task<IActionResult> GetProductByTopic([FromQuery] string topic,[FromQuery] int page,[FromQuery] int size)
+    {
+        try
+        {
+            var products = new List<ProductResponse>();
+            switch (topic)
+            {
+                case "top_sale":
+                    products = await _productService.GetTopSaleProduct(page,size);
+                    break;
+                case "top_deal":
+                    products = await _productService.GetTopDealProductAsync(page,size);
+                    break;
+            }
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
 }

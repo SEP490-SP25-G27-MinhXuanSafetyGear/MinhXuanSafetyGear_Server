@@ -448,13 +448,14 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<List<ProductResponse>?> GetTopSaleProduct(int size)
+    public async Task<List<ProductResponse>?> GetTopSaleProduct(int page,int size)
     {
         try
         {
-            var products = await _productRepo.GetAllProductsAsync();
+            var products = await _productRepo.GetAllProductsAsync()?? new List<Product>();
             var topSaleProducts = products
                 .OrderByDescending(p => p.OrderDetails.Count)
+                .Skip((page - 1) * size)
                 .Take(size)
                 .ToList();
             return _mapper.Map<List<ProductResponse>>(topSaleProducts);
@@ -538,11 +539,11 @@ public class ProductService : IProductService
         return _productRepo.IsProductNameExists(productName);
     }
 
-    public async Task<List<ProductResponse>?> GetTopDealProductAsync(int size,int minDiscountPercent)
+    public async Task<List<ProductResponse>?> GetTopDealProductAsync(int page,int size)
     {
         try
         {
-            var products = await _productRepo.GetTopDiscountAsync(size,minDiscountPercent);
+            var products = await _productRepo.GetTopDiscountAsync(page,size);
             return _mapper.Map<List<ProductResponse>>(products);
         }
         catch (Exception ex)
