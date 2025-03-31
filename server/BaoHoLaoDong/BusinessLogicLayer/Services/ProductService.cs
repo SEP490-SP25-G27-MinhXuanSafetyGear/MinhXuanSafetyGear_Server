@@ -662,5 +662,17 @@ public class ProductService : IProductService
             throw;
         }
     }
+    public async Task<List<ProductReviewResponse>?> GetTopFeedBackAsync(int size)
+    {
+        try
+        {
+            var feedbacks = await _productRepo.GetTopProductReviewsAsync(size);
+            return _mapper.Map<List<ProductReviewResponse>>(feedbacks);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 
 }

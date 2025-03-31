@@ -47,4 +47,5 @@ public interface IProductRepo
     Task<List<Product>> GetProductByIdsAsync(List<int> productIds);
 
     Task<Product?> GetProductBySlugAsync(string slug);
+    Task<List<ProductReview>?> GetTopProductReviewsAsync(int size);
 }
