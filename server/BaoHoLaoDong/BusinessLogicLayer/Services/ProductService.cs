@@ -454,7 +454,7 @@ public class ProductService : IProductService
         {
             var products = await _productRepo.GetAllProductsAsync()?? new List<Product>();
             var topSaleProducts = products
-                .OrderByDescending(p => p.OrderDetails.Count)
+                .OrderBy(p => p.OrderDetails.Count)
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToList();
