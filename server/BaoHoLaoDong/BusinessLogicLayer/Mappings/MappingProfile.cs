@@ -52,7 +52,6 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.UpdateAt, opt => opt.Ignore()) // Không cập nhật ban đầu
                 .ForMember(dest => dest.AccountVerifications,
                     opt => opt.Ignore()) // Bỏ qua danh sách xác thực tài khoản
-                .ForMember(dest => dest.Notifications, opt => opt.Ignore()) // Bỏ qua danh sách thông báo
                 .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Bỏ qua danh sách đơn hàng
                 .ForMember(dest => dest.ProductReviews, opt => opt.Ignore()); // Bỏ qua danh sách đánh giá sản phẩm
             CreateMap<Customer, CustomerResponse>()
@@ -249,6 +248,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod))
                 .ForMember(dest => dest.QrcodeData, opt => opt.MapFrom(src => src.QrcodeData))
                 .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus))
+                .ForMember(dest=>dest.ImageScreenTransfer,otp=>otp.MapFrom(src=> $"{applicationUrl}/images/bills/{src.FileName}"))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.PaymentDate, opt => opt.MapFrom(src => src.PaymentDate))
                 .ForMember(dest => dest.PaymentConfirmOfCustomer,opt => opt.MapFrom(src => src.PaymentConfirmOfCustomer))

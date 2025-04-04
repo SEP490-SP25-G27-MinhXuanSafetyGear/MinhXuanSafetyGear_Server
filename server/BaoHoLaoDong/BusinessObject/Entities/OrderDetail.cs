@@ -17,9 +17,9 @@ public partial class OrderDetail
 
     public decimal ProductPrice { get; set; }
 
-    public decimal? ProductTax { get; set; }
-
     public decimal ProductDiscount { get; set; }
+
+    public decimal? ProductTax { get; set; }
 
     public int Quantity { get; set; }
 

@@ -11,7 +11,7 @@ public partial class Notification
 
     public string Message { get; set; } = null!;
 
-    public int RecipientId { get; set; }
+    public int? RecipientId { get; set; }
 
     public string RecipientType { get; set; } = null!;
 
@@ -25,7 +25,5 @@ public partial class Notification
 
     public string Status { get; set; } = null!;
 
-    public virtual Customer Recipient { get; set; } = null!;
-
-    public virtual Employee RecipientNavigation { get; set; } = null!;
+    public virtual Employee? Recipient { get; set; }
 }

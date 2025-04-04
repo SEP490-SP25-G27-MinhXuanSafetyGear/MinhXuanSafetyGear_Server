@@ -635,81 +635,76 @@ namespace BusinessLogicLayer.Services
         /// </summary>
         /// <param name="newOrder"></param>
         /// <returns></returns>
-     public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder) 
+         public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder) 
         { 
             try 
             { 
                 var order = await CreateOrderEntityAsync(newOrder);
-                if (order != null) 
+                if (order == null) return null;
+                order = await _orderRepo.CreateOrderAsync(order);
+                if (order == null) return null;
+                var products = order.OrderDetails.Select(p => new 
                 { 
-                    order = await _orderRepo.CreateOrderAsync(order); 
-                    if (order != null) 
-                    { 
-                        var products = order.OrderDetails.Select(p => new 
-                        { 
-                            productId = p.ProductId, 
-                            variantId = p.VariantId, 
-                            quantity = p.Quantity 
-                        }).ToList();
-                        bool isStockAvailable = true; 
-                        List<string> outOfStockProducts = new List<string>();
+                    productId = p.ProductId, 
+                    variantId = p.VariantId, 
+                    quantity = p.Quantity 
+                }).ToList();
+                bool isStockAvailable = true; 
+                var outOfStockProducts = new List<string>();
                 
-                        foreach (var p in products) 
+                foreach (var p in products) 
+                { 
+                    var product = await _productRepo.GetProductByIdAsync(p.productId); 
+                    var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
+                    if (p.variantId != null && p.variantId != 0) 
+                    { 
+                        if (variant == null || variant.Quantity < p.quantity) 
                         { 
-                            var product = await _productRepo.GetProductByIdAsync(p.productId); 
-                            var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
-                            if (p.variantId != null && p.variantId != 0) 
-                            { 
-                                if (variant == null || variant.Quantity < p.quantity) 
-                                { 
-                                    isStockAvailable = false; 
-                                    outOfStockProducts.Add($"Sản phẩm {product.ProductName} {variant?.Size} - {variant?.Color} không đủ hàng."); 
-                                } 
-                            }
-                            else 
-                            { 
-                                if (product == null || product.Quantity < p.quantity) 
-                                { 
-                                    isStockAvailable = false; 
-                                    outOfStockProducts.Add($"Sản phẩm {product?.ProductName} không đủ hàng."); 
-                                } 
-                            }
-                        }
-
-                        // 🔹 **Nếu có sản phẩm hết hàng, cập nhật ghi chú & không trừ tồn kho**
-                        
-                        if (!isStockAvailable) 
-                        { 
-                            order.Notes = string.Join("; ", outOfStockProducts); 
-                            await _orderRepo.UpdateOrderAsync(order);  // Cập nhật ghi chú vào đơn hàng
-                            return _mapper.Map<OrderResponse>(order);
+                            isStockAvailable = false; 
+                            outOfStockProducts.Add($"Sản phẩm {product.ProductName} {variant?.Size} - {variant?.Color} không đủ hàng."); 
                         } 
-                        // 🔹 **Trừ tồn kho nếu đủ hàng**
-                        foreach (var p in products) 
+                    }
+                    else 
+                    { 
+                        if (product == null || product.Quantity < p.quantity) 
                         { 
-                            if (p.variantId != null && p.variantId != 0) 
-                            { 
-                                var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
-                                if (variant != null && variant.Quantity > p.quantity) 
-                                { 
-                                    variant.Quantity -= p.quantity; 
-                                    await _productRepo.UpdateProductVariantAsync(variant); // Cập nhật DB
-                                }
-                            }
-                            else 
-                            { 
-                                var product = await _productRepo.GetProductByIdAsync(p.productId); 
-                                if (product != null && product.Quantity > p.quantity) 
-                                { 
-                                    product.Quantity -= p.quantity; 
-                                    await _productRepo.UpdateProductAsync(product); // Cập nhật DB
-                                } 
-                            } 
-                        }
-                        return _mapper.Map<OrderResponse>(order); 
-                    } 
+                            isStockAvailable = false; 
+                            outOfStockProducts.Add($"Sản phẩm {product?.ProductName} không đủ hàng."); 
+                        } 
+                    }
+                }
+
+                // 🔹 **Nếu có sản phẩm hết hàng, cập nhật ghi chú & không trừ tồn kho**
+                        
+                if (!isStockAvailable) 
+                { 
+                    order.Notes = string.Join("; ", outOfStockProducts); 
+                    await _orderRepo.UpdateOrderAsync(order);  // Cập nhật ghi chú vào đơn hàng
+                    return _mapper.Map<OrderResponse>(order);
                 } 
-                return null; 
+                // 🔹 **Trừ tồn kho nếu đủ hàng**
+                foreach (var p in products) 
+                { 
+                    if (p.variantId != null && p.variantId != 0) 
+                    { 
+                        var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
+                        if (variant != null && variant.Quantity > p.quantity) 
+                        { 
+                            variant.Quantity -= p.quantity; 
+                            await _productRepo.UpdateProductVariantAsync(variant); // Cập nhật DB
+                        }
+                    }
+                    else 
+                    { 
+                        var product = await _productRepo.GetProductByIdAsync(p.productId); 
+                        if (product != null && product.Quantity > p.quantity) 
+                        { 
+                            product.Quantity -= p.quantity; 
+                            await _productRepo.UpdateProductAsync(product); // Cập nhật DB
+                        } 
+                    } 
+                }
+                return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex) 
             { 

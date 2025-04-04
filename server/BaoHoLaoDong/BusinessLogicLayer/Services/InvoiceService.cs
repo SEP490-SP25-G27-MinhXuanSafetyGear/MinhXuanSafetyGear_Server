@@ -36,7 +36,7 @@ public class InvoiceService : IInvoiceService
         {
             var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(confirmInvoice.InvoiceNumber);
             if(invoice == null) { return null; }
-            var _imagePathBill = _applicationUrls.FolderBill;
+            var _imagePathBill = $"{_applicationUrls.FolderImage}\\bills";
             var fileBill = confirmInvoice.File;
             if (fileBill != null)
             {
@@ -92,7 +92,7 @@ public class InvoiceService : IInvoiceService
             if (invoice == null) return null;
             if (!string.IsNullOrEmpty(invoice.FileName))
             {
-                var filePath = $"{_applicationUrls.FolderBill}/{invoice.FileName}";
+                var filePath = $"{_applicationUrls.FolderImage}/bills/{invoice.FileName}";
                 return await _fileService.GetFileAsStreamAsync(filePath);
             }
 
