@@ -1,11 +1,13 @@
 ﻿using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class ReportController : ControllerBase
 {
     private readonly IReportService _reportService;

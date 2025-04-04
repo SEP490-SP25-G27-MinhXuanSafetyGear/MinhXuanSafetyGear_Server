@@ -41,7 +41,6 @@ public class UserService : IUserService
         {
             var employee = await _userRepo.GetEmployeeByEmailAsync(email);
             var customer = await _userRepo.GetCustomerByEmailAsync(email);
-
             if (employee == null && customer == null)
             {
                 _logger.LogWarning("Login failed for email {Email}: User not found", email);
