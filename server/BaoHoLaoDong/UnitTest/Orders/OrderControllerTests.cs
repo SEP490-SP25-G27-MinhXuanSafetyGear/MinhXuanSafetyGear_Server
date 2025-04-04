@@ -444,6 +444,30 @@ namespace UnitTest.Orders
             Assert.That(badRequestResult?.Value.ToString(), Does.Contain("Lỗi hệ thống"), "Thông báo lỗi không chính xác");
         }
 
+        [Test]
+        public async Task CreateOrderV2_NullOrderDetails_ReturnsBadRequest()
+        {
+            var invalidOrder = new NewOrder
+            {
+                TrackingId = Guid.NewGuid(),
+                CustomerName = "Nguyen Van A",
+                CustomerPhone = "0123456789",
+                CustomerEmail = "valid@example.com",
+                CustomerAddress = "123 Street",
+                PaymentMethod = "Cash",
+                OrderDetails = null
+            };
+
+            _orderQueueServiceMock
+                .Setup(s => s.EnqueueOrder(It.IsAny<NewOrder>()))
+                .ThrowsAsync(new ArgumentException("Chi tiết đơn hàng không được để trống"));
+
+            var result = await _orderController.CreateOrderV2(invalidOrder);
+
+            Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+            var badRequest = result as BadRequestObjectResult;
+            Assert.That(badRequest?.Value.ToString(), Does.Contain("Chi tiết đơn hàng không được để trống"));
+        }
 
     }
 }
