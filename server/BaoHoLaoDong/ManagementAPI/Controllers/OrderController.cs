@@ -6,6 +6,7 @@ using BusinessLogicLayer.Mappings.ResponseDTO;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.ModelHelper;
 using BusinessLogicLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
@@ -14,6 +15,7 @@ namespace ManagementAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Manager")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -37,7 +39,7 @@ namespace ManagementAPI.Controllers
             _mailService = mailService;
             _logger = logger;
         }
-
+        [AllowAnonymous]
         [HttpPost("create-order-v2")]
         public async Task<IActionResult> CreateOrderV2([FromBody] NewOrder newOrder)
         {
@@ -171,37 +173,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        /// <summary>
-        /// Get orders by customer ID
-        /// </summary>
-        /// <param name="customerId"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
-        /// <returns>List OrderResponse</returns>
-
-
-        //[HttpGet("get-orders-by-customer/{customerId}/{page}/{pageSize}")]
-        //public async Task<IActionResult> GetOrders([FromQuery] int? customerId, [FromQuery] string? customerName,
-        //    [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
-        //{
-        //    try
-        //    {
-        //        string? customerIdStr = customerId?.ToString();
-        //        var orders = await _orderService.GetOrdersAsync(startDate, endDate, customerName ?? customerIdStr, page, pageSize);
-        //        if (orders == null || !orders.Items.Any())
-        //        {
-        //            return NotFound(new { message = "No orders found with the given criteria." });
-        //        }
-
-        //        return Ok(orders);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
-        //    }
-        //}
-
+        
 
         /// <summary>
         /// Search orders based on criteria
@@ -278,29 +250,7 @@ namespace ManagementAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpGet("img/invoice")]
-        public async Task<IActionResult> GetImage(int orderId)
-        {
-            try
-            {
-                var fileName = await _orderService.GetInvoiceImageAsync(orderId);
-                if (string.IsNullOrEmpty(fileName))
-                {
-                    return NotFound();
-                }
-                var pathFolder = _configuration["ApplicationSettings:ImageFolder"];
-                string imagePath = Path.Combine(pathFolder, fileName);
-                byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
-                string base64String = Convert.ToBase64String(imageBytes);
-                return Ok(new { ImageBase64 = base64String });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
+        
         [HttpPut("confirm-order")]
         public async Task<IActionResult> ConfirmOrderAsync(int orderId)
         {
@@ -342,10 +292,9 @@ namespace ManagementAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = "Failed to retrieve orders", error = ex.Message });
-            
+            } 
         }
-    }
-
+        [AllowAnonymous]
         [HttpPost("calculate-order")]
         public async Task<IActionResult> CalculateOrder([FromBody] NewOrder order)
         {

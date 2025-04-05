@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;

@@ -673,16 +673,12 @@ namespace BusinessLogicLayer.Services
                         } 
                     }
                 }
-
-                // 🔹 **Nếu có sản phẩm hết hàng, cập nhật ghi chú & không trừ tồn kho**
-                        
                 if (!isStockAvailable) 
                 { 
                     order.Notes = string.Join("; ", outOfStockProducts); 
-                    await _orderRepo.UpdateOrderAsync(order);  // Cập nhật ghi chú vào đơn hàng
+                    await _orderRepo.UpdateOrderAsync(order);  
                     return _mapper.Map<OrderResponse>(order);
                 } 
-                // 🔹 **Trừ tồn kho nếu đủ hàng**
                 foreach (var p in products) 
                 { 
                     if (p.variantId != null && p.variantId != 0) 

@@ -52,7 +52,7 @@
           "dependencies": {
             "AutoMapper": {
               "target": "Package",
-              "version": "[13.0.1, )"
+              "version": "[14.0.0, )"
             },
             "BCrypt.Net-Next": {
               "target": "Package",
@@ -60,7 +60,7 @@
             },
             "MailKit": {
               "target": "Package",
-              "version": "[4.9.0, )"
+              "version": "[4.11.0, )"
             },
             "Microsoft.AspNetCore.Http": {
               "target": "Package",
@@ -74,13 +74,13 @@
               "target": "Package",
               "version": "[8.0.10, )"
             },
-            "Microsoft.Extensions.Hosting": {
+            "Microsoft.Extensions.Configuration.Json": {
               "target": "Package",
               "version": "[8.0.0, )"
             },
-            "Newtonsoft.Json": {
+            "Microsoft.Extensions.Hosting": {
               "target": "Package",
-              "version": "[13.0.3, )"
+              "version": "[8.0.0, )"
             },
             "SixLabors.ImageSharp": {
               "target": "Package",
