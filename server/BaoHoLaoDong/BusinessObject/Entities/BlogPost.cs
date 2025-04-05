@@ -25,9 +25,17 @@ public partial class BlogPost
 
     public DateTime? UpdatedAt { get; set; }
 
+    public int? CreateBy { get; set; }
+
+    public int? UpdateBy { get; set; }
+
     public string Status { get; set; } = null!;
 
     public string? FileName { get; set; }
 
     public virtual BlogCategory? CategoryBlog { get; set; }
+
+    public virtual Employee? CreateByNavigation { get; set; }
+
+    public virtual Employee? UpdateByNavigation { get; set; }
 }

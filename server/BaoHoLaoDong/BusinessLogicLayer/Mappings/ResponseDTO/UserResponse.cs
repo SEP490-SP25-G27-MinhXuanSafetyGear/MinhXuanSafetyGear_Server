@@ -23,8 +23,8 @@ public class UserResponse
     public string? ImageUrl { get; set; }
 
     public DateTime? UpdateAt { get; set; }
-    
-    public string Role { get; set; } = null!;
+    public int RoleId { get; set; }
+    public string RoleName { get; set; } = null!;
     
     public string Status { get; set; } = null!;
 

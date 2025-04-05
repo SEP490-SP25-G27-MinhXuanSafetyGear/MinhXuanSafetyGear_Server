@@ -26,7 +26,7 @@ public class NewBlogPost
     [Required]
     public int Category { get; set; }
     
-    [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".gif" })]
-    [MaxFileSize(1)]
+    [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".svg" })]
+    [MaxFileSize(5)]
     public IFormFile? File { get; set; }
 }

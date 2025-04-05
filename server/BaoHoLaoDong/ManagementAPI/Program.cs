@@ -10,12 +10,17 @@ using DataAccessObject.Repository.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
-var externalImagePath = builder.Configuration["ApplicationSettings:FolderImage"]??""; 
+var externalImagePath = Path.Combine(Directory.GetCurrentDirectory(), "images");
+if (!Directory.Exists(externalImagePath))
+{
+    Directory.CreateDirectory(externalImagePath);
+}
 builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
@@ -134,6 +139,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials(); // Cho phép gửi cookies hoặc thông tin xác thực
     });
 });
+builder.Configuration["ApplicationSettings:FolderImage"] = externalImagePath;
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -152,7 +158,7 @@ app.UseAuthorization();
 
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(externalImagePath),
+    FileProvider = new PhysicalFileProvider(externalImagePath),
     RequestPath = "/images"
 });
 app.MapControllers();
