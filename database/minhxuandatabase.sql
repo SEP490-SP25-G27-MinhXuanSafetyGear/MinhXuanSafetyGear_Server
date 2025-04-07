@@ -373,11 +373,8 @@ END;
 go
 -- password admin123
 insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
-('admin','linhndhe163822@fpt.edu.vn','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
+('admin','admin@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
 
-INSERT INTO Customers (FullName, Email, IsEmailVerified, PasswordHash, PhoneNumber, [Address], DateOfBirth, Gender, ImageUrl, UpdateAt)  
-VALUES  
-(N'Nguyễn Văn A', 'ngocquy@example.com', 1, '$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G', '0987654321', '123 Đường ABC, Quận 1, TP.HCM', '1995-05-20', 1, 'https://example.com/avatar.jpg', GETDATE());
 go
 INSERT INTO BlogCategories (CategoryName, Slug)
 VALUES 
@@ -385,7 +382,8 @@ VALUES
 (N'Chính Sách', 'chinh-sach'),
 (N'Hướng Dẫn', 'huong-dan'),
 (N'KIẾN THỨC AN TOÀN LAO ĐỘNG', 'kien-thuc-an-toan-lao-dong'),
-(N'Quảng cáo', 'quang-cao')
+(N'Banner', 'banner'),
+(N'Khách Hàng Nói về Chúng tôi','khach-hang-noi-ve-chung-toi')
 ;
 INSERT INTO BlogPosts (Title, Content, CategoryBlogId, Slug)
 VALUES 
@@ -462,28 +460,3 @@ WHERE CategoryId IN (14);  -- Các sản phẩm thuộc nhóm "Thiết bị phò
 UPDATE ProductCategory
 SET GroupId = 6
 WHERE CategoryId IN (15, 16);  -- Các sản phẩm thuộc nhóm "Phòng cháy chữa cháy"
-INSERT INTO Products (ProductName, Slug, CategoryId, [Description], Material, Origin, Quantity, Price, Discount, FreeShip, Guarantee)
-VALUES 
-(N'Mũ bảo hộ', 'mu-bao-ho', 1, N'Mũ bảo hộ chất lượng cao, bảo vệ đầu khỏi va đập.', N'Nhựa', N'Việt Nam', 100, 150000, 0, 1, 12),
-(N'Găng tay bảo hộ', 'gang-tay-bao-ho', 2, N'Găng tay bảo hộ chống cắt, an toàn cho người sử dụng.', N'Vải', N'Việt Nam', 200, 50000, 5, 1, 6),
-(N'Kính bảo hộ', 'kinh-bao-ho', 3, N'Kính bảo hộ chống bụi và tia UV.', N'Kính', N'Việt Nam', 150, 75000, 0, 1, 12),
-(N'Giày bảo hộ', 'giay-bao-ho', 4, N'Giày bảo hộ chống đinh và trơn trượt.', N'Da', N'Việt Nam', 80, 300000, 10, 1, 24),
-(N'Quần áo bảo hộ', 'quan-ao-bao-ho', 5, N'Quần áo bảo hộ chống tĩnh điện.', N'Thun', N'Việt Nam', 50, 200000, 15, 1, 12),
-(N'Khẩu trang bảo hộ', 'khau-trang-bao-ho', 6, N'Khẩu trang bảo vệ sức khỏe, chống bụi mịn.', N'Vải', N'Việt Nam', 500, 20000, 0, 1, 0),
-(N'Bịt tai chống ồn', 'bit-tai-chong-on', 7, N'Bịt tai giảm tiếng ồn khi làm việc.', N'Nhựa', N'Việt Nam', 300, 30000, 0, 1, 0),
-(N'Áo phản quang', 'ao-phan-quang', 8, N'Áo phản quang giúp tăng khả năng nhận diện.', N'Thun', N'Việt Nam', 100, 120000, 5, 1, 12),
-(N'Dây đai an toàn', 'day-dai-an-toan', 9, N'Dây đai bảo vệ khi làm việc trên cao.', N'Vải', N'Việt Nam', 150, 80000, 0, 1, 12),
-(N'Mặt nạ phòng độc', 'mat-na-phong-doc', 10, N'Mặt nạ bảo vệ khỏi khí độc.', N'Nhựa', N'Việt Nam', 60, 100000, 0, 1, 12);
-
-INSERT INTO ProductVariants (ProductId, Size, Color, Quantity, Price, Discount)
-VALUES 
-(1, 'M', 'Đen', 50, 150000, 0),
-(1, 'L', 'Xanh', 100, 150000, 5),
-(2, 'M', 'Trắng', 75, 50000, 0),
-(2, 'L', 'Đỏ', 50, 50000, 10),
-(3, 'M', 'Xám', 60, 75000, 0),
-(3, 'L', 'Vàng', 40, 75000, 5),
-(4, '42', 'Nâu', 30, 300000, 10),
-(4, '43', 'Đen', 20, 300000, 15),
-(5, 'M', 'Xanh dương', 20, 200000, 0),
-(5, 'L', 'Hồng', 15, 200000, 5);
