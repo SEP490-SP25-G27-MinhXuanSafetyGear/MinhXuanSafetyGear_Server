@@ -28,12 +28,16 @@ public class NotificationService : INotificationService
 
     public async Task<NotificationResponse?> CreateNewNotificationAsync(NewNotification notification)
     {
-        var newNotification = _mapper.Map<Notification>(notification);
-        newNotification.CreatedAt = DateTime.Now;
-        newNotification.IsRead = false;
-        newNotification.OrderId = notification.OrderId;
-        newNotification = await _notificationRepo.CreateAsync(newNotification);
-        return _mapper.Map<NotificationResponse?>(newNotification);
+        try
+        {
+            var newNotification = _mapper.Map<Notification>(notification);
+            newNotification = await _notificationRepo.CreateAsync(newNotification);
+            return _mapper.Map<NotificationResponse?>(newNotification);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     public async Task<List<NotificationResponse>?> GetAllAdminNotiAsync()

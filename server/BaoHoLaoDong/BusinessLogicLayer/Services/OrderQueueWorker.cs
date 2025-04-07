@@ -57,18 +57,24 @@ public class OrderQueueWorker : BackgroundService
                                 if (createdOrder != null)
                                 {
                                     orderQueueService.CompleteOrder(newOrder.TrackingId, createdOrder);
-                                    var notification = new NewNotification
+                                    try
                                     {
-                                        Title = "Đơn hàng mới cần xác minh",
-                                        Message = $"Đơn hàng từ khách hàng {createdOrder.Email} được tạo mới với số tiền là {createdOrder.TotalAmount}",
-                                        RecipientId = 1,
-                                        RecipientType = RecipientType.Employee.ToString(),
-                                        Status = NotificationStatus.Active.ToString(),
-                                        OrderId = createdOrder.OrderId
-                                    };
-                                    var notifi = await notificationService.CreateNewNotificationAsync(notification);
-                                    await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString())
-                                        .SendAsync("ReceiveNotification", notifi, cancellationToken: stoppingToken);
+                                        var notification = new NewNotification
+                                        {
+                                            Title = "Đơn hàng mới cần xác minh",
+                                            Message = $"Đơn hàng từ khách hàng {createdOrder.Email} được tạo mới với số tiền là {createdOrder.TotalAmount}",
+                                            RecipientId = 1,
+                                            RecipientType = RecipientType.Employee.ToString(),
+                                            OrderId = createdOrder.OrderId
+                                        };
+                                        var notifi = await notificationService.CreateNewNotificationAsync(notification);
+                                        await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString())
+                                            .SendAsync("ReceiveNotification", notifi, cancellationToken: stoppingToken);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogError("Loi tao thong bao",ex.Message);
+                                    }
                                     await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder, cancellationToken: stoppingToken);
                                     if (createdOrder.OrderDetails != null)
                                         foreach (var odl in createdOrder.OrderDetails)
@@ -76,28 +82,7 @@ public class OrderQueueWorker : BackgroundService
                                             var product = await productService.GetProductByIdAsync(odl.ProductId);
                                             await _productHub.Clients.All.SendAsync("ProductUpdated", product, cancellationToken: stoppingToken);
                                         } 
-                                    if (createdOrder.CustomerId == null)
-                                    {
-                                        var newCus = new Customer
-                                        {
-                                            Email = createdOrder.Email,
-                                            FullName = createdOrder.FullName,
-                                            PhoneNumber = createdOrder.PhoneNumber,
-                                            Address = createdOrder.Address,
-                                            CreatedAt = DateTime.Now
-                                        };
-
-                                        try
-                                        {
-                                            _logger.LogInformation($"🔍 Đang tạo khách hàng {newCus.Email}...");
-                                            await userRepo.CreateCustomerAsync(newCus);
-                                            _logger.LogInformation("✅ Khách hàng được tạo thành công.");
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            _logger.LogError($"❌ Lỗi khi tạo khách hàng: {ex.Message}");
-                                        }
-                                    }
+                                    
                                     await mailService.SendOrderConfirmationEmailAsync(createdOrder);
 
                                     _logger.LogInformation($"✅ Xử lý đơn hàng thành công của: {createdOrder.Email}");

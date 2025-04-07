@@ -11,7 +11,9 @@ using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services;
 
@@ -21,10 +23,10 @@ public class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
     private readonly ITaxRepo _taxRepo;
-    private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","products");
+    private  string _imageDirectory;
     private readonly IFileService _fileService;
     private readonly IUserRepo _userRepo;
-    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper,
+    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper ,IOptions<ApplicationUrls> applicationUrls,
         ILogger<ProductService> logger,IFileService fileService ,IUserRepo userRepo)
     {
         _productRepo = productRepo;
@@ -32,6 +34,7 @@ public class ProductService : IProductService
         _logger = logger;
         _userRepo = userRepo;
         _fileService = fileService;
+        _imageDirectory = $"{applicationUrls.Value.FolderImage}\\products";
         _taxRepo = taxRepo;
     }
 

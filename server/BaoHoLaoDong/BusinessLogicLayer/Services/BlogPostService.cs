@@ -11,22 +11,24 @@ using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services;
 
 public class BlogPostService : IBlogPostService
 {
     private readonly IBlogPostRepo _blogPostRepo;
-    private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","blogs");
+    private  string _imagePathBlog;
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
     private readonly IFileService _fileService;
-    public BlogPostService(IBlogPostRepo blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(IBlogPostRepo blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger,IOptions<ApplicationUrls> applicationUrls)
     {
         _blogPostRepo = blogPostRepo;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
+        _imagePathBlog = $"{applicationUrls.Value.FolderImage}\\blogs";
     }
     public async Task<BlogPostResponse> CreateNewBlogPostAsync(NewBlogPost newBlogPost)
     {

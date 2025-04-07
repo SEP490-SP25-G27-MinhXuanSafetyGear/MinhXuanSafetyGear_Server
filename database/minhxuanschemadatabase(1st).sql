@@ -177,6 +177,7 @@ CREATE TABLE OrderDetails (
     ProductName nvarchar(250) NOT NULL,               -- Tên sản phẩm tại thời điểm mua
     ProductPrice decimal(18,2) NOT NULL,              -- Giá sản phẩm tại thời điểm mua
     ProductDiscount decimal(5,2) not NULL DEFAULT 0.00,   -- Giảm giá sản phẩm tại thời điểm mua
+	ProductTax decimal(5,2) null default 0.00,
     Quantity int NOT NULL,                            -- Số lượng sản phẩm trong đơn hàng
     TotalPrice decimal(18,2) NOT NULL,               -- Tổng giá trị của sản phẩm trong đơn hàng
     Size nvarchar(50) NULL,                           -- Kích thước của sản phẩm
@@ -249,14 +250,13 @@ CREATE TABLE Notifications (
     NotificationId int PRIMARY KEY IDENTITY(1,1),  -- Khoá chính cho thông báo
     Title nvarchar(255) NOT NULL,                    -- Tiêu đề thông báo
     [Message] nvarchar(max) NOT NULL,                -- Nội dung thông báo
-    RecipientId int NOT NULL,                        -- Mã người nhận (khách hàng hoặc nhân viên)
+    RecipientId int NULL,                        -- Mã người nhận (khách hàng hoặc nhân viên)
     RecipientType nvarchar(50) NOT NULL CHECK (RecipientType IN ('Customer', 'Employee')),  -- Loại người nhận (Customer hoặc Employee)
     IsRead bit NOT NULL DEFAULT 0,                   -- Trạng thái đọc của thông báo (0: chưa đọc, 1: đã đọc)
     CreatedAt datetime NOT NULL DEFAULT GETDATE(),   -- Thời gian tạo thông báo
     UpdatedAt datetime NULL,                         -- Thời gian cập nhật thông báo
 	OrderId int  null ,                                -- Thông báo cho đơn hàng
     [Status] varchar(50) NOT NULL DEFAULT 'Active',    -- Trạng thái thông báo (Active, Inactive)
-    CONSTRAINT FK_Notifications_Customers FOREIGN KEY (RecipientId) REFERENCES Customers(CustomerId) ON DELETE CASCADE, -- Khoá ngoại tới bảng Customers
     CONSTRAINT FK_Notifications_Employees FOREIGN KEY (RecipientId) REFERENCES Employees(EmployeeId) ON DELETE CASCADE  -- Khoá ngoại tới bảng Employees
 );
 GO
@@ -371,92 +371,3 @@ BEGIN
     END
 END;
 go
--- password admin123
-insert into Employees(FullName,Email,PasswordHash,PhoneNumber,Address,DateOfBirth,Gender,[Role]) values
-('admin','admin@gmail.com','$2a$11$uQTwwfFB9WBJcvB2PAfg7ejM9Xsp.LJgY/0q82R.4Vk2d4zGvr00G','0123456789','ha noi','2002-03-09',1,'Admin');
-
-go
-INSERT INTO BlogCategories (CategoryName, Slug)
-VALUES 
-(N'Liên hệ', 'lien-he'),
-(N'Chính Sách', 'chinh-sach'),
-(N'Hướng Dẫn', 'huong-dan'),
-(N'KIẾN THỨC AN TOÀN LAO ĐỘNG', 'kien-thuc-an-toan-lao-dong'),
-(N'Banner', 'banner'),
-(N'Khách Hàng Nói về Chúng tôi','khach-hang-noi-ve-chung-toi')
-;
-INSERT INTO BlogPosts (Title, Content, CategoryBlogId, Slug)
-VALUES 
-(N'Địa chỉ', N'Hai Bà Trưng, Hà Nội', 1, 'dia-chi'),
-(N'Điện thoại', N'0912.423.062', 1, 'dien-thoai'),
-(N'Email', N'minhxuanbhld@gmail.com', 1, 'email'),
-(N'Zalo', N'0912.423.062', 1, 'zalo'),
-(N'Chính sách mua hàng', N'', 2, 'chinh-sach-mua-hang'),
-(N'Chính sách thanh toán', N'', 2, 'chinh-sach-thanh-toan'),
-(N'Chính sách vận chuyển', N'', 2, 'chinh-sach-van-chuyen'),
-(N'Hướng dẫn mua hàng', N'', 3, 'huong-dan-mua-hang'),
-(N'Hướng dẫn đổi trả', N'', 3, 'huong-dan-doi-tra'),
-(N'Hướng dẫn chuyển khoản', N'', 3, 'huong-dan-chuyen-khoan'),
-(N'Hướng dẫn trả góp', N'', 3, 'huong-dan-tra-gop'),
-(N'Hướng dẫn hoàn hàng', N'', 3, 'huong-dan-hoan-hang');
-go
-INSERT INTO ProductCategoryGroup(GroupName,Description) 
-VALUES
-(N'Trang Thiết bị bảo hộ',N''),
-(N'An toàn ngành điện',N''),
-(N'An toàn ngành nước',N''),
-(N'Thiết bị chống ồn',N''),
-(N'Thiết bị phòng độc',N''),
-(N'Phòng cháy chữa cháy',N'');
-INSERT INTO ProductCategory (CategoryName, [Description])
-VALUES 
-(N'Mũ bảo hộ', N'Các loại mũ bảo hộ lao động bảo vệ đầu khỏi va đập và rơi vật nặng.'),
-(N'Găng tay bảo hộ', N'Găng tay bảo hộ chống cắt, cách điện, chống hóa chất.'),
-(N'Kính bảo hộ', N'Kính bảo hộ chống bụi, chống tia UV, bảo vệ mắt.'),
-(N'Giày bảo hộ', N'Giày bảo hộ chống đinh, chống trơn trượt, cách điện.'),
-(N'Quần áo bảo hộ', N'Bộ quần áo bảo hộ chống tĩnh điện, chống hóa chất.'),
-(N'Khẩu trang bảo hộ', N'Khẩu trang chống bụi mịn, chống hóa chất độc hại.'),
-(N'Bịt tai chống ồn', N'Bịt tai giảm tiếng ồn khi làm việc trong môi trường công nghiệp.'),
-(N'Áo phản quang', N'Áo phản quang giúp tăng khả năng nhận diện trong điều kiện ánh sáng yếu.'),
-(N'Dây đai an toàn', N'Dây đai bảo vệ khi làm việc trên cao, chống ngã.'),
-(N'Mặt nạ phòng độc', N'Mặt nạ bảo vệ khỏi khí độc, hơi hóa chất.'),
-(N'Găng tay cách điện', N'Găng tay bảo vệ khỏi điện áp cao trong ngành điện lực.'),
-(N'Mũ hàn điện tử', N'Mũ hàn tự động đổi màu kính để bảo vệ mắt.'),
-(N'Tấm chắn mặt', N'Tấm chắn mặt bảo vệ khỏi hóa chất, bụi bẩn.'),
-(N'Giày chống tĩnh điện', N'Giày bảo vệ linh kiện điện tử khỏi tĩnh điện.'),
-(N'Bộ đồ chống hóa chất', N'Bộ đồ bảo hộ khi làm việc trong môi trường hóa chất.'),
-(N'Bộ sơ cứu y tế', N'Bộ sơ cứu y tế dùng trong trường hợp khẩn cấp.'),
-(N'Dây cứu sinh', N'Dây cứu sinh chịu lực cao cho công trình xây dựng.'),
-(N'Áo chống đâm thủng', N'Áo bảo hộ chống đâm thủng từ vật sắc nhọn.'),
-(N'Bốt bảo hộ', N'Bốt bảo hộ chống nước, chống trơn trượt.'),
-(N'Túi đựng dụng cụ bảo hộ', N'Túi đựng dụng cụ bảo hộ an toàn.');
-
-
-INSERT INTO Tax (TaxName, TaxRate, Description) VALUES 
-('VAT', 10.00, 'Thuế giá trị gia tăng'),
-('Import Tax', 5.00, 'Thuế nhập khẩu'),
-('Environmental Tax', 2.00, 'Thuế môi trường');
-
-UPDATE ProductCategory
-SET GroupId = 1
-WHERE CategoryId IN (1, 2, 3, 4, 5, 6);  -- Các sản phẩm thuộc nhóm "Trang Thiết bị bảo hộ"
-
-UPDATE ProductCategory
-SET GroupId = 2
-WHERE CategoryId IN (7, 8);  -- Các sản phẩm thuộc nhóm "An toàn ngành điện"
-
-UPDATE ProductCategory
-SET GroupId = 3
-WHERE CategoryId IN (9, 10, 11);  -- Các sản phẩm thuộc nhóm "An toàn ngành nước"
-
-UPDATE ProductCategory
-SET GroupId = 4
-WHERE CategoryId IN (12, 13);  -- Các sản phẩm thuộc nhóm "Thiết bị chống ồn"
-
-UPDATE ProductCategory
-SET GroupId = 5
-WHERE CategoryId IN (14);  -- Các sản phẩm thuộc nhóm "Thiết bị phòng độc"
-
-UPDATE ProductCategory
-SET GroupId = 6
-WHERE CategoryId IN (15, 16);  -- Các sản phẩm thuộc nhóm "Phòng cháy chữa cháy"

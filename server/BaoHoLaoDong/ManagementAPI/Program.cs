@@ -15,10 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
-var urlResetPassword = builder.Configuration["ApplicationSettings:UrlResetPassword"];
-var googleClientId = builder.Configuration["GoogleAuth:ClientId"];
-var imagePathBill = builder.Configuration["ApplicationSettings:FolderBill"];
-
+var externalImagePath = builder.Configuration["ApplicationSettings:FolderImage"]??""; 
 builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
@@ -151,7 +148,13 @@ app.UseHttpsRedirection();
 app.UseCors(); // Thêm middleware CORS vào pipeline xử lý HTTP
 app.UseAuthentication(); 
 app.UseAuthorization();
-app.UseStaticFiles();
+
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(externalImagePath),
+    RequestPath = "/images"
+});
 app.MapControllers();
 if (app.Environment.IsDevelopment()!)
 {
