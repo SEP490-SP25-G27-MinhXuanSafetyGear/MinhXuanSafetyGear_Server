@@ -16,11 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
-var externalImagePath = Path.Combine(Directory.GetCurrentDirectory(), "images");
-if (!Directory.Exists(externalImagePath))
-{
-    Directory.CreateDirectory(externalImagePath);
-}
+
 builder.WebHost.UseUrls(baseUrl);
 #region JWT
 // Lấy cấu hình JWT từ appsettings.json
@@ -139,7 +135,6 @@ builder.Services.AddCors(options =>
             .AllowCredentials(); // Cho phép gửi cookies hoặc thông tin xác thực
     });
 });
-builder.Configuration["ApplicationSettings:FolderImage"] = externalImagePath;
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -155,12 +150,10 @@ app.UseCors(); // Thêm middleware CORS vào pipeline xử lý HTTP
 app.UseAuthentication(); 
 app.UseAuthorization();
 
+//app.UseDefaultFiles();
+app.UseStaticFiles();
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(externalImagePath),
-    RequestPath = "/images"
-});
+//app.MapFallbackToFile("index.html"); 
 app.MapControllers();
 if (app.Environment.IsDevelopment()!)
 {

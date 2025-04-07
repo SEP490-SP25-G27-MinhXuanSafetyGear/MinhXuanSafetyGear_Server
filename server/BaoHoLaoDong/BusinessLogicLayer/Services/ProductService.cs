@@ -10,6 +10,7 @@ using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository;
 using DataAccessObject.Repository.Interface;
+using FuzzySharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,10 +24,10 @@ public class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IProductRepo _productRepo;
     private readonly ITaxRepo _taxRepo;
-    private  string _imageDirectory;
+    private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", "images","products");
     private readonly IFileService _fileService;
     private readonly IUserRepo _userRepo;
-    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper ,IOptions<ApplicationUrls> applicationUrls,
+    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper ,
         ILogger<ProductService> logger,IFileService fileService ,IUserRepo userRepo)
     {
         _productRepo = productRepo;
@@ -34,8 +35,8 @@ public class ProductService : IProductService
         _logger = logger;
         _userRepo = userRepo;
         _fileService = fileService;
-        _imageDirectory = $"{applicationUrls.Value.FolderImage}\\products";
         _taxRepo = taxRepo;
+        
     }
 
 
@@ -371,69 +372,40 @@ public class ProductService : IProductService
         return text;
     }
 
-  public async Task<List<ProductResponse>?> SearchProductAsync(string title)
-{
-    try
+    public async Task<List<ProductResponse>?> SearchProductAsync(string title)
     {
-        if (string.IsNullOrWhiteSpace(title) || title.Length > 100)
+        try
         {
-            _logger.LogWarning("Invalid search title: {Title}", title);
+            if (string.IsNullOrWhiteSpace(title) || title.Length > 100)
+            {
+                _logger.LogWarning("Invalid search title: {Title}", title);
+                return new List<ProductResponse>();
+            }
+
+            title = title.Trim().ToLower();
+            var forbiddenKeywords = new List<string> { "drop", "delete", "truncate", "script", "select", "insert", "update" };
+            if (forbiddenKeywords.Any(keyword => title.Contains(keyword)))
+            {
+                _logger.LogWarning("Blocked search query due to forbidden keyword: {Title}", title);
+                return new List<ProductResponse>();
+            }
+
+            var products = await _productRepo.GetAllProductsAsync() ?? new List<Product>();
+
+            var keywords = title.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var filteredProducts = products.Where(p =>
+                keywords.Any(k => Fuzz.PartialRatio(p.ProductName.ToLower(), k) >= 70)
+            ).ToList();
+
+            return _mapper.Map<List<ProductResponse>>(filteredProducts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while searching products with title: {Title}", title);
             return new List<ProductResponse>();
         }
-
-        // Loại bỏ ký tự đặc biệt
-        title = Regex.Replace(title, @"[^\w\s]", "").Trim().ToLower();
-        
-        // Danh sách từ khóa không hợp lệ
-        var forbiddenKeywords = new List<string> { "drop", "delete", "truncate", "script", "select", "insert", "update" };
-        if (forbiddenKeywords.Any(keyword => title.Contains(keyword)))
-        {
-            _logger.LogWarning("Blocked search query due to forbidden keyword: {Title}", title);
-            return new List<ProductResponse>();
-        }
-
-        // Chuẩn hóa tiêu đề (loại bỏ dấu tiếng Việt)
-        title = RemoveDiacritics(Regex.Replace(title, @"\s+", " "));
-
-        // Danh sách từ không có ý nghĩa (stopwords)
-        var stopWords = new HashSet<string> { "và", "hoặc", "của", "là", "có", "với", "bởi", "cho", "trong", "một", "những", "các", "the", "an", "or", "is", "on", "at" };
-
-        // Lấy danh sách sản phẩm từ database
-        var products = await _productRepo.GetAllProductsAsync() ?? new List<Product>();
-
-        // Tự động tạo danh sách từ khóa hợp lệ từ tên sản phẩm
-        var validKeywords = products
-            .SelectMany(p => RemoveDiacritics(p.ProductName.ToLower()).Split(' '))
-            .Where(word => word.Length > 1 && !stopWords.Contains(word))
-            .Distinct()
-            .ToHashSet();
-
-        // Tách từ khóa tìm kiếm, chỉ giữ lại từ có trong danh sách hợp lệ
-        var keywords = title.Split(' ')
-                            .Where(k => validKeywords.Contains(k))
-                            .ToList();
-
-        if (!keywords.Any())
-        {
-            _logger.LogWarning("Search query contains only invalid words: {Title}", title);
-            return new List<ProductResponse>();
-        }
-
-        // Lọc sản phẩm dựa trên từ khóa hợp lệ
-        var filteredProducts = products.Where(p =>
-        {
-            var productName = RemoveDiacritics(p.ProductName.ToLower());
-            return keywords.All(keyword => productName.Contains(keyword));
-        }).ToList();
-
-        return _mapper.Map<List<ProductResponse>>(filteredProducts);
     }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error while searching products with title: {Title}", title);
-        return new List<ProductResponse>();
-    }
-}
 
 
 

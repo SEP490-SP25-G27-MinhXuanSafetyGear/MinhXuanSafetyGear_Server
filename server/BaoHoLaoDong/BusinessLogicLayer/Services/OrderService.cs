@@ -743,7 +743,7 @@ namespace BusinessLogicLayer.Services
                         }
                         var price = variant == null ? product.Price :variant.Price; 
                         var discount =  product.Discount; 
-                        var tax = newOrder.IsTaxIncluded  ? product.TotalTax :0; 
+                        var tax = newOrder.IsTaxIncluded  ? (product.TotalTax==null?0:product.TotalTax) :0; 
                         var priceAfterDiscount = price * (1 - discount / 100);
                         var finalPrice = priceAfterDiscount * (1 + tax / 100);
                         odDetail.ProductPrice = finalPrice.GetValueOrDefault(0);

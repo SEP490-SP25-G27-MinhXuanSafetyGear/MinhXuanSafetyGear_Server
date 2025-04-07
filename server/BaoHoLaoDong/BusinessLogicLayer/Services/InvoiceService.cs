@@ -20,14 +20,13 @@ public class InvoiceService : IInvoiceService
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceService> _logger;
-    private ApplicationUrls _applicationUrls;
-    public InvoiceService(IInvoiceRepo invoiceRepo, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger,IOptions<ApplicationUrls> applicationUrls )
+    private readonly string _imagePathBill = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","bills");
+    public InvoiceService(IInvoiceRepo invoiceRepo, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger )
     {
         _invoiceRepo = invoiceRepo;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
-        _applicationUrls = applicationUrls.Value;
         
     }
     public async Task<InvoiceResponse?> ConFirmInvoiceByCustomerAsync(ConfirmInvoice confirmInvoice)
@@ -36,7 +35,6 @@ public class InvoiceService : IInvoiceService
         {
             var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(confirmInvoice.InvoiceNumber);
             if(invoice == null) { return null; }
-            var _imagePathBill = $"{_applicationUrls.FolderImage}\\bills";
             var fileBill = confirmInvoice.File;
             if (fileBill != null)
             {
@@ -92,7 +90,7 @@ public class InvoiceService : IInvoiceService
             if (invoice == null) return null;
             if (!string.IsNullOrEmpty(invoice.FileName))
             {
-                var filePath = $"{_applicationUrls.FolderImage}/bills/{invoice.FileName}";
+                var filePath = $"{_imagePathBill}/{invoice.FileName}";
                 return await _fileService.GetFileAsStreamAsync(filePath);
             }
 
