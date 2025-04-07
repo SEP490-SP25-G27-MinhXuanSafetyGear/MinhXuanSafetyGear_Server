@@ -722,7 +722,11 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await CreateOrderEntityAsync(newOrder);
+                var order = await CreateOrderEntityAsync(newOrder) ;
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    orderDetail.Product = await _productRepo.GetProductByIdAsync(orderDetail.ProductId)?? new Product();
+                }
                 return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex)
@@ -748,7 +752,7 @@ namespace BusinessLogicLayer.Services
                         }
                         var price = variant == null ? product.Price :variant.Price; 
                         var discount =  product.Discount; 
-                        var tax = product.TotalTax.GetValueOrDefault(0); 
+                        var tax = newOrder.IsTaxIncluded  ? product.TotalTax :0; 
                         var priceAfterDiscount = price * (1 - discount / 100);
                         var finalPrice = priceAfterDiscount * (1 + tax / 100);
                         odDetail.ProductPrice = finalPrice.GetValueOrDefault(0);
@@ -758,6 +762,7 @@ namespace BusinessLogicLayer.Services
                         odDetail.VariantId = odDetail.VariantId;
                         odDetail.Size = variant?.Size ;
                         odDetail.Color = variant?.Color;
+                        odDetail.ProductTax = product.TotalTax;
                     }
                 }
                 order.TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice);

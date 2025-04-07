@@ -196,6 +196,7 @@ public class ProductDao : IDao<Product>
             .Include(p=>p.ProductTaxes).ThenInclude(t=>t.Tax)
             .AsNoTracking()
             .OrderByDescending(p=>p.Discount)
+            .Where(p=>p.Discount>0)
             .Skip((page - 1) * size)
             .Take(size)
             .ToListAsync();
