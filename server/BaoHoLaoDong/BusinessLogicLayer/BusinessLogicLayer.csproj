@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="14.0.0" />
       <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+      <PackageReference Include="FuzzySharp" Version="2.0.2" />
       <PackageReference Include="itext.html2pdf.core" Version="1.0.4" />
       <PackageReference Include="MailKit" Version="4.11.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />

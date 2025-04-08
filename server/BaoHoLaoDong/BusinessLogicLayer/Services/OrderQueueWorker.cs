@@ -73,7 +73,22 @@ public class OrderQueueWorker : BackgroundService
                                     }
                                     catch (Exception ex)
                                     {
-                                        _logger.LogError("Loi tao thong bao",ex.Message);
+                                        _logger.LogError(ex.Message);
+                                    }
+                                    try
+                                    {
+                                        await userRepo.CreateCustomerAsync(new Customer()
+                                        {
+                                            Email = createdOrder.Email,
+                                            PhoneNumber = createdOrder.PhoneNumber,
+                                            Address = createdOrder.Address,
+                                            IsEmailVerified = true
+                                            
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogError("Loi tao khach hang", ex.Message);
                                     }
                                     await _orderHub.Clients.All.SendAsync("NewOrderCreated", createdOrder, cancellationToken: stoppingToken);
                                     if (createdOrder.OrderDetails != null)

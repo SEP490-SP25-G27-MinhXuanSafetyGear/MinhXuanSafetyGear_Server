@@ -20,4 +20,19 @@
     <ProjectReference Include="..\DataAccessObject\DataAccessObject.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\static\css\main.3938f0a7.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\css\main.3938f0a7.css.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\js\main.9c1bbc2f.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\js\main.9c1bbc2f.js.LICENSE.txt" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\js\main.9c1bbc2f.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\media\slick.2630a3e3eab21c607e21.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\media\slick.295183786cd8a1389865.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\media\slick.a4e97f5a2a64f0ab1323.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\media\slick.c94f7671dcc99dce43e2.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\js\main.08a4b79f.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\js\main.08a4b79f.js.LICENSE.txt" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\js\main.08a4b79f.js.map" />
+  </ItemGroup>
+
 </Project>

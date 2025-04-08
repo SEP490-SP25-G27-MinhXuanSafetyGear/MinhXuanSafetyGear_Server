@@ -149,6 +149,15 @@
           "build/netstandard2.0/coverlet.collector.targets": {}
         }
       },
+      "FuzzySharp/2.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp2.1/FuzzySharp.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/FuzzySharp.dll": {}
+        }
+      },
       "Google.Apis/1.68.0": {
         "type": "package",
         "dependencies": {
@@ -3772,6 +3781,7 @@
           "BCrypt.Net-Next": "4.0.3",
           "BusinessObject": "1.0.0",
           "DataAccessObject": "1.0.0",
+          "FuzzySharp": "2.0.2",
           "MailKit": "4.11.0",
           "Microsoft.AspNetCore.Http": "2.3.0",
           "Microsoft.AspNetCore.SignalR": "1.2.0",
@@ -4082,6 +4092,26 @@
         "coverlet-icon.png",
         "coverlet.collector.6.0.4.nupkg.sha512",
         "coverlet.collector.nuspec"
+      ]
+    },
+    "FuzzySharp/2.0.2": {
+      "sha512": "sBKqWxw3g//peYxDZ8JipRlyPbIyBtgzqBVA5GqwHVeqtIrw75maGXAllztf+1aJhchD+drcQIgf2mFho8ZV8A==",
+      "type": "package",
+      "path": "fuzzysharp/2.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "fuzzysharp.2.0.2.nupkg.sha512",
+        "fuzzysharp.nuspec",
+        "lib/net45/FuzzySharp.dll",
+        "lib/net46/FuzzySharp.dll",
+        "lib/net461/FuzzySharp.dll",
+        "lib/netcoreapp2.0/FuzzySharp.dll",
+        "lib/netcoreapp2.1/FuzzySharp.dll",
+        "lib/netstandard1.6/FuzzySharp.dll",
+        "lib/netstandard2.0/FuzzySharp.dll",
+        "lib/netstandard2.1/FuzzySharp.dll"
       ]
     },
     "Google.Apis/1.68.0": {

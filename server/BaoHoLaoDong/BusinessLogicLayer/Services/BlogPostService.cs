@@ -18,17 +18,16 @@ namespace BusinessLogicLayer.Services;
 public class BlogPostService : IBlogPostService
 {
     private readonly IBlogPostRepo _blogPostRepo;
-    private  string _imagePathBlog;
+    private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","blogs");
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
     private readonly IFileService _fileService;
-    public BlogPostService(IBlogPostRepo blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger,IOptions<ApplicationUrls> applicationUrls)
+    public BlogPostService(IBlogPostRepo blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
     {
         _blogPostRepo = blogPostRepo;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
-        _imagePathBlog = $"{applicationUrls.Value.FolderImage}\\blogs";
     }
     public async Task<BlogPostResponse> CreateNewBlogPostAsync(NewBlogPost newBlogPost)
     {
