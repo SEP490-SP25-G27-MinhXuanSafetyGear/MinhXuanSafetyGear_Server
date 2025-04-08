@@ -40,9 +40,9 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task<List<NotificationResponse>?> GetAllAdminNotiAsync()
+    public async Task<List<NotificationResponse>?> GetAllAdminNotiAsync(int recipientId)
     {
-        var notifications = await _notificationRepo.GetAllAdminNotiAsync(RecipientType.Employee.ToString());
+        var notifications = await _notificationRepo.GetAllAdminNotiAsync(recipientId,RecipientType.Employee.ToString());
         return _mapper.Map<List<NotificationResponse>?>(notifications);
     }
 

@@ -4,6 +4,7 @@ using BusinessLogicLayer.Models;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
 using DataAccessObject.Repository.Interface;
+using iText.Layout.Element;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,7 +46,7 @@ public class OrderQueueWorker : BackgroundService
                     var mailService = services.GetRequiredService<IMailService>();
                     var orderQueueService = services.GetRequiredService<IOrderQueueService>();
                     var productService = services.GetRequiredService<IProductService>();
-                    var userRepo = services.GetRequiredService<IUserRepo>();
+                    var userService = services.GetRequiredService<IUserService>();
                     try
                     {
                         var newOrder = await orderQueueService.DequeueOrder();
@@ -59,17 +60,25 @@ public class OrderQueueWorker : BackgroundService
                                     orderQueueService.CompleteOrder(newOrder.TrackingId, createdOrder);
                                     try
                                     {
-                                        var notification = new NewNotification
+                                        var empPage = await userService.GetAllUserPageAsync("Employee", 1, int.MaxValue);
+                                        var notifications = new List<NewNotification>();
+                                        foreach (var u in empPage.Items)
                                         {
-                                            Title = "Đơn hàng mới cần xác minh",
-                                            Message = $"Đơn hàng từ khách hàng {createdOrder.Email} được tạo mới với số tiền là {createdOrder.TotalAmount}",
-                                            RecipientId = 1,
-                                            RecipientType = RecipientType.Employee.ToString(),
-                                            OrderId = createdOrder.OrderId
-                                        };
-                                        var notifi = await notificationService.CreateNewNotificationAsync(notification);
-                                        await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString())
-                                            .SendAsync("ReceiveNotification", notifi, cancellationToken: stoppingToken);
+                                            notifications.Add(new NewNotification
+                                            {
+                                                Title = "Đơn hàng mới cần xác minh",
+                                                Message = $"Đơn hàng từ khách hàng {createdOrder.Email} được tạo mới với số tiền là {createdOrder.TotalAmount}",
+                                                RecipientId = u.Id,
+                                                RecipientType = RecipientType.Employee.ToString(),
+                                                OrderId = createdOrder.OrderId
+                                            });
+                                        }
+                                        foreach (var noti in notifications)
+                                        {
+                                            var notifi = await notificationService.CreateNewNotificationAsync(noti);
+                                            await _notificationHub.Clients.Group(NotificationGroup.Employee.ToString())
+                                                .SendAsync("ReceiveNotification", notifi, cancellationToken: stoppingToken);
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -77,12 +86,14 @@ public class OrderQueueWorker : BackgroundService
                                     }
                                     try
                                     {
-                                        await userRepo.CreateCustomerAsync(new Customer()
+                                        await userService.CreateNewCustomerAsync(new NewCustomer()
                                         {
+                                            FullName = createdOrder.FullName,
                                             Email = createdOrder.Email,
                                             PhoneNumber = createdOrder.PhoneNumber,
                                             Address = createdOrder.Address,
-                                            IsEmailVerified = true
+                                            IsEmailVerified = true,
+                                            Password = "customer12345"
                                             
                                         });
                                     }

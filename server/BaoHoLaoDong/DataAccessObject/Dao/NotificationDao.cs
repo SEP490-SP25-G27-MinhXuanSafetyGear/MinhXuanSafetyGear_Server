@@ -33,11 +33,11 @@ public class NotificationDao
         return newNotifications;
     }
 
-    public async Task<List<Notification>> GetAllAdminNotiAsync(string recipientType)
+    public async Task<List<Notification>> GetAllAdminNotiAsync(int recipientId,string recipientType)
     {
         return await _context.Notifications
             .Where(n => n.RecipientType == recipientType)
-            .Where(c => c.RecipientId == 1)
+            .Where(c => c.RecipientId == recipientId)
             .OrderByDescending(c => c.CreatedAt)
             .AsNoTracking()
             .ToListAsync();

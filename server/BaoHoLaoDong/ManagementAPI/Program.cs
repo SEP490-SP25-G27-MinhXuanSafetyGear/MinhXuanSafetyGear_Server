@@ -10,7 +10,6 @@ using DataAccessObject.Repository.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -150,10 +149,10 @@ app.UseCors(); // Thêm middleware CORS vào pipeline xử lý HTTP
 app.UseAuthentication(); 
 app.UseAuthorization();
 
-//app.UseDefaultFiles();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
-//app.MapFallbackToFile("index.html"); 
+app.MapFallbackToFile("index.html"); 
 app.MapControllers();
 if (app.Environment.IsDevelopment()!)
 {

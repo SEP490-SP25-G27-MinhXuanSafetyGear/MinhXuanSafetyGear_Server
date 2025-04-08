@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+                .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src=> 2))
                 .ForMember(dest => dest.CreateAt,
                     opt => opt.MapFrom(_ => DateTime.UtcNow)) // Mặc định là thời gian hiện tại
                 .ForMember(dest => dest.UpdateAt, opt => opt.Ignore()) // Bỏ qua UpdateAt khi tạo mới
