@@ -22,15 +22,15 @@ namespace BusinessLogicLayer.Services
     {
         private readonly IMapper _mapper;
         private readonly ILogger<OrderService> _logger;
-        private readonly IOrderRepo _orderRepo;
-        private readonly IProductRepo _productRepo;
+        private readonly IOrderRepository _orderRepo;
+        private readonly IProductRepository _productRepo;
         public readonly IConfiguration _configuration;
-        private readonly IUserRepo _userRepo;
-        private readonly INotificationRepo _notificationRepo;
+        private readonly IUserRepository _userRepo;
+        private readonly INotificationRepository _notificationRepo;
         private readonly IMailService _mailService;
         private readonly IProductService _productService;
-        public OrderService(IOrderRepo orderRepo,IProductRepo productRepo,IUserRepo userRepo, 
-            INotificationRepo notificationRepo,IProductService productService,
+        public OrderService(IOrderRepository orderRepo,IProductRepository productRepo,IUserRepository userRepo, 
+            INotificationRepository notificationRepo,IProductService productService,
             IMapper mapper, ILogger<OrderService> logger, IConfiguration configuration,
             IMailService mailService)
         {

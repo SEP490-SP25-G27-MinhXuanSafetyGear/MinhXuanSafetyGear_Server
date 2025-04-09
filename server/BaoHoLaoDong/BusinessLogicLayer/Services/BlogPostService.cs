@@ -17,12 +17,12 @@ namespace BusinessLogicLayer.Services;
 
 public class BlogPostService : IBlogPostService
 {
-    private readonly IBlogPostRepo _blogPostRepo;
+    private readonly IBlogPostRepository _blogPostRepo;
     private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","blogs");
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
     private readonly IFileService _fileService;
-    public BlogPostService(IBlogPostRepo blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(IBlogPostRepository blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
     {
         _blogPostRepo = blogPostRepo;
         _fileService = fileService;

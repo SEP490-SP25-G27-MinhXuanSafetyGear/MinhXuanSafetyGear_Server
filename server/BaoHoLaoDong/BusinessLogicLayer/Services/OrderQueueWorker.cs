@@ -45,7 +45,7 @@ public class OrderQueueWorker : BackgroundService
                     var mailService = services.GetRequiredService<IMailService>();
                     var orderQueueService = services.GetRequiredService<IOrderQueueService>();
                     var productService = services.GetRequiredService<IProductService>();
-                    var userRepo = services.GetRequiredService<IUserRepo>();
+                    var userRepo = services.GetRequiredService<IUserRepository>();
                     try
                     {
                         var newOrder = await orderQueueService.DequeueOrder();

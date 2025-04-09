@@ -22,13 +22,13 @@ public class ProductService : IProductService
 {
     private readonly IMapper _mapper;
     private readonly ILogger<ProductService> _logger;
-    private readonly IProductRepo _productRepo;
-    private readonly ITaxRepo _taxRepo;
+    private readonly IProductRepository _productRepo;
+    private readonly ITaxRepository _taxRepo;
     private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", "images","products");
     private readonly IFileService _fileService;
-    private readonly IUserRepo _userRepo;
-    public ProductService(IProductRepo productRepo,ITaxRepo taxRepo, IMapper mapper ,
-        ILogger<ProductService> logger,IFileService fileService ,IUserRepo userRepo)
+    private readonly IUserRepository _userRepo;
+    public ProductService(IProductRepository productRepo,ITaxRepository taxRepo, IMapper mapper ,
+        ILogger<ProductService> logger,IFileService fileService ,IUserRepository userRepo)
     {
         _productRepo = productRepo;
         _mapper = mapper;
