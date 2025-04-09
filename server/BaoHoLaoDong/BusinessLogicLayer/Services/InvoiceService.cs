@@ -16,14 +16,14 @@ namespace BusinessLogicLayer.Services;
 
 public class InvoiceService : IInvoiceService
 {
-    private readonly IInvoiceRepository _invoiceRepo;
+    private readonly IInvoiceRepository _invoiceRepository;
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceService> _logger;
     private readonly string _imagePathBill = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","bills");
-    public InvoiceService(IInvoiceRepository invoiceRepo, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger )
+    public InvoiceService(IInvoiceRepository invoiceRepository, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger )
     {
-        _invoiceRepo = invoiceRepo;
+        _invoiceRepository = invoiceRepository;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
@@ -33,7 +33,7 @@ public class InvoiceService : IInvoiceService
     {
         try
         {
-            var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(confirmInvoice.InvoiceNumber);
+            var invoice = await _invoiceRepository.GetInvoiceByNumberAsync(confirmInvoice.InvoiceNumber);
             if(invoice == null) { return null; }
             var fileBill = confirmInvoice.File;
             if (fileBill != null)
@@ -48,7 +48,7 @@ public class InvoiceService : IInvoiceService
 
             invoice.PaymentConfirmOfCustomer = true;
             invoice.PaymentDate = DateTime.Now;
-            invoice = await _invoiceRepo.UpdateInvoiceAsync(invoice);
+            invoice = await _invoiceRepository.UpdateInvoiceAsync(invoice);
             if(invoice == null) { return null; }
             return _mapper.Map<InvoiceResponse>(invoice);
         }
@@ -63,7 +63,7 @@ public class InvoiceService : IInvoiceService
     {
         try
         {
-            var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(invoiceNo);
+            var invoice = await _invoiceRepository.GetInvoiceByNumberAsync(invoiceNo);
             if(invoice == null) { return null; }
 
             invoice.PaymentConfirmOfCustomer = true;
@@ -71,7 +71,7 @@ public class InvoiceService : IInvoiceService
             invoice.PaymentStatus = status;
             invoice.Order.Status = status;
             invoice.Order.UpdatedAt = DateTime.Now;
-            invoice = await _invoiceRepo.UpdateInvoiceAsync(invoice);
+            invoice = await _invoiceRepository.UpdateInvoiceAsync(invoice);
             if(invoice == null) { return null; }
             return _mapper.Map<InvoiceResponse>(invoice);
         }
@@ -86,7 +86,7 @@ public class InvoiceService : IInvoiceService
     {
         try
         {
-            var invoice = await _invoiceRepo.GetInvoiceByNumberAsync(invoiceNo);
+            var invoice = await _invoiceRepository.GetInvoiceByNumberAsync(invoiceNo);
             if (invoice == null) return null;
             if (!string.IsNullOrEmpty(invoice.FileName))
             {

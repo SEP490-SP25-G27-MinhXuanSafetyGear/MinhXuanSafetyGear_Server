@@ -28,9 +28,9 @@ public class NotificationRepository : INotificationRepository
         return await notificationDao.CreateAsync(newNotifications);
     }
 
-    public async Task<List<Notification>?> GetAllAdminNotiAsync(string recipientType)
+    public async Task<List<Notification>?> GetAllAdminNotiAsync(int recipientId,string recipientType)
     {
-        return await notificationDao.GetAllAdminNotiAsync(recipientType);
+        return await notificationDao.GetAllAdminNotiAsync(recipientId,recipientType);
     }
 
     public async Task<bool?> MaskAsReadAsync(int notificationId, bool readAll)

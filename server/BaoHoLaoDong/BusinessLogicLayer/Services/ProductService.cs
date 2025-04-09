@@ -22,20 +22,20 @@ public class ProductService : IProductService
 {
     private readonly IMapper _mapper;
     private readonly ILogger<ProductService> _logger;
-    private readonly IProductRepository _productRepo;
-    private readonly ITaxRepository _taxRepo;
+    private readonly IProductRepository _productRepository;
+    private readonly ITaxRepository _taxRepository;
     private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", "images","products");
     private readonly IFileService _fileService;
-    private readonly IUserRepository _userRepo;
-    public ProductService(IProductRepository productRepo,ITaxRepository taxRepo, IMapper mapper ,
-        ILogger<ProductService> logger,IFileService fileService ,IUserRepository userRepo)
+    private readonly IUserRepository _userRepository;
+    public ProductService(IProductRepository productRepository,ITaxRepository taxRepository, IMapper mapper ,
+        ILogger<ProductService> logger,IFileService fileService ,IUserRepository userRepository)
     {
-        _productRepo = productRepo;
+        _productRepository = productRepository;
         _mapper = mapper;
         _logger = logger;
-        _userRepo = userRepo;
+        _userRepository = userRepository;
         _fileService = fileService;
-        _taxRepo = taxRepo;
+        _taxRepository = taxRepository;
         
     }
 
@@ -43,21 +43,21 @@ public class ProductService : IProductService
     public async Task<List<ProductCategoryGroupResponse>?> CreateNewCategory(NewProductCategory newProductCategory)
     {
         var category = _mapper.Map<ProductCategory>(newProductCategory);
-        category = await _productRepo.CreateCategoryAsync(category);
-        var groups = await _productRepo.GetAllCategoriesAsync();
+        category = await _productRepository.CreateCategoryAsync(category);
+        var groups = await _productRepository.GetAllCategoriesAsync();
         return _mapper.Map<List<ProductCategoryGroupResponse>>(groups);
     }
 
     public async Task<List<ProductCategoryGroupResponse>?> GetAllCategory()
     {
-        var categories = await _productRepo.GetAllCategoriesAsync();
+        var categories = await _productRepository.GetAllCategoriesAsync();
         return _mapper.Map<List<ProductCategoryGroupResponse>>(categories);
     }
 
     public async Task<Page<ProductResponse>?> GetProductByPage(int group,int category = 0, int page = 1, int pageSize = 20)
     {
-        var products = await _productRepo.GetProductPageAsync(group,category, page, pageSize);
-        var totalProduct = await _productRepo.CountProductByCategory(group,category);
+        var products = await _productRepository.GetProductPageAsync(group,category, page, pageSize);
+        var totalProduct = await _productRepository.CountProductByCategory(group,category);
         var productsResponse = _mapper.Map<List<ProductResponse>>(products);
         var pageResult = new Page<ProductResponse>(productsResponse, page, pageSize, totalProduct);
         _logger.LogInformation("getproducts",pageResult);
@@ -68,15 +68,15 @@ public class ProductService : IProductService
     {
         try
         {
-            var category = await _productRepo.GetCategoryByIdAsync(updateProductCategory.CategoryId);
+            var category = await _productRepository.GetCategoryByIdAsync(updateProductCategory.CategoryId);
             if (category == null)
             {
                 throw new Exception("Category not found.");
             }
 
             _mapper.Map(updateProductCategory, category);
-            category = await _productRepo.UpdateCategoryAsync(category);
-            var groups = await _productRepo.GetAllCategoriesAsync();
+            category = await _productRepository.UpdateCategoryAsync(category);
+            var groups = await _productRepository.GetAllCategoriesAsync();
             return _mapper.Map<List<ProductCategoryGroupResponse>>(groups);
         }
         catch (Exception ex)
@@ -92,7 +92,7 @@ public class ProductService : IProductService
         {
             var product = _mapper.Map<Product>(newProduct);
             product.Slug = GenerateSlug(product.ProductName);
-            product = await _productRepo.CreateProductAsync(product);
+            product = await _productRepository.CreateProductAsync(product);
             var files = newProduct.Files;
             if (files != null && files.Count > 0)
             {
@@ -107,11 +107,11 @@ public class ProductService : IProductService
                             FileName = fileName,
                             IsPrimary = (files.IndexOf(file) == 0)?true:false
                         };
-                        await _productRepo.CreateProductImageAsync(productImage);
+                        await _productRepository.CreateProductImageAsync(productImage);
                     }
                 }
             }
-            product = await _productRepo.GetProductByIdAsync(product.ProductId);
+            product = await _productRepository.GetProductByIdAsync(product.ProductId);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -153,14 +153,14 @@ public class ProductService : IProductService
     }
     public async Task<int> CountProductByCategory(int category)
     {
-        return await _productRepo.CountProductByCategory(0,category);
+        return await _productRepository.CountProductByCategory(0,category);
     }
 
     public async Task<ProductResponse?> UpdateProductAsync(UpdateProduct updateProduct)
     {
         try
         {
-            var product = await _productRepo.GetProductByIdAsync(updateProduct.Id);
+            var product = await _productRepository.GetProductByIdAsync(updateProduct.Id);
             if (product == null)
             {
                 throw new Exception("Product not found.");
@@ -168,7 +168,7 @@ public class ProductService : IProductService
 
             _mapper.Map(updateProduct, product);
             product.Slug = GenerateSlug(product.ProductName);
-            product = await _productRepo.UpdateProductAsync(product);
+            product = await _productRepository.UpdateProductAsync(product);
             _logger.LogInformation("Update product success");
             return _mapper.Map<ProductResponse>(product);
         }
@@ -187,7 +187,7 @@ public class ProductService : IProductService
     try
     {
         // Get the existing product image by its ID
-        var productImage = await _productRepo.GetProductImageByIdAsync(updateProductImage.ProductImageId);
+        var productImage = await _productRepository.GetProductImageByIdAsync(updateProductImage.ProductImageId);
         if (productImage == null)
         {
             _logger.LogWarning("Product image with ID: {ProductImageId} not found.", updateProductImage.ProductImageId);
@@ -214,8 +214,8 @@ public class ProductService : IProductService
             productImage.IsPrimary = updateProductImage.IsPrimary;
 
             // Update the product image in the repository
-            var result = await _productRepo.UpdateProductImageAsync(productImage);
-            var product = await _productRepo.GetProductByIdAsync(productImage.ProductId);
+            var result = await _productRepository.UpdateProductImageAsync(productImage);
+            var product = await _productRepository.GetProductByIdAsync(productImage.ProductId);
             if (result != null)
             {
                 await _fileService.DeleteFileAsync(oldPath);
@@ -251,16 +251,16 @@ public class ProductService : IProductService
     {
         try
         {
-            var productImageExit = await _productRepo.GetProductImageByIdAsync(id);
+            var productImageExit = await _productRepository.GetProductImageByIdAsync(id);
             if (productImageExit != null)
             {
-                var result =await _productRepo.DeleteProductImageAsync(id);
+                var result =await _productRepository.DeleteProductImageAsync(id);
                 var fileName = productImageExit.FileName;
                 var oldFilePath = Path.Combine(_imageDirectory, fileName);
                 if (File.Exists(oldFilePath) && result)
                 {
                     File.Delete(oldFilePath);
-                    var product = await _productRepo.GetProductByIdAsync(productImageExit.ProductId);
+                    var product = await _productRepository.GetProductByIdAsync(productImageExit.ProductId);
                     return _mapper.Map<ProductResponse>(product);
                 }
             }
@@ -277,7 +277,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var productExit = await _productRepo.GetProductByIdAsync(productImage.ProductId);
+            var productExit = await _productRepository.GetProductByIdAsync(productImage.ProductId);
             if (productExit == null) throw new Exception("Product not found");
             var file = productImage.File;
             if (file != null && file.Length > 0)
@@ -290,9 +290,9 @@ public class ProductService : IProductService
                     IsPrimary = productImage.IsPrimary
 
                 };
-                newProductImage = await _productRepo.CreateProductImageAsync(newProductImage);
+                newProductImage = await _productRepository.CreateProductImageAsync(newProductImage);
                 _logger.LogInformation(newProductImage.ProductImageId.ToString());
-                var product = await _productRepo.GetProductByIdAsync(productImage.ProductId);
+                var product = await _productRepository.GetProductByIdAsync(productImage.ProductId);
                 return _mapper.Map<ProductResponse>(product);
             }
             return null;
@@ -309,14 +309,14 @@ public class ProductService : IProductService
         try
         {
             var productId = newProductVariant.ProductId;
-            var product = await _productRepo.GetProductByIdAsync(productId);
+            var product = await _productRepository.GetProductByIdAsync(productId);
             if (product == null)
             {
                 throw new Exception("Product not found.");
             }
             var productVariant = _mapper.Map<ProductVariant>(newProductVariant);
-            productVariant = await _productRepo.CreateProductVariantAsync(productVariant);
-            product = await _productRepo.GetProductByIdAsync(productId);
+            productVariant = await _productRepository.CreateProductVariantAsync(productVariant);
+            product = await _productRepository.GetProductByIdAsync(productId);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -332,15 +332,15 @@ public class ProductService : IProductService
         {
             var productId = updateProductVariant.ProductId;
             var variantId = updateProductVariant.VariantId;
-            var productVariant = await _productRepo.GetProductVariantByIdAsync(variantId);
+            var productVariant = await _productRepository.GetProductVariantByIdAsync(variantId);
             if (productVariant == null)
             {
                 throw new Exception("Product variant not found.");
             }
 
             _mapper.Map(updateProductVariant, productVariant);
-            productVariant = await _productRepo.UpdateProductVariantAsync(productVariant);
-            var product = await _productRepo.GetProductByIdAsync(productId);
+            productVariant = await _productRepository.UpdateProductVariantAsync(productVariant);
+            var product = await _productRepository.GetProductByIdAsync(productId);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -390,7 +390,7 @@ public class ProductService : IProductService
                 return new List<ProductResponse>();
             }
 
-            var products = await _productRepo.GetAllProductsAsync() ?? new List<Product>();
+            var products = await _productRepository.GetAllProductsAsync() ?? new List<Product>();
 
             var keywords = title.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -413,7 +413,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var product = await _productRepo.GetProductByIdAsync(id);
+            var product = await _productRepository.GetProductByIdAsync(id);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -427,7 +427,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var products = await _productRepo.GetAllProductsAsync()?? new List<Product>();
+            var products = await _productRepository.GetAllProductsAsync()?? new List<Product>();
             var topSaleProducts = products
                 .OrderBy(p => p.OrderDetails.Count)
                 .Skip((page - 1) * size)
@@ -446,10 +446,10 @@ public class ProductService : IProductService
         try
         {
             var productTax = _mapper.Map<ProductTaxis>(newProductTax); 
-             productTax = await _productRepo.AddProductTaxAsync(productTax);
+             productTax = await _productRepository.AddProductTaxAsync(productTax);
              if (productTax != null)
              {
-                 var product = await _productRepo.GetProductByIdAsync(newProductTax.ProductId);
+                 var product = await _productRepository.GetProductByIdAsync(newProductTax.ProductId);
                  return _mapper.Map<ProductResponse>(product);
              }
              return null;
@@ -464,8 +464,8 @@ public class ProductService : IProductService
     {
         try
         {
-            var result = await _productRepo.DeleteProductTaxAsync(productTaxid);
-            var product = await _productRepo.GetProductByIdAsync((int)result.ProductId);
+            var result = await _productRepository.DeleteProductTaxAsync(productTaxid);
+            var product = await _productRepository.GetProductByIdAsync((int)result.ProductId);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -477,7 +477,7 @@ public class ProductService : IProductService
 
     public async Task<List<ProductResponse>?> FilterProductsAsync(List<int?> categories)
     {
-        var products =await _productRepo.FilterProductsAsync(categories);
+        var products =await _productRepository.FilterProductsAsync(categories);
         return _mapper.Map<List<ProductResponse>>(products);
     }
 
@@ -486,7 +486,7 @@ public class ProductService : IProductService
         try
         {
             var group = _mapper.Map<ProductCategoryGroup>(groupCategory);
-            group = await _productRepo.CreateGroupCategoryAsync(group);
+            group = await _productRepository.CreateGroupCategoryAsync(group);
             return _mapper.Map<ProductCategoryGroupResponse>(group);
         }
         catch (Exception ex)
@@ -500,7 +500,7 @@ public class ProductService : IProductService
         try
         {
             var group = _mapper.Map<ProductCategoryGroup>(groupCategory);
-            group = await _productRepo.UpdateGroupCategoryAsync(group);
+            group = await _productRepository.UpdateGroupCategoryAsync(group);
             return _mapper.Map<ProductCategoryGroupResponse>(group);
         }
         catch (Exception ex)
@@ -511,14 +511,14 @@ public class ProductService : IProductService
 
     public bool IsProductNameExists(string productName)
     {
-        return _productRepo.IsProductNameExists(productName);
+        return _productRepository.IsProductNameExists(productName);
     }
 
     public async Task<List<ProductResponse>?> GetTopDealProductAsync(int page,int size)
     {
         try
         {
-            var products = await _productRepo.GetTopDiscountAsync(page,size);
+            var products = await _productRepository.GetTopDiscountAsync(page,size);
             return _mapper.Map<List<ProductResponse>>(products);
         }
         catch (Exception ex)
@@ -531,7 +531,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var products = await _productRepo.GetAllProductsAsync()??new List<Product>();
+            var products = await _productRepository.GetAllProductsAsync()??new List<Product>();
             var productExit = products.FirstOrDefault(p=>p.ProductId==id)?? null;
             if (productExit == null)  return null;
             products = products.Where(p=>p.Category.GroupId == productExit.Category.GroupId && p.ProductId!=id)
@@ -552,7 +552,7 @@ public class ProductService : IProductService
         try
         {
             var review = new Review();
-            var productExit = await _productRepo.GetProductByIdAsync(id);
+            var productExit = await _productRepository.GetProductByIdAsync(id);
             if ( productExit != null)
             {
                 review.Star1 = productExit.ProductReviews.Count(r => r.Rating == 1);
@@ -575,7 +575,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var product = await _productRepo.GetProductBySlugAsync(slug);
+            var product = await _productRepository.GetProductBySlugAsync(slug);
             return _mapper.Map<ProductResponse>(product);
         }
         catch (Exception ex)
@@ -594,7 +594,7 @@ public class ProductService : IProductService
 
         try
         { 
-            product = await _productRepo.GetProductByIdAsync(productId);
+            product = await _productRepository.GetProductByIdAsync(productId);
             if (product == null)
             {
                 throw new KeyNotFoundException($"❌ Không tìm thấy sản phẩm có ID: {productId}");
@@ -620,14 +620,14 @@ public class ProductService : IProductService
     {
         try
         {
-            var customer = await _userRepo.GetCustomerByEmailAsync(feedBack.Email);
+            var customer = await _userRepository.GetCustomerByEmailAsync(feedBack.Email);
             if (customer != null)
             {
                 var newFeedBack = new ProductReview()
                 {
                     CustomerId = customer.CustomerId, ProductId = feedBack.ProductId, Rating = feedBack.Rating, Comment = feedBack.Comment
                 };
-                var productReview=  await _productRepo.CreateProductReviewAsync(newFeedBack);
+                var productReview=  await _productRepository.CreateProductReviewAsync(newFeedBack);
                 return _mapper.Map<ProductReviewResponse>(productReview);
             }
             return null;
@@ -641,7 +641,7 @@ public class ProductService : IProductService
     {
         try
         {
-            var feedbacks = await _productRepo.GetTopProductReviewsAsync(size);
+            var feedbacks = await _productRepository.GetTopProductReviewsAsync(size);
             return _mapper.Map<List<ProductReviewResponse>>(feedbacks);
         }
         catch (Exception ex)

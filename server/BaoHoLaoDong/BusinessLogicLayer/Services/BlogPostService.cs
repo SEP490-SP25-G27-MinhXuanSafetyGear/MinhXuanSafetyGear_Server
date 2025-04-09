@@ -17,14 +17,14 @@ namespace BusinessLogicLayer.Services;
 
 public class BlogPostService : IBlogPostService
 {
-    private readonly IBlogPostRepository _blogPostRepo;
+    private readonly IBlogPostRepository _blogPostRepository;
     private readonly string _imagePathBlog = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","blogs");
     private readonly IMapper _mapper;
     private readonly ILogger<BlogPostService> _logger;
     private readonly IFileService _fileService;
-    public BlogPostService(IBlogPostRepository blogPostRepo, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
+    public BlogPostService(IBlogPostRepository blogPostRepository, IFileService fileService,IMapper mapper,ILogger<BlogPostService> logger)
     {
-        _blogPostRepo = blogPostRepo;
+        _blogPostRepository = blogPostRepository;
         _fileService = fileService;
         _mapper = mapper;
         _logger = logger;
@@ -41,7 +41,7 @@ public class BlogPostService : IBlogPostService
                 blogPost.FileName = fileName;
             }
             blogPost.Slug = GenerateSlug(blogPost.Title);
-            blogPost = await _blogPostRepo.CreateBlogPostAsync(blogPost);
+            blogPost = await _blogPostRepository.CreateBlogPostAsync(blogPost);
             return _mapper.Map<BlogPostResponse>(blogPost);
         }
         catch (Exception ex)
@@ -54,7 +54,7 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogPosts = await _blogPostRepo.SearchBlogPostAsync(title);
+            var blogPosts = await _blogPostRepository.SearchBlogPostAsync(title);
             return _mapper.Map<List<BlogPostResponse>>(blogPosts);
         }
         catch (Exception ex)
@@ -69,9 +69,9 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogs = await _blogPostRepo.GetBlogPostsPageAsync(categoryId,page, pageSize);
+            var blogs = await _blogPostRepository.GetBlogPostsPageAsync(categoryId,page, pageSize);
             blogs = blogs.OrderByDescending(b => b.CreatedAt).ToList();
-            var totalBlogPosts = await _blogPostRepo.CountBlogPostByCategoryAsync(categoryId) ;
+            var totalBlogPosts = await _blogPostRepository.CountBlogPostByCategoryAsync(categoryId) ;
             var blogPage = new Page<BlogPostResponse>(_mapper.Map<List<BlogPostResponse>>(blogs), page, pageSize, totalBlogPosts);
             return blogPage;
         }
@@ -86,7 +86,7 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(updateBlogPost.Id);
+            var blogPostExit = await _blogPostRepository.GetBlogPostByIdAsync(updateBlogPost.Id);
             _mapper.Map(updateBlogPost, blogPostExit);
             var newFile = updateBlogPost.File;
             if (newFile != null && newFile.Length > 0)
@@ -98,7 +98,7 @@ public class BlogPostService : IBlogPostService
             }
 
             blogPostExit.Slug = GenerateSlug(blogPostExit.Title);
-            blogPostExit = await _blogPostRepo.UpdateBlogPostAsync(blogPostExit);
+            blogPostExit = await _blogPostRepository.UpdateBlogPostAsync(blogPostExit);
             return _mapper.Map<BlogPostResponse>(blogPostExit);
         }
         catch (Exception ex)
@@ -112,10 +112,10 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogPostExit = await _blogPostRepo.GetBlogPostByIdAsync(id);
+            var blogPostExit = await _blogPostRepository.GetBlogPostByIdAsync(id);
             var fileName = blogPostExit.FileName;
             var pathImage = Path.Combine(_imagePathBlog, fileName);
-            var result = await _blogPostRepo.DeleteBlogPostAsync(id);
+            var result = await _blogPostRepository.DeleteBlogPostAsync(id);
             await _fileService.DeleteFileAsync(pathImage);
             return result;
         }
@@ -130,7 +130,7 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogCategories = await _blogPostRepo.GetBlogCategoriesAsync();
+            var blogCategories = await _blogPostRepository.GetBlogCategoriesAsync();
             return _mapper.Map<List<BlogCategoryResponse>>(blogCategories);
         }
         catch (Exception ex)
@@ -145,7 +145,7 @@ public class BlogPostService : IBlogPostService
         {
             var blogCategory = _mapper.Map<BlogCategory>(blogCategoryRequest);
             blogCategory.Slug = GenerateSlug(blogCategory.CategoryName);
-            blogCategory = await _blogPostRepo.CreateBlogCategoryAsync(blogCategory);
+            blogCategory = await _blogPostRepository.CreateBlogCategoryAsync(blogCategory);
             return _mapper.Map<BlogCategoryResponse>(blogCategory);
         }
         catch (Exception ex)
@@ -158,10 +158,10 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogCategory = await _blogPostRepo.GetBlogCategoryByIdAsync(updateBlogCategory.Id);
+            var blogCategory = await _blogPostRepository.GetBlogCategoryByIdAsync(updateBlogCategory.Id);
             _mapper.Map(updateBlogCategory, blogCategory);
             blogCategory.Slug = GenerateSlug(blogCategory.CategoryName);
-            blogCategory = await _blogPostRepo.UpdateBlogCategoryAsync(blogCategory);
+            blogCategory = await _blogPostRepository.UpdateBlogCategoryAsync(blogCategory);
             return _mapper.Map<BlogCategoryResponse>(blogCategory);
         }
         catch (Exception ex)
@@ -175,7 +175,7 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogPost = await _blogPostRepo.GetBlogPostByIdAsync(id);
+            var blogPost = await _blogPostRepository.GetBlogPostByIdAsync(id);
             return _mapper.Map<BlogPostResponse>(blogPost);
         }
         catch (Exception ex)
@@ -189,7 +189,7 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blog = await _blogPostRepo.GetBlogPostBySlugAsync(slug);
+            var blog = await _blogPostRepository.GetBlogPostBySlugAsync(slug);
             return _mapper.Map<BlogPostResponse>(blog);
         }
         catch (Exception ex)
@@ -202,7 +202,7 @@ public class BlogPostService : IBlogPostService
     {
         try
         {
-            var blogs = await _blogPostRepo.GetBlogPostBySlugCategoryAsync(slug);
+            var blogs = await _blogPostRepository.GetBlogPostBySlugCategoryAsync(slug);
             return _mapper.Map<List<BlogPostResponse>>(blogs);
         }
         catch (Exception ex)

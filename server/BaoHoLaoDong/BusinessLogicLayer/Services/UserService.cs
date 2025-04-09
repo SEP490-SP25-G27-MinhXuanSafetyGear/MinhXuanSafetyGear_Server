@@ -17,14 +17,14 @@ namespace BusinessLogicLayer.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepo;
+    private readonly IUserRepository _userRepository;
     private readonly IMailService _mailService;
     private readonly IMapper _mapper;
     private readonly ILogger<UserService> _logger;
     // Inject ILogger vào constructor
-    public UserService(IUserRepository userRepo, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
+    public UserService(IUserRepository userRepository, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
     {
-        _userRepo =userRepo;
+        _userRepository =userRepository;
         _mapper = mapper;
         _logger = logger;
         _mailService = mailService;
@@ -39,8 +39,8 @@ public class UserService : IUserService
 
         try
         {
-            var employee = await _userRepo.GetEmployeeByEmailAsync(email);
-            var customer = await _userRepo.GetCustomerByEmailAsync(email);
+            var employee = await _userRepository.GetEmployeeByEmailAsync(email);
+            var customer = await _userRepository.GetCustomerByEmailAsync(email);
             if (employee == null && customer == null)
             {
                 _logger.LogWarning("Login failed for email {Email}: User not found", email);
@@ -94,7 +94,7 @@ public class UserService : IUserService
         try
         {
             var employee = _mapper.Map<Employee>(newEmployee);
-            var result = await _userRepo.CreateEmployeeAsync(employee);
+            var result = await _userRepository.CreateEmployeeAsync(employee);
             if (result == null)
             {
                 _logger.LogWarning("Failed to create employee for email {Email}", newEmployee.Email);
@@ -115,8 +115,8 @@ public class UserService : IUserService
     {
         try
         {
-            var emps = await _userRepo.GetEmployeesPageAsync(page, pageSize);
-            var totalEmp = await _userRepo.CountEmployees();
+            var emps = await _userRepository.GetEmployeesPageAsync(page, pageSize);
+            var totalEmp = await _userRepository.CountEmployees();
             var empRequests = _mapper.Map<List<UserResponse>>(emps);
             var pageResult = new Page<UserResponse>(empRequests, page, pageSize, totalEmp);
             _logger.LogInformation("Get employee by page successfully");
@@ -130,10 +130,10 @@ public class UserService : IUserService
 
     public async Task<UserResponse?> GetUserByEmailAsync(string email)
     {
-        var emp = await _userRepo.GetEmployeeByEmailAsync(email);
+        var emp = await _userRepository.GetEmployeeByEmailAsync(email);
         if (emp == null)
         {
-            var cus = await _userRepo.GetCustomerByEmailAsync(email);
+            var cus = await _userRepository.GetCustomerByEmailAsync(email);
             if (cus == null) return null;
             var cusRequest = _mapper.Map<UserResponse>(cus);
             return cusRequest;
@@ -144,7 +144,7 @@ public class UserService : IUserService
 
     public async Task<UserResponse?> GetEmployeeByIdAsync(int employeeId)
     {
-        var emp = await _userRepo.GetEmployeeByIdAsync(employeeId);
+        var emp = await _userRepository.GetEmployeeByIdAsync(employeeId);
         var empRequest = _mapper.Map<UserResponse>(emp);
         return empRequest;
     }
@@ -153,9 +153,9 @@ public class UserService : IUserService
     {
         try
         {
-            var existingEmployee = await _userRepo.GetEmployeeByIdAsync(updateEmployee.Id);
+            var existingEmployee = await _userRepository.GetEmployeeByIdAsync(updateEmployee.Id);
             _mapper.Map(updateEmployee, existingEmployee);
-            var updatedEmployee = await _userRepo.UpdateEmployeeAsync(existingEmployee);
+            var updatedEmployee = await _userRepository.UpdateEmployeeAsync(existingEmployee);
             var employeeResponse = _mapper.Map<UserResponse>(updatedEmployee);
             return employeeResponse;
         }
@@ -171,8 +171,8 @@ public class UserService : IUserService
     public async Task<UserResponse?> CreateNewCustomerAsync(NewCustomer newCustomer)
     {
         var customer = _mapper.Map<Customer>(newCustomer);
-        var result = await _userRepo.CreateCustomerAsync(customer);
-        var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
+        var result = await _userRepository.CreateCustomerAsync(customer);
+        var accountVerification = await _userRepository.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
         if (result != null && result.IsEmailVerified == false)
         {
             var resultMail =
@@ -195,7 +195,7 @@ public class UserService : IUserService
 
         try
         {
-            var customer = await _userRepo.GetCustomerByEmailAsync(email);
+            var customer = await _userRepository.GetCustomerByEmailAsync(email);
             if (customer == null)
             {
                 _logger.LogWarning("Login failed for email {Email}: Customer not found", email);
@@ -225,8 +225,8 @@ public class UserService : IUserService
 
     public async Task<Page<UserResponse>?> GetCustomerByPageAsync(int page, int pageSize)
     {
-        var customers = await _userRepo.GetCustomersPageAsync(page, pageSize);
-        var totalCustomer = await _userRepo.CountCustomers();
+        var customers = await _userRepository.GetCustomersPageAsync(page, pageSize);
+        var totalCustomer = await _userRepository.CountCustomers();
         var customerRequests = _mapper.Map<List<UserResponse>>(customers);
         var pageResult = new Page<UserResponse>(customerRequests, page, pageSize, totalCustomer);
         return pageResult;
@@ -234,7 +234,7 @@ public class UserService : IUserService
 
     public async Task<UserResponse?> GetCustomerByEmailAsync(string email)
     {
-        var customer = await _userRepo.GetCustomerByEmailAsync(email);
+        var customer = await _userRepository.GetCustomerByEmailAsync(email);
         var customerRequest = _mapper.Map<UserResponse>(customer);
         return customerRequest;
     }
@@ -242,7 +242,7 @@ public class UserService : IUserService
     public async Task<UserResponse?> UpdateCustomerAsync(UpdateCustomer updateCustomer)
     {
         var customer = _mapper.Map<Customer>(updateCustomer);
-        var result = await _userRepo.UpdateCustomerAsync(customer);
+        var result = await _userRepository.UpdateCustomerAsync(customer);
         var customerRequest = _mapper.Map<UserResponse>(result);
         return customerRequest;
     }
@@ -250,9 +250,9 @@ public class UserService : IUserService
 
     public async Task<bool> SendVerificationCodeBackAsync(string email)
     {
-        var customer = await _userRepo.GetCustomerByEmailAsync(email);
+        var customer = await _userRepository.GetCustomerByEmailAsync(email);
         if (customer == null)return false;
-        var accountVerication = await _userRepo.CreateNewVefificationCodeAsync(customer.CustomerId);
+        var accountVerication = await _userRepository.CreateNewVefificationCodeAsync(customer.CustomerId);
         var sendMailresult = await 
             _mailService.SendVerificationEmailAsync(customer.Email, accountVerication.VerificationCode);
         return sendMailresult;
@@ -262,10 +262,10 @@ public class UserService : IUserService
     {
         try
         {
-            var customer = await _userRepo.GetCustomerByEmailAsync(email);
+            var customer = await _userRepository.GetCustomerByEmailAsync(email);
             if (customer == null) return null;
 
-            var accountVerification = await _userRepo.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
+            var accountVerification = await _userRepository.GetAccountVerificationByIdAndTypeAccountAsync(customer.CustomerId);
             if (accountVerification == null) return null;
 
             // Kiểm tra mã xác thực có đúng và có hết hạn chưa
@@ -273,9 +273,9 @@ public class UserService : IUserService
                 return null;
 
             // Xác thực thành công, cập nhật trạng thái tài khoản
-            var result = await _userRepo.ConfirmEmailCustomerSuccessAsync(customer.CustomerId);
+            var result = await _userRepository.ConfirmEmailCustomerSuccessAsync(customer.CustomerId);
             customer.IsEmailVerified = true;
-            var customerRequest= await _userRepo.UpdateCustomerAsync(customer);
+            var customerRequest= await _userRepository.UpdateCustomerAsync(customer);
             if (customerRequest.IsEmailVerified)
             {
                 await _mailService.SendAccountCreatedEmailAsync(customerRequest.Email, customer.FullName);
@@ -296,13 +296,13 @@ public class UserService : IUserService
             switch (role)
             {
                 case "Customer":
-                    var customers = await _userRepo.GetAllCustomersAsync();
-                    var totalCustomer = await _userRepo.CountCustomers();
+                    var customers = await _userRepository.GetAllCustomersAsync();
+                    var totalCustomer = await _userRepository.CountCustomers();
                     var customerResponses = _mapper.Map<List<UserResponse>>(customers);
                     return new Page<UserResponse>(customerResponses,page,size,totalCustomer);
                 case "Employee":
-                    var employees = await _userRepo.GetAllEmployeesAsync();
-                    var totalEmployees = await _userRepo.CountEmployees();
+                    var employees = await _userRepository.GetAllEmployeesAsync();
+                    var totalEmployees = await _userRepository.CountEmployees();
                     var employeesResponses = _mapper.Map<List<UserResponse>>(employees);
                     return new Page<UserResponse>(employeesResponses,page,size,totalEmployees);
             }
@@ -319,20 +319,20 @@ public class UserService : IUserService
     {
         try
         {
-            var emp = await _userRepo.GetEmployeeByEmailAsync(resetPassword.Email);
+            var emp = await _userRepository.GetEmployeeByEmailAsync(resetPassword.Email);
             if (emp != null)
             {
                 emp.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPassword.Password); ;
-                await _userRepo.UpdateEmployeeAsync(emp);
+                await _userRepository.UpdateEmployeeAsync(emp);
                 return true;
             }
             else if (emp == null)
             {
-                var cus = await _userRepo.GetCustomerByEmailAsync(resetPassword.Email);
+                var cus = await _userRepository.GetCustomerByEmailAsync(resetPassword.Email);
                 if (cus != null)
                 {
                     cus.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPassword.Email);
-                    await _userRepo.UpdateCustomerAsync(cus);
+                    await _userRepository.UpdateCustomerAsync(cus);
                     return true;
                 }
 
@@ -347,7 +347,7 @@ public class UserService : IUserService
     }
     public async Task<UserResponse?> GetCustomerByIdAsync(int customerId)
     {
-        var customer = await _userRepo.GetCustomerByIdAsync(customerId);
+        var customer = await _userRepository.GetCustomerByIdAsync(customerId);
         var customerResponse = _mapper.Map<UserResponse>(customer);
         return customerResponse;
     }

@@ -97,6 +97,7 @@ public class BlogPostController : ControllerBase
     /// <param name="page"></param>
     /// <param name="pagesize"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet("get-blog-page")]
     public async Task<IActionResult> GetBlogPostPage([FromQuery] int categoryId = 0,[FromQuery] int page=1, [FromQuery]int size=20)
     {

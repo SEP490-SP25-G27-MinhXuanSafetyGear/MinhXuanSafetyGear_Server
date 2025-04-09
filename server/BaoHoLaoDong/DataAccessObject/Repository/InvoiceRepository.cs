@@ -4,11 +4,11 @@ using DataAccessObject.Dao;
 
 namespace DataAccessObject.Repository
 {
-    public class InvoiceRepo : IInvoiceRepository
+    public class InvoiceRepository : IInvoiceRepository
     {
         private readonly InvoiceDao _invoiceDao;
 
-        public InvoiceRepo(MinhXuanDatabaseContext context)
+        public InvoiceRepository(MinhXuanDatabaseContext context)
         {
             _invoiceDao = new InvoiceDao(context);
         }
