@@ -16,12 +16,12 @@ namespace BusinessLogicLayer.Services;
 
 public class InvoiceService : IInvoiceService
 {
-    private readonly IInvoiceRepo _invoiceRepo;
+    private readonly IInvoiceRepository _invoiceRepo;
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceService> _logger;
     private readonly string _imagePathBill = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images","bills");
-    public InvoiceService(IInvoiceRepo invoiceRepo, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger )
+    public InvoiceService(IInvoiceRepository invoiceRepo, IFileService fileService, IMapper mapper, ILogger<InvoiceService> logger )
     {
         _invoiceRepo = invoiceRepo;
         _fileService = fileService;

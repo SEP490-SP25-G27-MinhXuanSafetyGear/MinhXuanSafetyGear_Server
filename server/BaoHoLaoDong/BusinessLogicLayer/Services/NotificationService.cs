@@ -12,9 +12,9 @@ namespace BusinessLogicLayer.Services;
 public class NotificationService : INotificationService
 {
     private readonly IMapper _mapper;
-    private readonly INotificationRepo _notificationRepo;
+    private readonly INotificationRepository _notificationRepo;
 
-    public NotificationService(IMapper mapper, INotificationRepo notificationRepo)
+    public NotificationService(IMapper mapper, INotificationRepository notificationRepo)
     {
         _mapper = mapper;
         _notificationRepo = notificationRepo;

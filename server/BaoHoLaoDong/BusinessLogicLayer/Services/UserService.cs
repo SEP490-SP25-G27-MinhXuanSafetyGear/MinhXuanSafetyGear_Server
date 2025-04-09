@@ -17,12 +17,12 @@ namespace BusinessLogicLayer.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepo _userRepo;
+    private readonly IUserRepository _userRepo;
     private readonly IMailService _mailService;
     private readonly IMapper _mapper;
     private readonly ILogger<UserService> _logger;
     // Inject ILogger vào constructor
-    public UserService(IUserRepo userRepo, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
+    public UserService(IUserRepository userRepo, IMapper mapper, ILogger<UserService> logger,IMailService mailService )
     {
         _userRepo =userRepo;
         _mapper = mapper;
