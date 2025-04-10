@@ -4,7 +4,7 @@ using DataAccessObject.Dao;
 
 namespace DataAccessObject.Repository
 {
-    public class BlogPostRepo : IBlogPostRepo
+    public class BlogPostRepo : IBlogPostRepository
     {
         private readonly BlogPostDao _blogPostDao;
         private readonly BlogCategoryDao _blogCategoryDao;

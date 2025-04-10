@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository
 {
-    public class OrderRepo : IOrderRepo
+    public class OrderRepo : IOrderRepository
     {
         private readonly OrderDao _orderDao;
         private readonly OrderDetailDao _orderDetailDao;
