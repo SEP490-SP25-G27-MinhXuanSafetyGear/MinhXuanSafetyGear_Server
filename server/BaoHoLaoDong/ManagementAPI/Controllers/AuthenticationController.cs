@@ -51,8 +51,8 @@ namespace ManagementAPI.Controllers
                     return Unauthorized("Invalid email or password.");
                 }
 
-                var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.Role,expriryDay);
-                return Ok(new { token, email = user.Email, role = user.Role, userId = user.Id });
+                var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.RoleName,expriryDay);
+                return Ok(new { token, email = user.Email, role = user.RoleName, userId = user.Id });
             }
             catch (Exception ex)
             {
@@ -86,8 +86,8 @@ namespace ManagementAPI.Controllers
                 {
                     return Unauthorized("Invalid email or password.");
                 }
-                var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.Role,expriryDay);
-                return Ok(new { token, userId = user.Id, email = user.Email, role = user.Role ,imageUrl=user.ImageUrl});
+                var token = _tokenService.GenerateJwtTokenByDays(user.Email, user.Id, user.RoleName,expriryDay);
+                return Ok(new { token, userId = user.Id, email = user.Email, role = user.RoleName ,imageUrl=user.ImageUrl});
             }
             catch (Exception ex)
             {
@@ -135,8 +135,8 @@ namespace ManagementAPI.Controllers
                     return StatusCode(500, "An internal server error occurred.");
                 }
 
-                var token = _tokenService.GenerateJwtTokenByDays(createdUser.Email, createdUser.Id, createdUser.Role,expriryDay);
-                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role ,imageUrl=createdUser.ImageUrl});
+                var token = _tokenService.GenerateJwtTokenByDays(createdUser.Email, createdUser.Id, createdUser.RoleName,expriryDay);
+                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.RoleName ,imageUrl=createdUser.ImageUrl});
             }
             catch (Exception ex)
             {
@@ -192,8 +192,8 @@ namespace ManagementAPI.Controllers
                     return StatusCode(500, "An internal server error occurred.");
                 }
 
-                var token = _tokenService.GenerateJwtTokenByDays(createdUser.Email, createdUser.Id, createdUser.Role,expriryDay);
-                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.Role ,imageUrl=createdUser.ImageUrl});
+                var token = _tokenService.GenerateJwtTokenByDays(createdUser.Email, createdUser.Id, createdUser.RoleName,expriryDay);
+                return Ok(new { token, userId = createdUser.Id, email = createdUser.Email, role = createdUser.RoleName ,imageUrl=createdUser.ImageUrl});
             }
             catch (Exception ex)
             {
@@ -211,7 +211,7 @@ namespace ManagementAPI.Controllers
             {
                 return NotFound("User not found.");
             }
-            var resetToken = _tokenService.GenerateJwtTokenByMinutes(user.Email, user.Id, user.Role,1);
+            var resetToken = _tokenService.GenerateJwtTokenByMinutes(user.Email, user.Id, user.RoleName,1);
             var resetUrl = $"{_configuration["ApplicationSettings:ClientUrl"]}/reset-password?email={email}&token={resetToken}&time={DateTime.Now.AddMinutes(5)}";
             await _mailService.SendResetPasswordEmail(user.Email, resetUrl);
             return Ok(new
@@ -242,6 +242,18 @@ namespace ManagementAPI.Controllers
 
             return Ok(new { message = "Password reset successful" });
         }
-
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        {
+            try
+            {
+                var result = await _userService.ConfirmEmailCustomerAsync(request.Email, request.Code);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

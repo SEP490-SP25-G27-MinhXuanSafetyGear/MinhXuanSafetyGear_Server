@@ -1,0 +1,217 @@
+{
+  "Files": [
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\asset-manifest.json",
+      "PackagePath": "staticwebassets\\asset-manifest.json"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\config.json",
+      "PackagePath": "staticwebassets\\config.json"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\02a48656-8522-4e52-bfd1-eb902ad176bf.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\02a48656-8522-4e52-bfd1-eb902ad176bf.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\3baf499d-d393-40e2-aac3-2b1d3ee3ef03.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\3baf499d-d393-40e2-aac3-2b1d3ee3ef03.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\51b660a9-10d6-4a9e-9e76-894c2abe06f9.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\51b660a9-10d6-4a9e-9e76-894c2abe06f9.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\76de083b-7037-4a4a-98cd-37de7e6dcf41.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\76de083b-7037-4a4a-98cd-37de7e6dcf41.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\7c2bd3dd-5997-4be2-81cb-714ebb426f53.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\7c2bd3dd-5997-4be2-81cb-714ebb426f53.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\91bc2343-4ed6-49dd-889e-3142ad42cd2b.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\91bc2343-4ed6-49dd-889e-3142ad42cd2b.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\d2950529-63e9-4a9d-ac7c-0fb72dc5f62f.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\d2950529-63e9-4a9d-ac7c-0fb72dc5f62f.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\e078f70e-fbe1-4dde-833b-0704c84991de.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\e078f70e-fbe1-4dde-833b-0704c84991de.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\e187206f-b2d1-4fd7-9188-c8c54555c904.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\e187206f-b2d1-4fd7-9188-c8c54555c904.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\e631f418-dce1-4b40-8d6e-ba51b712a685.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\e631f418-dce1-4b40-8d6e-ba51b712a685.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\blogs\\f7734b2b-aaaa-4ee5-bdf9-a9f0647245a7.webp",
+      "PackagePath": "staticwebassets\\images\\blogs\\f7734b2b-aaaa-4ee5-bdf9-a9f0647245a7.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\206090f9-56bb-4de9-a028-b85fea51fad6.webp",
+      "PackagePath": "staticwebassets\\images\\products\\206090f9-56bb-4de9-a028-b85fea51fad6.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\2e8fcd58-7f47-4191-9bf9-9ee7b4035518.webp",
+      "PackagePath": "staticwebassets\\images\\products\\2e8fcd58-7f47-4191-9bf9-9ee7b4035518.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\31b3f10e-f61d-4273-b39d-61f10ffb0949.webp",
+      "PackagePath": "staticwebassets\\images\\products\\31b3f10e-f61d-4273-b39d-61f10ffb0949.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\477fc9e7-e39d-4d8c-b2a5-54daa66ec222.webp",
+      "PackagePath": "staticwebassets\\images\\products\\477fc9e7-e39d-4d8c-b2a5-54daa66ec222.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\4a17fe0d-dd5f-42ca-a5a7-4c48928cbd1b.webp",
+      "PackagePath": "staticwebassets\\images\\products\\4a17fe0d-dd5f-42ca-a5a7-4c48928cbd1b.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\6a3ad9f8-ba6a-4ded-ac47-b7c1152e78c4.webp",
+      "PackagePath": "staticwebassets\\images\\products\\6a3ad9f8-ba6a-4ded-ac47-b7c1152e78c4.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\6b0cd874-637d-424e-8120-b884cbbcf833.webp",
+      "PackagePath": "staticwebassets\\images\\products\\6b0cd874-637d-424e-8120-b884cbbcf833.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\7c076311-0df9-4aea-8fa6-d96e339db8fc.webp",
+      "PackagePath": "staticwebassets\\images\\products\\7c076311-0df9-4aea-8fa6-d96e339db8fc.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\7f7b5784-d8fe-471d-bb2b-6db5463921e2.webp",
+      "PackagePath": "staticwebassets\\images\\products\\7f7b5784-d8fe-471d-bb2b-6db5463921e2.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\894c9be4-0059-4e85-9a89-3aef4b387a52.webp",
+      "PackagePath": "staticwebassets\\images\\products\\894c9be4-0059-4e85-9a89-3aef4b387a52.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\923936d2-87db-4edf-bb95-b41c8f73d3f0.webp",
+      "PackagePath": "staticwebassets\\images\\products\\923936d2-87db-4edf-bb95-b41c8f73d3f0.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\a8f37240-a078-48be-a0be-8000def8ff06.webp",
+      "PackagePath": "staticwebassets\\images\\products\\a8f37240-a078-48be-a0be-8000def8ff06.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\ad39fb5f-64d5-43f9-9333-553737742e4f.webp",
+      "PackagePath": "staticwebassets\\images\\products\\ad39fb5f-64d5-43f9-9333-553737742e4f.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\b9d378be-6700-4e08-9ae6-e469d47b7567.webp",
+      "PackagePath": "staticwebassets\\images\\products\\b9d378be-6700-4e08-9ae6-e469d47b7567.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\cbcf774d-9fb7-4a6c-ba90-88d911a6ee0b.webp",
+      "PackagePath": "staticwebassets\\images\\products\\cbcf774d-9fb7-4a6c-ba90-88d911a6ee0b.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\d253883b-48bf-4a27-bb9b-ce6d140e822c.webp",
+      "PackagePath": "staticwebassets\\images\\products\\d253883b-48bf-4a27-bb9b-ce6d140e822c.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\f2153b9e-51a7-4cb9-abbc-9878c292a44e.webp",
+      "PackagePath": "staticwebassets\\images\\products\\f2153b9e-51a7-4cb9-abbc-9878c292a44e.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\images\\products\\faf7cc66-2025-4d88-88fc-c187d0a953c9.webp",
+      "PackagePath": "staticwebassets\\images\\products\\faf7cc66-2025-4d88-88fc-c187d0a953c9.webp"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\logo-fotor.png",
+      "PackagePath": "staticwebassets\\logo-fotor.png"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\logo.gif",
+      "PackagePath": "staticwebassets\\logo.gif"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\logo192.png",
+      "PackagePath": "staticwebassets\\logo192.png"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\logo512.png",
+      "PackagePath": "staticwebassets\\logo512.png"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\manifest.json",
+      "PackagePath": "staticwebassets\\manifest.json"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\robots.txt",
+      "PackagePath": "staticwebassets\\robots.txt"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\css\\main.3938f0a7.css",
+      "PackagePath": "staticwebassets\\static\\css\\main.3938f0a7.css"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\css\\main.3938f0a7.css.map",
+      "PackagePath": "staticwebassets\\static\\css\\main.3938f0a7.css.map"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\js\\main.942c8c6b.js",
+      "PackagePath": "staticwebassets\\static\\js\\main.942c8c6b.js"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\js\\main.942c8c6b.js.LICENSE.txt",
+      "PackagePath": "staticwebassets\\static\\js\\main.942c8c6b.js.LICENSE.txt"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\js\\main.942c8c6b.js.map",
+      "PackagePath": "staticwebassets\\static\\js\\main.942c8c6b.js.map"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\media\\slick.2630a3e3eab21c607e21.svg",
+      "PackagePath": "staticwebassets\\static\\media\\slick.2630a3e3eab21c607e21.svg"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\media\\slick.295183786cd8a1389865.woff",
+      "PackagePath": "staticwebassets\\static\\media\\slick.295183786cd8a1389865.woff"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\media\\slick.a4e97f5a2a64f0ab1323.eot",
+      "PackagePath": "staticwebassets\\static\\media\\slick.a4e97f5a2a64f0ab1323.eot"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\static\\media\\slick.c94f7671dcc99dce43e2.ttf",
+      "PackagePath": "staticwebassets\\static\\media\\slick.c94f7671dcc99dce43e2.ttf"
+    },
+    {
+      "Id": "E:\\SEP490\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\ManagementAPI\\wwwroot\\thiet-bi-bao-ho-lao-dong.webp",
+      "PackagePath": "staticwebassets\\thiet-bi-bao-ho-lao-dong.webp"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.ManagementAPI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.ManagementAPI.props",
+      "PackagePath": "build\\ManagementAPI.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.ManagementAPI.props",
+      "PackagePath": "buildMultiTargeting\\ManagementAPI.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.ManagementAPI.props",
+      "PackagePath": "buildTransitive\\ManagementAPI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

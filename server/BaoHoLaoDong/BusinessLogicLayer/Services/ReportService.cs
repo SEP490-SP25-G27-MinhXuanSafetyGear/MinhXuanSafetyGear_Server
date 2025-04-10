@@ -9,19 +9,19 @@ namespace BusinessLogicLayer.Services;
 
 public class ReportService :IReportService
 {
-    private readonly IProductRepo _productRepo;
-    private readonly IUserRepo _userRepo;
-    private readonly IOrderRepo _orderRepo;
-    private readonly IInvoiceRepo _invoiceRepo;
+    private readonly IProductRepository _productRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IInvoiceRepository _invoiceRepository;
     private readonly IMapper _mapper;
 
-    public ReportService( IProductRepo productRepo,IUserRepo userRepo,IOrderRepo orderRepo,IInvoiceRepo invoiceRepo, IMapper mapper)
+    public ReportService( IProductRepository productRepository,IUserRepository userRepository,IOrderRepository orderRepository,IInvoiceRepository invoiceRepository, IMapper mapper)
     {
-        _productRepo = productRepo;
-        _userRepo =userRepo;
-        _orderRepo = orderRepo;
+        _productRepository = productRepository;
+        _userRepository =userRepository;
+        _orderRepository = orderRepository;
         _mapper = mapper;
-        _invoiceRepo =  invoiceRepo;
+        _invoiceRepository =  invoiceRepository;
     }
 
     public async Task<Report> GetReport()
@@ -29,11 +29,11 @@ public class ReportService :IReportService
         try
         {
             var currentYear = DateTime.Now.Year;
-            var totalCustomer = await _userRepo.CountCustomers();
-            var totalOrder = await _orderRepo.CountOrdersAsync();
-            var totalProductSale = await _productRepo.CountProductSaleAsync();
-            var productSales = await _productRepo.GetProductSaleQualityAsync(5);
-            var invoices = await _invoiceRepo.GetAllInvoicesAsync()??new List<Invoice>();
+            var totalCustomer = await _userRepository.CountCustomers();
+            var totalOrder = await _orderRepository.CountOrdersAsync();
+            var totalProductSale = await _productRepository.CountProductSaleAsync();
+            var productSales = await _productRepository.GetProductSaleQualityAsync(5);
+            var invoices = await _invoiceRepository.GetAllInvoicesAsync()??new List<Invoice>();
             invoices = invoices.Where(i => i.CreatedAt.Year == currentYear ).ToList();
             var mappedProductSale = productSales.Select(ps => new ProductSaleResponse
             {

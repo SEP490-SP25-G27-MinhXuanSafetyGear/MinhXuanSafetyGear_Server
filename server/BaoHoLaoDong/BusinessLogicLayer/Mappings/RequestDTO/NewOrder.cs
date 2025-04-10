@@ -19,11 +19,12 @@ public class NewOrder
     public string CustomerAddress { get; set; } = null!;
 
     private string _paymentMethod = "Cash"; // Giá trị mặc định
-
+    
     public string PaymentMethod
     {
         get => string.IsNullOrWhiteSpace(_paymentMethod) ? "Cash" : _paymentMethod;
         set => _paymentMethod = string.IsNullOrWhiteSpace(value) ? "Cash" : value;
     }
+    public bool IsTaxIncluded { get; set; } = false;
     public virtual ICollection<NewOrderDetail> OrderDetails { get; set; } = new List<NewOrderDetail>();
 }

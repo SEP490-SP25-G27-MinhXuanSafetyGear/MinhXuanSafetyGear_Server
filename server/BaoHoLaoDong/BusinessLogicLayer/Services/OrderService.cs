@@ -22,26 +22,26 @@ namespace BusinessLogicLayer.Services
     {
         private readonly IMapper _mapper;
         private readonly ILogger<OrderService> _logger;
-        private readonly IOrderRepo _orderRepo;
-        private readonly IProductRepo _productRepo;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IProductRepository _productRepository;
         public readonly IConfiguration _configuration;
-        private readonly IUserRepo _userRepo;
-        private readonly INotificationRepo _notificationRepo;
+        private readonly IUserRepository _userRepository;
+        private readonly INotificationRepository _notificationRepository;
         private readonly IMailService _mailService;
         private readonly IProductService _productService;
-        public OrderService(IOrderRepo orderRepo,IProductRepo productRepo,IUserRepo userRepo, 
-            INotificationRepo notificationRepo,IProductService productService,
+        public OrderService(IOrderRepository orderRepository,IProductRepository productRepository,IUserRepository userRepository, 
+            INotificationRepository notificationRepository,IProductService productService,
             IMapper mapper, ILogger<OrderService> logger, IConfiguration configuration,
             IMailService mailService)
         {
-            _orderRepo = orderRepo;
+            _orderRepository = orderRepository;
             _mapper = mapper;
             _logger = logger;
-            _productRepo =productRepo;
+            _productRepository =productRepository;
             _configuration = configuration;
             _productService =productService;
-            _userRepo = userRepo;
-            _notificationRepo = notificationRepo;
+            _userRepository = userRepository;
+            _notificationRepository = notificationRepository;
             _mailService = mailService;
         }
 
@@ -49,7 +49,7 @@ namespace BusinessLogicLayer.Services
 
         public async Task<List<OrderResponse>> GetAllOrdersAsync()
         {
-            var orders = await _orderRepo.GetAllOrdersAsync();
+            var orders = await _orderRepository.GetAllOrdersAsync();
 
             if (orders == null || !orders.Any())
                 return new List<OrderResponse>();
@@ -62,7 +62,7 @@ namespace BusinessLogicLayer.Services
             try
             {
                 var order = _mapper.Map<Order>(orderRequest);
-                order = await _orderRepo.CreateOrderAsync(order);
+                order = await _orderRepository.CreateOrderAsync(order);
                 return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null)
                 {
                     return null;
@@ -114,8 +114,8 @@ namespace BusinessLogicLayer.Services
                 {
                     id = Int32.Parse(customerId);
                 }
-                var orders = await _orderRepo.SearchAsync(emailOrPhone, start, end, customerName, id, status, page, pageSize);
-                var totalOrders = await _orderRepo.CountTotalOrdersByFilter(emailOrPhone, start, end, customerName, id, status);
+                var orders = await _orderRepository.SearchAsync(emailOrPhone, start, end, customerName, id, status, page, pageSize);
+                var totalOrders = await _orderRepository.CountTotalOrdersByFilter(emailOrPhone, start, end, customerName, id, status);
                 //var order1 = orders.FirstOrDefault();
                 //var a = _mapper.Map<OrderResponse>(order1);
                 var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize, totalOrders);
@@ -162,9 +162,9 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orders = await _orderRepo.SearchAsync(emailOrPhone, startDate, endDate, null, null, null, page, pageSize);
+                var orders = await _orderRepository.SearchAsync(emailOrPhone, startDate, endDate, null, null, null, page, pageSize);
                 orders = orders.OrderByDescending(o => o.OrderDate).ToList();
-                var totalOrders = await _orderRepo.CountTotalOrdersByDate(startDate, endDate);
+                var totalOrders = await _orderRepository.CountTotalOrdersByDate(startDate, endDate);
                 var orderPage = new Page<OrderResponse>(_mapper.Map<List<OrderResponse>>(orders), page, pageSize,
                     totalOrders);
                 return orderPage;
@@ -181,14 +181,14 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null)
                 {
                     throw new Exception("Order not found.");
                 }
 
                 _mapper.Map(orderRequest, order);
-                order = await _orderRepo.UpdateOrderAsync(order);
+                order = await _orderRepository.UpdateOrderAsync(order);
                 return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex)
@@ -202,14 +202,14 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null)
                 {
                     throw new Exception("Order not found.");
                 }
 
                 order.Status = status;
-                var result = await _orderRepo.UpdateOrderAsync(order);
+                var result = await _orderRepository.UpdateOrderAsync(order);
                 return result != null;
             }
             catch (Exception ex)
@@ -223,13 +223,13 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null)
                 {
                     return false;
                 }
 
-                return await _orderRepo.DeleteOrderAsync(orderId);
+                return await _orderRepository.DeleteOrderAsync(orderId);
             }
             catch (Exception ex)
             {
@@ -242,7 +242,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orderDetails = await _orderRepo.GetOrderDetailsByOrderIdAsync(orderId);
+                var orderDetails = await _orderRepository.GetOrderDetailsByOrderIdAsync(orderId);
                 if (orderDetails == null || orderDetails.Count == 0)
                 {
                     return 0m;
@@ -268,7 +268,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orderDetails = await _orderRepo.GetOrderDetailsPageAsync(orderId, page, pageSize);
+                var orderDetails = await _orderRepository.GetOrderDetailsPageAsync(orderId, page, pageSize);
                 return _mapper.Map<List<OrderDetailResponse>>(orderDetails);
             }
             catch (Exception ex)
@@ -281,7 +281,7 @@ namespace BusinessLogicLayer.Services
         public async Task<List<OrderResponse>?> SearchOrdersAsync(string? emailOrPhone, DateTime? startDate, DateTime? endDate,
              string customerName, string status, int page = 1, int pageSize = 20)
         {
-            var orders = await _orderRepo.SearchAsync(emailOrPhone, startDate, endDate, customerName, null, status, page, pageSize);
+            var orders = await _orderRepository.SearchAsync(emailOrPhone, startDate, endDate, customerName, null, status, page, pageSize);
 
             if (orders == null || !orders.Any())
             {
@@ -295,14 +295,14 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null || order.Status == "Cancelled" || order.Status == "Shipped")
                 {
                     return false;
                 }
 
                 order.Status = "Cancelled";
-                await _orderRepo.UpdateOrderAsync(order);
+                await _orderRepository.UpdateOrderAsync(order);
                 return true;
             }
             catch (Exception ex)
@@ -316,7 +316,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                return await _orderRepo.CountOrdersAsync();
+                return await _orderRepository.CountOrdersAsync();
             }
             catch (Exception ex)
             {
@@ -357,7 +357,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orderDetail = await _orderRepo.GetOrderDetailByIdAsync(orderDetailId);
+                var orderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderDetailId);
                 if (orderDetail == null)
                 {
                     return null;
@@ -377,7 +377,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orderDetails = await _orderRepo.GetOrderDetailsByOrderIdAsync(orderId, page, pageSize);
+                var orderDetails = await _orderRepository.GetOrderDetailsByOrderIdAsync(orderId, page, pageSize);
                 return orderDetails?.Select(MapToOrderDetailResponse).ToList();
             }
             catch (Exception ex)
@@ -392,7 +392,7 @@ namespace BusinessLogicLayer.Services
             try
             {
                 var orderDetail = MapToOrderDetail(orderDetailRequest);
-                var createdOrderDetail = await _orderRepo.CreateOrderDetailAsync(orderDetail);
+                var createdOrderDetail = await _orderRepository.CreateOrderDetailAsync(orderDetail);
                 return MapToOrderDetailResponse(createdOrderDetail);
             }
             catch (Exception ex)
@@ -407,7 +407,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var existingOrderDetail = await _orderRepo.GetOrderDetailByIdAsync(orderDetailId);
+                var existingOrderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderDetailId);
 
                 if (existingOrderDetail == null)
                 {
@@ -416,7 +416,7 @@ namespace BusinessLogicLayer.Services
 
                 existingOrderDetail = UpdateOrderDetailFromRequest(existingOrderDetail, orderDetailRequest);
 
-                var updatedOrderDetail = await _orderRepo.UpdateOrderDetailAsync(orderDetailId, existingOrderDetail);
+                var updatedOrderDetail = await _orderRepository.UpdateOrderDetailAsync(orderDetailId, existingOrderDetail);
 
                 return MapToOrderDetailResponse(updatedOrderDetail);
             }
@@ -431,13 +431,13 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orderDetail = await _orderRepo.GetOrderDetailByIdAsync(orderDetailId);
+                var orderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderDetailId);
                 if (orderDetail == null)
                 {
                     return false;
                 }
 
-                await _orderRepo.DeleteOrderDetailAsync(orderDetailId);
+                await _orderRepository.DeleteOrderDetailAsync(orderDetailId);
                 return true;
             }
             catch (Exception ex)
@@ -451,7 +451,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var orderDetail = await _orderRepo.GetOrderDetailByIdAsync(orderDetailId);
+                var orderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderDetailId);
                 if (orderDetail == null)
                 {
                     return 0m;
@@ -514,7 +514,7 @@ namespace BusinessLogicLayer.Services
             try
             {
                 var productIds = model.OrderDetails.Select(od => od.ProductId).Distinct().ToList();
-                var products = await _productRepo.GetProductByIdsAsync(productIds);
+                var products = await _productRepository.GetProductByIdsAsync(productIds);
                 if (products == null || !products.Any())
                 {
                     throw new Exception("Invalid product IDs.");
@@ -569,7 +569,7 @@ namespace BusinessLogicLayer.Services
                     }*/
                 };
 
-                var orderResponse = await _orderRepo.PayAsync(order);
+                var orderResponse = await _orderRepository.PayAsync(order);
                 return true;
             }
             catch (Exception ex)
@@ -583,7 +583,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null)
                 {
                     return false;
@@ -614,7 +614,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await _orderRepo.GetOrderByIdAsync(orderId);
+                var order = await _orderRepository.GetOrderByIdAsync(orderId);
                 //if (order == null || order.Invoices?.Any() != true)
                 {
                     return String.Empty;
@@ -635,81 +635,72 @@ namespace BusinessLogicLayer.Services
         /// </summary>
         /// <param name="newOrder"></param>
         /// <returns></returns>
-     public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder) 
+         public async Task<OrderResponse?> CreateNewOrderV2Async(NewOrder newOrder) 
         { 
             try 
             { 
-                var order = await CreateOrderEntityAsync(newOrder); 
-                if (order != null) 
+                var order = await CreateOrderEntityAsync(newOrder);
+                if (order == null) return null;
+                order = await _orderRepository.CreateOrderAsync(order);
+                if (order == null) return null;
+                var products = order.OrderDetails.Select(p => new 
                 { 
-                    order = await _orderRepo.CreateOrderAsync(order); 
-                    if (order != null) 
-                    { 
-                        var products = order.OrderDetails.Select(p => new 
-                        { 
-                            productId = p.ProductId, 
-                            variantId = p.VariantId, 
-                            quantity = p.Quantity 
-                        }).ToList();
-                        bool isStockAvailable = true; 
-                        List<string> outOfStockProducts = new List<string>();
+                    productId = p.ProductId, 
+                    variantId = p.VariantId, 
+                    quantity = p.Quantity 
+                }).ToList();
+                bool isStockAvailable = true; 
+                var outOfStockProducts = new List<string>();
                 
-                        foreach (var p in products) 
+                foreach (var p in products) 
+                { 
+                    var product = await _productRepository.GetProductByIdAsync(p.productId); 
+                    var variant = await _productRepository.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
+                    if (p.variantId != null && p.variantId != 0) 
+                    { 
+                        if (variant == null || variant.Quantity < p.quantity) 
                         { 
-                            var product = await _productRepo.GetProductByIdAsync(p.productId); 
-                            var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
-                            if (p.variantId != null && p.variantId != 0) 
-                            { 
-                                if (variant == null || variant.Quantity < p.quantity) 
-                                { 
-                                    isStockAvailable = false; 
-                                    outOfStockProducts.Add($"Sản phẩm {product.ProductName} {variant?.Size} - {variant?.Color} không đủ hàng."); 
-                                } 
-                            }
-                            else 
-                            { 
-                                if (product == null || product.Quantity < p.quantity) 
-                                { 
-                                    isStockAvailable = false; 
-                                    outOfStockProducts.Add($"Sản phẩm {product?.ProductName} không đủ hàng."); 
-                                } 
-                            }
-                        }
-
-                        // 🔹 **Nếu có sản phẩm hết hàng, cập nhật ghi chú & không trừ tồn kho**
-                        
-                        if (!isStockAvailable) 
-                        { 
-                            order.Notes = string.Join("; ", outOfStockProducts); 
-                            await _orderRepo.UpdateOrderAsync(order);  // Cập nhật ghi chú vào đơn hàng
-                            return _mapper.Map<OrderResponse>(order);
+                            isStockAvailable = false; 
+                            outOfStockProducts.Add($"Sản phẩm {product.ProductName} {variant?.Size} - {variant?.Color} không đủ hàng."); 
                         } 
-                        // 🔹 **Trừ tồn kho nếu đủ hàng**
-                        foreach (var p in products) 
+                    }
+                    else 
+                    { 
+                        if (product == null || product.Quantity < p.quantity) 
                         { 
-                            if (p.variantId != null && p.variantId != 0) 
-                            { 
-                                var variant = await _productRepo.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
-                                if (variant != null && variant.Quantity > p.quantity) 
-                                { 
-                                    variant.Quantity -= p.quantity; 
-                                    await _productRepo.UpdateProductVariantAsync(variant); // Cập nhật DB
-                                }
-                            }
-                            else 
-                            { 
-                                var product = await _productRepo.GetProductByIdAsync(p.productId); 
-                                if (product != null && product.Quantity > p.quantity) 
-                                { 
-                                    product.Quantity -= p.quantity; 
-                                    await _productRepo.UpdateProductAsync(product); // Cập nhật DB
-                                } 
-                            } 
-                        }
-                        return _mapper.Map<OrderResponse>(order); 
-                    } 
+                            isStockAvailable = false; 
+                            outOfStockProducts.Add($"Sản phẩm {product?.ProductName} không đủ hàng."); 
+                        } 
+                    }
+                }
+                if (!isStockAvailable) 
+                { 
+                    order.Notes = string.Join("; ", outOfStockProducts); 
+                    await _orderRepository.UpdateOrderAsync(order);  
+                    return _mapper.Map<OrderResponse>(order);
                 } 
-                return null; 
+                foreach (var p in products) 
+                { 
+                    if (p.variantId != null && p.variantId != 0) 
+                    { 
+                        var variant = await _productRepository.GetProductVariantByIdAsync(p.variantId.GetValueOrDefault()); 
+                        if (variant != null && variant.Quantity > p.quantity) 
+                        { 
+                            variant.Quantity -= p.quantity; 
+                            await _productRepository.UpdateProductVariantAsync(variant); // Cập nhật DB
+                        }
+                    }
+                    else 
+                    { 
+                        var product = await _productRepository.GetProductByIdAsync(p.productId); 
+                        if (product != null && product.Quantity > p.quantity) 
+                        { 
+                            product.Quantity -= p.quantity; 
+                            await _productRepository.UpdateProductAsync(product); // Cập nhật DB
+                        } 
+                    } 
+                }
+                return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex) 
             { 
@@ -722,7 +713,11 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var order = await CreateOrderEntityAsync(newOrder);
+                var order = await CreateOrderEntityAsync(newOrder) ;
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    orderDetail.Product = await _productRepository.GetProductByIdAsync(orderDetail.ProductId)?? new Product();
+                }
                 return _mapper.Map<OrderResponse>(order);
             }
             catch (Exception ex)
@@ -735,7 +730,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {   
-                var cus = await _userRepo.GetCustomerByEmailAsync(newOrder.CustomerEmail??"");
+                var cus = await _userRepository.GetCustomerByEmailAsync(newOrder.CustomerEmail??"");
                 var order = _mapper.Map<Order>(newOrder);
                 if (order.OrderDetails.Any())
                 {
@@ -748,7 +743,7 @@ namespace BusinessLogicLayer.Services
                         }
                         var price = variant == null ? product.Price :variant.Price; 
                         var discount =  product.Discount; 
-                        var tax = product.TotalTax.GetValueOrDefault(0); 
+                        var tax = newOrder.IsTaxIncluded  ? (product.TotalTax==null?0:product.TotalTax) :0; 
                         var priceAfterDiscount = price * (1 - discount / 100);
                         var finalPrice = priceAfterDiscount * (1 + tax / 100);
                         odDetail.ProductPrice = finalPrice.GetValueOrDefault(0);
@@ -758,6 +753,7 @@ namespace BusinessLogicLayer.Services
                         odDetail.VariantId = odDetail.VariantId;
                         odDetail.Size = variant?.Size ;
                         odDetail.Color = variant?.Color;
+                        odDetail.ProductTax = product.TotalTax;
                     }
                 }
                 order.TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice);

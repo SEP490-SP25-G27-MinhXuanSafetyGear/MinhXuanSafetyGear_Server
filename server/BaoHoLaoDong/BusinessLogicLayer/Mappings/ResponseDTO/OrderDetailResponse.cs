@@ -13,6 +13,8 @@ public class OrderDetailResponse
     public string ProductImage { get; set; } = string.Empty;
 
     public decimal ProductPrice { get; set; }
+    
+    public decimal ProductTax { get; set; }
 
     public decimal? ProductDiscount { get; set; }
 
@@ -23,5 +25,6 @@ public class OrderDetailResponse
     public string? Size { get; set; }
 
     public string? Color { get; set; }
+    
 
 }

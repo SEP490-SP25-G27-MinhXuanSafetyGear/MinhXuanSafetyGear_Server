@@ -2,11 +2,14 @@
 using System.Threading.Tasks;
 using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Services.Interface;
+using BusinessObject.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,Manager")]
 public class BlogPostController : ControllerBase
 {
     private readonly IBlogPostService _blogPostService;
@@ -19,6 +22,7 @@ public class BlogPostController : ControllerBase
     /// get blog categories
     /// </summary>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet("get-blog-categories")]
     public async Task<IActionResult> GetBlogCategories()
     {
@@ -93,6 +97,7 @@ public class BlogPostController : ControllerBase
     /// <param name="page"></param>
     /// <param name="pagesize"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet("get-blog-page")]
     public async Task<IActionResult> GetBlogPostPage([FromQuery] int categoryId = 0,[FromQuery] int page=1, [FromQuery]int size=20)
     {
@@ -142,7 +147,8 @@ public class BlogPostController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+    
+    [AllowAnonymous]
     [HttpGet("get-blog/{id}")]
     public async Task<IActionResult> GetBlog([FromRoute] int id)
     {
@@ -156,7 +162,7 @@ public class BlogPostController : ControllerBase
             return BadRequest(ex);
         }
     }
-
+    [AllowAnonymous]
     [HttpGet("get-blog-by-slug/{slug}")]
     public async Task<IActionResult> GetBlogBySlug([FromRoute] string slug)
     {
@@ -169,7 +175,8 @@ public class BlogPostController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-    }    
+    }  
+    [AllowAnonymous]
     [HttpGet("search-blog")]
     public async Task<IActionResult> SearchBlog([FromQuery] string title)
     {
@@ -183,7 +190,7 @@ public class BlogPostController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+    [AllowAnonymous]
     [HttpGet("get-blog-by-category/{slug}")]
     public async Task<IActionResult> GetBlogsBySlugOfCategory([FromRoute] string slug)
     {

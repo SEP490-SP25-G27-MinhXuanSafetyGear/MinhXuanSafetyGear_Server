@@ -9,7 +9,8 @@ public class BlogPostResponse
     public string Summary { get; set; } = null!;
     
     public string Tags { get; set; } = null!;
-
+    
+    public string? PostUrl { get; set; }
     public string Content { get; set; } = null!;
     
     public int CategoryId { get; set; }

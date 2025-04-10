@@ -10,14 +10,14 @@ namespace BusinessLogicLayer.Services;
 public class FileService : IFileService
 {
     private readonly ILogger<FileService> _logger;
-    private const int MAX_FILE_SIZE_KB = 300; // Giới hạn file tối đa 500KB
+    private const int MaxFileSizeKb = 300;
 
     public FileService(ILogger<FileService> logger)
     {
         _logger = logger;
     }
 
-    public async Task<string?> SaveImageAsync(string imageDirectory,IFormFile file)
+    public async Task<string?> SaveImageAsync(string imageDirectory, IFormFile file)
     {
         try
         {
@@ -25,10 +25,10 @@ public class FileService : IFileService
             {
                 Directory.CreateDirectory(imageDirectory);
             }
-            var fileName = $"{Guid.NewGuid()}.webp"; 
+            var fileName = $"{Guid.NewGuid()}.webp";
             var filePath = Path.Combine(imageDirectory, fileName);
 
-            using (var image = Image.Load(file.OpenReadStream())) 
+            using (var image = Image.Load(file.OpenReadStream()))
             {
                 // Giảm kích thước ảnh (tối đa 1080px chiều rộng hoặc cao)
                 int maxWidth = 1080;
@@ -39,13 +39,17 @@ public class FileService : IFileService
                     Size = new Size(maxWidth, maxHeight)
                 }));
 
+                long fileSizeKB = file.Length / 1024; // Kích thước file gốc (KB)
                 int quality = 75; // Mặc định là 75%
-                long fileSizeKB = file.Length / 1024; // Kích thước file ban đầu (KB)
 
-                // Nếu file lớn hơn mức tối đa, giảm chất lượng xuống 50%
-                if (fileSizeKB > MAX_FILE_SIZE_KB)
+                if (fileSizeKB > MaxFileSizeKb)
                 {
-                    quality = 50;
+                    // Tính toán tỷ lệ cần giảm
+                    double scaleFactor = (double)MaxFileSizeKb / fileSizeKB;
+                    quality = (int)(quality * scaleFactor); // Giảm chất lượng theo tỷ lệ
+
+                    // Đảm bảo chất lượng không nhỏ hơn 10%
+                    quality = Math.Max(quality, 10);
                 }
 
                 var encoder = new WebpEncoder { Quality = quality };
@@ -53,7 +57,7 @@ public class FileService : IFileService
                 await image.SaveAsync(filePath, encoder);
             }
 
-            _logger.LogInformation($"Image saved as WebP to {imageDirectory}");
+            _logger.LogInformation($"Image saved as WebP to {filePath}");
             return fileName;
         }
         catch (Exception ex)
@@ -62,6 +66,7 @@ public class FileService : IFileService
             return null;
         }
     }
+
 
     public async Task<bool> DeleteFileAsync(string directoryFile)
     {
@@ -88,7 +93,8 @@ public class FileService : IFileService
         try
         {
             var filePath = Path.Combine(imageDirectory, fileName);
-            using (var image = Image.Load(file.OpenReadStream())) 
+
+            using (var image = Image.Load(file.OpenReadStream()))
             {
                 // Giảm kích thước ảnh (tối đa 1080px chiều rộng hoặc cao)
                 int maxWidth = 1080;
@@ -99,13 +105,14 @@ public class FileService : IFileService
                     Size = new Size(maxWidth, maxHeight)
                 }));
 
-                int quality = 75; // Mặc định là 75%
-                long fileSizeKB = file.Length / 1024; // Kích thước file ban đầu (KB)
+                long fileSizeKB = file.Length / 1024;
+                int quality = 75;
 
-                // Nếu file lớn hơn mức tối đa, giảm chất lượng xuống 50%
-                if (fileSizeKB > MAX_FILE_SIZE_KB)
+                if (fileSizeKB > MaxFileSizeKb)
                 {
-                    quality = 50;
+                    double scaleFactor = (double)MaxFileSizeKb / fileSizeKB;
+                    quality = (int)(quality * scaleFactor);
+                    quality = Math.Max(quality, 10);
                 }
 
                 var encoder = new WebpEncoder { Quality = quality };
@@ -113,7 +120,7 @@ public class FileService : IFileService
                 await image.SaveAsync(filePath, encoder);
             }
 
-            _logger.LogInformation($"Image saved as WebP to {imageDirectory}");
+            _logger.LogInformation($"Image saved as WebP to {filePath}");
             return fileName;
         }
         catch (Exception ex)
@@ -122,7 +129,8 @@ public class FileService : IFileService
             return null;
         }
     }
-    public async Task<FileStream?> GetFileAsStreamAsync(string filePath)
+
+   public async Task<FileStream?> GetFileAsStreamAsync(string filePath)
     {
         try
         {

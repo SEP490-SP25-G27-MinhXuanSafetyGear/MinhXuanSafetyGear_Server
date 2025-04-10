@@ -35,9 +35,10 @@ namespace BusinessLogicLayer.Mappings.RequestDTO
         public bool Status { get; set; }
         
         [MinFileCount(1,ErrorMessage = "Phải tải lên ít nhất 1 hình ảnh")]
-        [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".gif" })]
-        [MaxFileSize(1)]
+        [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".svg" })]
+        [MaxFileSize(5)]
         public List<IFormFile> Files { get; set; } = null!;
+        [UniqueProductVariants]
         public ICollection<NewProductVariant> ProductVariants { get; set; } = new List<NewProductVariant>();
     }
 }
