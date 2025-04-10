@@ -28,4 +28,8 @@
     <ProjectReference Include="..\ManagementAPI\ManagementAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Blogs\" />
+  </ItemGroup>
+
 </Project>

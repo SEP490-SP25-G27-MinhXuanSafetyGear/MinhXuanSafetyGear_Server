@@ -11,7 +11,10 @@ using BusinessLogicLayer.Hubs;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using BusinessObject.Entities;
+using Moq.Language.Flow;
 namespace UnitTest.Products
 {
     public class ProductControllerTests
@@ -22,6 +25,7 @@ namespace UnitTest.Products
         private Mock<IMapper> _mapperMock;
         private ProductController _productController;
         private Mock<IServiceProvider> _mockServiceProvider;
+
 
         [SetUp]
         public void SetUp()
@@ -42,6 +46,9 @@ namespace UnitTest.Products
                 _mapperMock.Object
             );
         }
+
+        #region Product
+        #region Create_Product
         [Test]
         public async Task CreateProduct_ValidName_ReturnsSuccess()
         {
@@ -57,7 +64,7 @@ namespace UnitTest.Products
 
             var newProduct = new NewProduct
             {
-                Name = "Product1", 
+                Name = "Product1",
                 Category = 1,
                 Description = "Good product",
                 Discount = 1,
@@ -307,7 +314,7 @@ namespace UnitTest.Products
 
             var newProduct = new NewProduct
             {
-                Name = "",  
+                Name = "",
                 Category = 1,
                 Description = "Test description",
                 Discount = 10,
@@ -359,7 +366,7 @@ namespace UnitTest.Products
             // Arrange
             var newProduct = new NewProduct
             {
-                Name = null,  
+                Name = null,
                 Category = 1,
                 Description = "Good product",
                 Discount = 1,
@@ -488,5 +495,492 @@ namespace UnitTest.Products
             var badRequestResult = (BadRequestObjectResult)result;
             Assert.That(badRequestResult.Value, Is.TypeOf<SerializableError>());
         }
+        #endregion Create_Product
+
+        #region update_product 
+
+        [Test]
+        public async Task UpdateProduct_ValidRequest_ReturnsOkAndBroadcasts()
+        {
+            // Arrange
+            var updateProduct = new UpdateProduct
+            {
+                //Id = 1,
+                Name = "Updated Product",
+                CategoryId = 2,
+                Quantity = 10,
+                Price = 50.5m,
+                Guarantee = 12,
+                Status = true
+            };
+
+            var response = new ProductResponse
+            {
+                //Id = updateProduct.Id,
+                Name = updateProduct.Name,
+                CategoryId = updateProduct.CategoryId ?? 0,
+                Quantity = updateProduct.Quantity,
+                Price = updateProduct.Price,
+                Guarantee = updateProduct.Guarantee,
+                Status = updateProduct.Status
+            };
+
+            var mockHubClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockHubClients.Setup(c => c.All).Returns(mockClientProxy.Object);
+            _productHubMock.Setup(h => h.Clients).Returns(mockHubClients.Object);
+
+            // Validate the updateProduct object manually
+            var validationContext = new ValidationContext(updateProduct);
+            var results = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(updateProduct, validationContext, results, true);
+
+            if (!isValid)
+            {
+                foreach (var validationResult in results)
+                {
+                    foreach (var memberName in validationResult.MemberNames)
+                    {
+                        _productController.ModelState.AddModelError(memberName, validationResult.ErrorMessage);
+                    }
+                }
+            }
+
+            if (isValid)
+            {
+                // Setup mock service and hub BEFORE calling controller
+                _productServiceMock
+                    .Setup(s => s.UpdateProductAsync(updateProduct))
+                    .ReturnsAsync(response);
+
+                mockClientProxy
+                    .Setup(p => p.SendCoreAsync(
+                        "ProductUpdated",
+                        It.Is<object[]>(o => o.Length == 1 && o[0] == response),
+                        default))
+                    .Returns(Task.CompletedTask);
+            }
+
+            // Act
+            var actionResult = await _productController.UpdateProduct(updateProduct);
+
+            // Assert
+            if (!isValid)
+            {
+                Assert.That(actionResult, Is.InstanceOf<BadRequestObjectResult>());
+            }
+            else
+            {
+                Assert.That(actionResult, Is.InstanceOf<OkObjectResult>());
+                var okResult = (OkObjectResult)actionResult;
+                Assert.That(okResult.Value, Is.EqualTo(response));
+
+                mockClientProxy.Verify(p =>
+                    p.SendCoreAsync(
+                        "ProductUpdated",
+                        It.Is<object[]>(o => o.Length == 1 && o[0] == response),
+                        default),
+                    Times.Once);
+            }
+        }
+
+        [Test]
+        public async Task UpdateProduct_InvalidModel_NoName_ReturnsBadRequest()
+        {
+            // Arrange
+            var updateProduct = new UpdateProduct
+            {
+                Id = 1,
+                //Name = "Updated Product",
+                CategoryId = 2,
+                Quantity = 10,
+                Price = 50.5m,
+                Guarantee = 12,
+                Status = true
+            };
+
+            _productController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var validationContext = new ValidationContext(updateProduct);
+            var results = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(updateProduct, validationContext, results, true);
+
+            if (!isValid)
+            {
+                foreach (var validationResult in results)
+                {
+                    foreach (var memberName in validationResult.MemberNames)
+                    {
+                        _productController.ModelState.AddModelError(memberName, validationResult.ErrorMessage);
+                    }
+                }
+            }
+            var result = await _productController.UpdateProduct(updateProduct);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            var badRequest = result as BadRequestObjectResult;
+            Assert.That(badRequest, Is.Not.Null);
+
+        }
+
+        [Test]
+        public async Task UpdateProduct_ValidModel_ReturnsOkAndBroadcasts()
+        {
+            // Arrange
+            var updateProduct = new UpdateProduct
+            {
+                Id = 1,
+                Name = "Updated Product",
+                CategoryId = 2,
+                Quantity = 10,
+                Price = 50.5m,
+                Guarantee = 12,
+                Status = true
+            };
+
+            var response = new ProductResponse
+            {
+                Id = updateProduct.Id,
+                Name = updateProduct.Name,
+                CategoryId = updateProduct.CategoryId ?? 0,
+                Quantity = updateProduct.Quantity,
+                Price = updateProduct.Price,
+                Guarantee = updateProduct.Guarantee,
+                Status = updateProduct.Status
+            };
+
+            var mockHubClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockHubClients.Setup(c => c.All).Returns(mockClientProxy.Object);
+            _productHubMock.Setup(h => h.Clients).Returns(mockHubClients.Object);
+
+            _productServiceMock
+                .Setup(s => s.UpdateProductAsync(updateProduct))
+                .ReturnsAsync(response);
+
+            mockClientProxy
+                .Setup(p => p.SendCoreAsync(
+                    "ProductUpdated",
+                    It.Is<object[]>(o => o.Length == 1 && o[0] == response),
+                    default))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _productController.UpdateProduct(updateProduct);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            var okResult = result as OkObjectResult;
+            Assert.That(okResult?.Value, Is.EqualTo(response));
+
+            mockClientProxy.Verify(p =>
+                p.SendCoreAsync(
+                    "ProductUpdated",
+                    It.Is<object[]>(o => o.Length == 1 && o[0] == response),
+                    default),
+                Times.Once);
+        }
+
+
+        #endregion update_product
+
+        #endregion Product
+
+        #region Product_Category
+
+        #region Create
+
+        [Test]
+        public async Task CreateNewCategory_ValidData_ReturnsOkResult()
+        {
+            // Arrange
+            var newCategory = new NewProductCategory
+            {
+                CategoryName = "Safety Equipment",
+                Description = "Protective gear for workers",
+                GroupId = 1
+            };
+
+            var expectedResult = new List<ProductCategoryGroupResponse>
+            {
+                new ProductCategoryGroupResponse
+                {
+                    GroupId = 1,
+                    GroupName = "PPE",
+                    Categories = new List<CategoryResponse>
+                    {
+                        new CategoryResponse
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Safety Equipment",
+                            Description = "Protective gear for workers",
+                            GroupId = 1
+                        }
+                    }
+                }
+            };
+
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+
+            mockClients.Setup(clients => clients.All).Returns(mockClientProxy.Object);
+            _productHubMock.Setup(hub => hub.Clients).Returns(mockClients.Object);
+
+            _productServiceMock.Setup(s => s.CreateNewCategory(It.IsAny<NewProductCategory>()))
+                .ReturnsAsync(expectedResult);
+
+            string? sentMethod = null;
+            object? sentArg = null;
+
+            mockClientProxy
+                .Setup(client => client.SendCoreAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<object[]>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<string, object[], CancellationToken>((method, args, token) =>
+                {
+                    sentMethod = method;
+                    if (args.Length > 0)
+                    {
+                        sentArg = args[0];
+                    }
+                })
+                .Returns(Task.CompletedTask);
+
+            var result = await _productController.CreateNewCategory(newCategory);
+
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            var okResult = result as OkObjectResult;
+            Assert.That(okResult?.Value, Is.EqualTo(expectedResult));
+
+            Assert.That(sentMethod, Is.EqualTo("ProductCategoryAdded"));
+            Assert.That(sentArg, Is.EqualTo(expectedResult));
+        }
+        [Test]
+        public async Task CreateNewCategory_ServiceReturnsNull_ReturnsBadRequest()
+        {
+            // Arrange
+            var newCategory = new NewProductCategory
+            {
+                CategoryName = "Test",
+                Description = "Test description",
+                GroupId = 1
+            };
+
+            _productServiceMock.Setup(s => s.CreateNewCategory(It.IsAny<NewProductCategory>()))
+                .ReturnsAsync((List<ProductCategoryGroupResponse>?)null);
+
+            // Act
+            var result = await _productController.CreateNewCategory(newCategory);
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.That(badRequestResult, Is.Not.Null);
+        }
+        [Test]
+        public async Task CreateNewCategory_ServiceThrowsArgumentException_ReturnsBadRequest()
+        {
+            // Arrange
+            var newCategory = new NewProductCategory
+            {
+                CategoryName = "Test",
+                Description = "Description",
+                GroupId = 999 
+            };
+
+            _productServiceMock.Setup(s => s.CreateNewCategory(It.IsAny<NewProductCategory>()))
+                .ThrowsAsync(new ArgumentException("GroupId does not exist"));
+
+            // Act
+            var result = await _productController.CreateNewCategory(newCategory);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            var badRequest = result as BadRequestObjectResult;
+            Assert.That(badRequest?.Value?.ToString(), Does.Contain("GroupId does not exist"));
+        }
+        [Test]
+        public async Task CreateNewCategory_ServiceThrowsGeneralException_ReturnsBadRequest()
+        {
+            var newCategory = new NewProductCategory
+            {
+                CategoryName = "Test",
+                Description = "Desc",
+                GroupId = 1
+            };
+
+            _productServiceMock.Setup(s => s.CreateNewCategory(It.IsAny<NewProductCategory>()))
+                .ThrowsAsync(new Exception("Unexpected error"));
+
+            // Act
+            var result = await _productController.CreateNewCategory(newCategory);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+
+        }
+        [Test]
+        public async Task CreateNewCategory_MissingCategoryName_ReturnsBadRequest()
+        {
+            // Arrange
+            var newCategory = new NewProductCategory
+            {
+                CategoryName = null,
+                Description = "Some description",
+                GroupId = 1
+            };
+
+            _productServiceMock.Setup(s => s.CreateNewCategory(It.IsAny<NewProductCategory>()))
+                .ReturnsAsync((List<ProductCategoryGroupResponse>?)null);
+
+            // Act
+            var result = await _productController.CreateNewCategory(newCategory);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+
+        }
+        [Test]
+        public async Task CreateNewCategory_InvalidGroupId_ReturnsBadRequest()
+        {
+            // Arrange
+            var newCategory = new NewProductCategory
+            {
+                CategoryName = "New Category",
+                Description = "Some description",
+                GroupId = 999 
+            };
+
+            _productServiceMock.Setup(s => s.CreateNewCategory(It.IsAny<NewProductCategory>()))
+                .ThrowsAsync(new ArgumentException("Group ID does not exist"));
+
+            // Act
+            var result = await _productController.CreateNewCategory(newCategory);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            var badRequest = result as BadRequestObjectResult;
+            Assert.That(badRequest?.Value?.ToString(), Does.Contain("Group ID does not exist"));
+        }
+
+
+        #endregion Create
+
+        #region Update
+
+        [Test]
+        public async Task UpdateCategory_ValidRequest_ReturnsOkWithResult()
+        {
+            // Arrange
+            var updateRequest = new UpdateProductCategory
+            {
+                CategoryId = 1,
+                CategoryName = "Găng tay",
+                Description = "Bảo hộ tay",
+                GroupId = 2
+            };
+
+            var expectedList = new List<ProductCategoryGroupResponse>
+                {
+                    new ProductCategoryGroupResponse
+                    {
+                        GroupId = 2,
+                        GroupName = "Đồ bảo hộ",
+                        Description = "Thiết bị bảo hộ lao động",
+                        Categories = new List<CategoryResponse>
+                        {
+                            new CategoryResponse
+                            {
+                                CategoryId = 1,
+                                CategoryName = "Găng tay",
+                                Description = "Bảo hộ tay"
+                            }
+                        }
+                    }
+                };
+
+            // Setup mock hub
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockClients.Setup(c => c.All).Returns(mockClientProxy.Object);
+            _productHubMock.Setup(h => h.Clients).Returns(mockClients.Object);
+
+            // Setup mock service
+            _productServiceMock.Setup(s => s.UpdateCategoryAsync(It.IsAny<UpdateProductCategory>()))
+                               .ReturnsAsync(expectedList);
+
+            // Act
+            var result = await _productController.UpdateCategory(updateRequest);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult!.Value, Is.EqualTo(expectedList));
+
+            mockClientProxy.Verify(client => client.SendCoreAsync(
+                "ProductCategoryUpdated",
+                It.Is<object[]>(args => args[0] == expectedList),
+                default
+            ), Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateCategory_ServiceReturnsNull_ReturnsOkWithNull()
+        {
+            // Arrange
+            var updateRequest = new UpdateProductCategory
+            {
+                CategoryId = 2,
+                CategoryName = "Mũ bảo hộ",
+                Description = "Bảo vệ đầu",
+                GroupId = 1
+            };
+
+            _productServiceMock.Setup(s => s.UpdateCategoryAsync(It.IsAny<UpdateProductCategory>()))
+                               .ReturnsAsync((List<ProductCategoryGroupResponse>?)null);
+
+            // Act
+            var result = await _productController.UpdateCategory(updateRequest);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult!.Value, Is.Null);
+        }
+
+        [Test]
+        public async Task UpdateCategory_ServiceThrowsException_ReturnsBadRequest()
+        {
+            // Arrange
+            var updateRequest = new UpdateProductCategory
+            {
+                CategoryId = 3,
+                CategoryName = "Giày",
+                Description = "Giày bảo hộ",
+                GroupId = 3
+            };
+
+            _productServiceMock.Setup(s => s.UpdateCategoryAsync(It.IsAny<UpdateProductCategory>()))
+                               .ThrowsAsync(new Exception("Service failed"));
+
+            // Act
+            var result = await _productController.UpdateCategory(updateRequest);
+
+            // Assert
+            var badRequest = result as BadRequestObjectResult;
+            Assert.That(badRequest, Is.Not.Null);
+            Assert.That(badRequest!.Value!.ToString(), Does.Contain("Service failed"));
+        }
+
+
+        #endregion Update
+
+
+        #endregion Product_Category
     }
+
 }
+

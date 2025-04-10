@@ -32,6 +32,10 @@ public class ProductController : ControllerBase
     /// <summary>
     /// Tạo danh mục sản phẩm mới
     /// </summary>
+<<<<<<< Updated upstream
+=======
+    [Authorize(Roles = "Admin")]
+>>>>>>> Stashed changes
     [HttpPost("create-category")]
     public async Task<IActionResult> CreateNewCategory([FromBody] NewProductCategory productCategory)
     {

@@ -5,10 +5,13 @@
     {
       "AbsoluteMoniker": "D:0:0:{97E731D9-47ED-4B2D-976A-B14AD24CB38D}|UnitTest\\UnitTest.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\unittest\\products\\productcontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97E731D9-47ED-4B2D-976A-B14AD24CB38D}|UnitTest\\UnitTest.csproj|solutionrelative:unittest\\products\\productcontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+<<<<<<< Updated upstream
     },
     {
       "AbsoluteMoniker": "D:0:0:{97E731D9-47ED-4B2D-976A-B14AD24CB38D}|UnitTest\\UnitTest.csproj|e:\\a_sep_sp24\\minhxuansafetygear_server\\server\\baoholaodong\\unittest\\orders\\ordercontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97E731D9-47ED-4B2D-976A-B14AD24CB38D}|UnitTest\\UnitTest.csproj|solutionrelative:unittest\\orders\\ordercontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+>>>>>>> Stashed changes
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +21,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< Updated upstream
           "SelectedChildIndex": 118,
+=======
+          "SelectedChildIndex": 117,
+>>>>>>> Stashed changes
           "Children": [
             {
               "$type": "Bookmark",
@@ -490,6 +497,7 @@
             },
             {
               "$type": "Document",
+<<<<<<< Updated upstream
               "DocumentIndex": 1,
               "Title": "OrderControllerTests.cs",
               "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\UnitTest\\Orders\\OrderControllerTests.cs",
@@ -503,15 +511,23 @@
             },
             {
               "$type": "Document",
+=======
+>>>>>>> Stashed changes
               "DocumentIndex": 0,
               "Title": "ProductControllerTests.cs",
               "DocumentMoniker": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\UnitTest\\Products\\ProductControllerTests.cs",
               "RelativeDocumentMoniker": "UnitTest\\Products\\ProductControllerTests.cs",
               "ToolTip": "E:\\a_SEP_SP24\\MinhXuanSafetyGear_Server\\server\\BaoHoLaoDong\\UnitTest\\Products\\ProductControllerTests.cs",
               "RelativeToolTip": "UnitTest\\Products\\ProductControllerTests.cs",
+<<<<<<< Updated upstream
               "ViewState": "AQIAAAgAAAAAAAAAAAAuwBYAAAA1AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-31T14:14:23.464Z",
+=======
+              "ViewState": "AQIAABgAAAAAAAAAAAAiwLECAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-10T13:49:45.202Z",
+>>>>>>> Stashed changes
               "EditorCaption": ""
             }
           ]
