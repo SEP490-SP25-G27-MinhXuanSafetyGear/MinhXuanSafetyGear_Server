@@ -11,11 +11,11 @@ public class ReportService :IReportService
 {
     private readonly IProductRepo _productRepo;
     private readonly IUserRepo _userRepo;
-    private readonly IOrderRepo _orderRepo;
+    private readonly IOrderRepository _orderRepo;
     private readonly IInvoiceRepo _invoiceRepo;
     private readonly IMapper _mapper;
 
-    public ReportService( IProductRepo productRepo,IUserRepo userRepo,IOrderRepo orderRepo,IInvoiceRepo invoiceRepo, IMapper mapper)
+    public ReportService( IProductRepo productRepo,IUserRepo userRepo,IOrderRepository orderRepo,IInvoiceRepo invoiceRepo, IMapper mapper)
     {
         _productRepo = productRepo;
         _userRepo =userRepo;

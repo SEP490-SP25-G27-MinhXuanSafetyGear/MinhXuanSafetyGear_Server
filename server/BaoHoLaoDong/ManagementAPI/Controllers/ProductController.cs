@@ -5,6 +5,7 @@ using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Mappings.ResponseDTO;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.SignalR;
@@ -32,10 +33,8 @@ public class ProductController : ControllerBase
     /// <summary>
     /// Tạo danh mục sản phẩm mới
     /// </summary>
-<<<<<<< Updated upstream
-=======
+
     [Authorize(Roles = "Admin")]
->>>>>>> Stashed changes
     [HttpPost("create-category")]
     public async Task<IActionResult> CreateNewCategory([FromBody] NewProductCategory productCategory)
     {
