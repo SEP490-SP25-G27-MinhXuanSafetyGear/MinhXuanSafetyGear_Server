@@ -4,11 +4,11 @@ using DataAccessObject.Repository.Interface;
 
 namespace DataAccessObject.Repository;
 
-public class NotificationRepo : INotificationRepo
+public class NotificationRepository : INotificationRepository
 {
     private readonly NotificationDao notificationDao;
 
-    public NotificationRepo(MinhXuanDatabaseContext context)
+    public NotificationRepository(MinhXuanDatabaseContext context)
     {
         notificationDao = new NotificationDao(context);
     }

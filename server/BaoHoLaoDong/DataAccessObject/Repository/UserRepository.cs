@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository
 {
-    public class UserRepo : IUserRepo
+    public class UserRepository : IUserRepository
     {
         private readonly CustomerDao _customerDao;
         private readonly EmployeeDao _employeeDao;
         private readonly AccountVerificationDao _accountVerificationDao;
 
-        public UserRepo(MinhXuanDatabaseContext context)
+        public UserRepository(MinhXuanDatabaseContext context)
         {
             _customerDao = new CustomerDao(context);
             _employeeDao = new EmployeeDao(context);

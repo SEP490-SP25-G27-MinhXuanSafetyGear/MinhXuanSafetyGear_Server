@@ -11,12 +11,12 @@ namespace BusinessLogicLayer.Services;
 
 public class TaxService :ITaxService
 {
-    private readonly ITaxRepo _taxRepo;
+    private readonly ITaxRepository _taxRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<TaxService> _logger;
-    public TaxService(ITaxRepo taxRepo , IMapper mapper, ILogger<TaxService> logger)
+    public TaxService(ITaxRepository taxRepository , IMapper mapper, ILogger<TaxService> logger)
     {
-        _taxRepo = taxRepo;
+        _taxRepository = taxRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -25,7 +25,7 @@ public class TaxService :ITaxService
     {
         try
         {
-            var taxes = await _taxRepo.GetAllTaxesAsync();
+            var taxes = await _taxRepository.GetAllTaxesAsync();
             return _mapper.Map<List<TaxResponse>>(taxes);
         }catch(Exception ex)
         {
@@ -39,7 +39,7 @@ public class TaxService :ITaxService
         try
         {
             var newTax = _mapper.Map<Tax>(tax);
-            newTax = await _taxRepo.CreateAsync(newTax);
+            newTax = await _taxRepository.CreateAsync(newTax);
             return _mapper.Map<TaxResponse>(newTax);
         }
         catch (Exception ex)
@@ -54,7 +54,7 @@ public class TaxService :ITaxService
         try
         {
             var tax = _mapper.Map<Tax>(updateTax);
-            tax = await _taxRepo.UpdateAsync(tax);
+            tax = await _taxRepository.UpdateAsync(tax);
             return _mapper.Map<TaxResponse>(tax);
         }
         catch (Exception ex)

@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface
 {
-    public interface IBlogPostRepo
+    public interface IBlogPostRepository
     {
         Task<BlogPost?> GetBlogPostByIdAsync(int id);
         Task<BlogPost?> CreateBlogPostAsync(BlogPost blogPost);

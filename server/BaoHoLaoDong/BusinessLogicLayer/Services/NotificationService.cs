@@ -12,17 +12,17 @@ namespace BusinessLogicLayer.Services;
 public class NotificationService : INotificationService
 {
     private readonly IMapper _mapper;
-    private readonly INotificationRepo _notificationRepo;
+    private readonly INotificationRepository _notificationRepository;
 
-    public NotificationService(IMapper mapper, INotificationRepo notificationRepo)
+    public NotificationService(IMapper mapper, INotificationRepository notificationRepository)
     {
         _mapper = mapper;
-        _notificationRepo = notificationRepo;
+        _notificationRepository = notificationRepository;
     }
 
     public async Task<List<NotificationResponse>?> GetAllNotificationsAsync(int userId)
     {
-        var notifications = await _notificationRepo.GetAllByRecipientIdAsync(userId);
+        var notifications = await _notificationRepository.GetAllByRecipientIdAsync(userId);
         return _mapper.Map<List<NotificationResponse>?>(notifications);
     }
 
@@ -31,7 +31,7 @@ public class NotificationService : INotificationService
         try
         {
             var newNotification = _mapper.Map<Notification>(notification);
-            newNotification = await _notificationRepo.CreateAsync(newNotification);
+            newNotification = await _notificationRepository.CreateAsync(newNotification);
             return _mapper.Map<NotificationResponse?>(newNotification);
         }
         catch (Exception ex)
@@ -42,13 +42,13 @@ public class NotificationService : INotificationService
 
     public async Task<List<NotificationResponse>?> GetAllAdminNotiAsync(int recipientId)
     {
-        var notifications = await _notificationRepo.GetAllAdminNotiAsync(recipientId,RecipientType.Employee.ToString());
+        var notifications = await _notificationRepository.GetAllAdminNotiAsync(recipientId,RecipientType.Employee.ToString());
         return _mapper.Map<List<NotificationResponse>?>(notifications);
     }
 
     public async Task<bool?> MaskAsReadAsync(int notificationId, bool readAll)
     {
-        return await _notificationRepo.MaskAsReadAsync(notificationId, readAll);
+        return await _notificationRepository.MaskAsReadAsync(notificationId, readAll);
     }
 
     public async Task<List<NotificationResponse>?> CreateNewNotificationAsync(List<NewNotification> notifications)
@@ -59,12 +59,12 @@ public class NotificationService : INotificationService
             notification.CreatedAt = DateTime.Now;
             notification.IsRead = false;
         }
-        newNotification = await _notificationRepo.CreateAsync(newNotification);
+        newNotification = await _notificationRepository.CreateAsync(newNotification);
         return _mapper.Map<List<NotificationResponse>>(newNotification);
     }
     public async Task<List<NotificationResponse>?> GetCustomerNotificationAsync(int? RecipientId, bool? isRead)
     {
-        var notifications = await _notificationRepo.GetCustomerNotificationAsync(RecipientId, isRead, RecipientType.Customer.ToString());
+        var notifications = await _notificationRepository.GetCustomerNotificationAsync(RecipientId, isRead, RecipientType.Customer.ToString());
         return _mapper.Map<List<NotificationResponse>>(notifications);
     }
 }

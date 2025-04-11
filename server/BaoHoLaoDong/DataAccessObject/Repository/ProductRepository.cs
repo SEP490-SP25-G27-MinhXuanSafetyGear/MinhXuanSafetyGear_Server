@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository
 {
-    public class ProductRepo : IProductRepo
+    public class ProductRepository : IProductRepository
     {
         private readonly ProductCategoryDao _productCategoryDao;
         private readonly ProductDao _productDao;
@@ -17,7 +17,7 @@ namespace DataAccessObject.Repository
         private readonly ProductTaxDao _productTaxDao;
         private readonly ProductCategoryGroupDao _productCategoryGroupDao;
 
-        public ProductRepo(MinhXuanDatabaseContext context)
+        public ProductRepository(MinhXuanDatabaseContext context)
         {
             _productCategoryDao = new ProductCategoryDao(context);
             _productDao = new ProductDao(context);

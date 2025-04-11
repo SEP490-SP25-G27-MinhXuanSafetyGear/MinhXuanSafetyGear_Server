@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface;
 
-public interface INotificationRepo
+public interface INotificationRepository
 {
     Task<List<Notification>?> GetAllByRecipientIdAsync(int userId);
     Task<Notification?> CreateAsync(Notification newNotification);

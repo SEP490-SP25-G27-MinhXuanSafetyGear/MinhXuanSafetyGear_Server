@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository
 {
-    public class OrderRepo : IOrderRepo
+    public class OrderRepository : IOrderRepository
     {
         private readonly OrderDao _orderDao;
         private readonly OrderDetailDao _orderDetailDao;
 
-        public OrderRepo(MinhXuanDatabaseContext context)
+        public OrderRepository(MinhXuanDatabaseContext context)
         {
             _orderDao = new OrderDao(context);
             _orderDetailDao = new OrderDetailDao(context);

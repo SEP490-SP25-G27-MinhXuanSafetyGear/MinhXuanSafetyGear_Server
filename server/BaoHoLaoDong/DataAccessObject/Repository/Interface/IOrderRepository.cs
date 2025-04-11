@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository.Interface
 {
-    public interface IOrderRepo
+    public interface IOrderRepository
     {
         // Order
 

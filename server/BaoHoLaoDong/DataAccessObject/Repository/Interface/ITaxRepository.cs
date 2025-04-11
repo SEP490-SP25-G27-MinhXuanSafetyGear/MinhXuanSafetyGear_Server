@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface;
 
-public interface ITaxRepo
+public interface ITaxRepository
 {
     public Task<List<Tax>?> GetAllTaxesAsync();
     Task<Tax> CreateAsync(Tax newTax);

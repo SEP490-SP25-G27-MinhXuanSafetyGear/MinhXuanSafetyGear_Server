@@ -83,13 +83,13 @@ builder.Services.AddAutoMapper(cfg =>
 
 #region repository
 
-builder.Services.AddScoped<IBlogPostRepo,BlogPostRepo>();
-builder.Services.AddScoped<IInvoiceRepo,InvoiceRepo>();
-builder.Services.AddScoped<INotificationRepo,NotificationRepo>();
-builder.Services.AddScoped<IOrderRepo,OrderRepo>();
-builder.Services.AddScoped<IProductRepo,ProductRepo>();
-builder.Services.AddScoped<ITaxRepo,TaxRepo>();
-builder.Services.AddScoped<IUserRepo,UserRepo>();
+builder.Services.AddScoped<IBlogPostRepository,BlogPostRepository>();
+builder.Services.AddScoped<IInvoiceRepository,InvoiceRepository>();
+builder.Services.AddScoped<INotificationRepository,NotificationRepository>();
+builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+builder.Services.AddScoped<IProductRepository,ProductRepository>();
+builder.Services.AddScoped<ITaxRepository,TaxRepository>();
+builder.Services.AddScoped<IUserRepository,UserRepository>();
 
 #endregion
 #region services

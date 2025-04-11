@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface;
 
-public interface IProductRepo
+public interface IProductRepository
 {
     // categories methods
     Task<ProductCategory?> CreateCategoryAsync(ProductCategory category);
