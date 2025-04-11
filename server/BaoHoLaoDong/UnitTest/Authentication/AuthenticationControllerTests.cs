@@ -54,7 +54,7 @@ namespace UnitTest.Authentication
         {
             // Arrange
             var formLogin = new FormLogin { Email = "test@example.com", Password = "password123" };
-            var user = new UserResponse { Id = 1, Email = "test@example.com", Role = "User", Status = "Active" };
+            var user = new UserResponse { Id = 1, Email = "test@example.com", RoleName = "User", Status = "Active" };
 
             _mockUserService.Setup(u => u.UserLoginByEmailAndPasswordAsync(formLogin))
                             .ReturnsAsync(user);
@@ -112,7 +112,7 @@ namespace UnitTest.Authentication
         {
             // Arrange
             var formLogin = new FormLogin { Email = "inactive@example.com", Password = "password123" };
-            var user = new UserResponse { Id = 1, Email = "inactive@example.com", Role = "User", Status = "InActive" };
+            var user = new UserResponse { Id = 1, Email = "inactive@example.com", RoleName = "User", Status = "InActive" };
 
             _mockUserService.Setup(u => u.UserLoginByEmailAndPasswordAsync(formLogin))
                             .ReturnsAsync(user);

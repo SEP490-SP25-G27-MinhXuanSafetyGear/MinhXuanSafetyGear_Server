@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,Manager")]
 public class InvoiceController : ControllerBase
 {
     private readonly IInvoiceService _invoiceService;

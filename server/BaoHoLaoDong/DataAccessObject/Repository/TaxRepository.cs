@@ -4,10 +4,10 @@ using DataAccessObject.Repository.Interface;
 
 namespace DataAccessObject.Repository;
 
-public class TaxRepo : ITaxRepo
+public class TaxRepository : ITaxRepository
 {
     private readonly TaxDao _taxDao;
-    public TaxRepo(MinhXuanDatabaseContext context)
+    public TaxRepository(MinhXuanDatabaseContext context)
     {
         _taxDao = new TaxDao(context);
     }

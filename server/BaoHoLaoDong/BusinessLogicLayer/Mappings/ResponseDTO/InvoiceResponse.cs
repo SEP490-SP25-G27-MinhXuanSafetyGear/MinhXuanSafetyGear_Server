@@ -16,7 +16,8 @@ namespace BusinessLogicLayer.Mappings.ResponseDTO
         public string? QrcodeData { get; set; }
 
         public string PaymentStatus { get; set; } = null!;
-
+        
+        public string ImageScreenTransfer  { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
 
         public DateTime? PaymentDate { get; set; }

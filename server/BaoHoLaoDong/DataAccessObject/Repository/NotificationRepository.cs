@@ -4,11 +4,11 @@ using DataAccessObject.Repository.Interface;
 
 namespace DataAccessObject.Repository;
 
-public class NotificationRepo : INotificationRepo
+public class NotificationRepository : INotificationRepository
 {
     private readonly NotificationDao notificationDao;
 
-    public NotificationRepo(MinhXuanDatabaseContext context)
+    public NotificationRepository(MinhXuanDatabaseContext context)
     {
         notificationDao = new NotificationDao(context);
     }
@@ -28,9 +28,9 @@ public class NotificationRepo : INotificationRepo
         return await notificationDao.CreateAsync(newNotifications);
     }
 
-    public async Task<List<Notification>?> GetAllAdminNotiAsync(string recipientType)
+    public async Task<List<Notification>?> GetAllAdminNotiAsync(int recipientId,string recipientType)
     {
-        return await notificationDao.GetAllAdminNotiAsync(recipientType);
+        return await notificationDao.GetAllAdminNotiAsync(recipientId,recipientType);
     }
 
     public async Task<bool?> MaskAsReadAsync(int notificationId, bool readAll)

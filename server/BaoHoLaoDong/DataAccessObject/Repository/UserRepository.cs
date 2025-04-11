@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository
 {
-    public class UserRepo : IUserRepo
+    public class UserRepository : IUserRepository
     {
         private readonly CustomerDao _customerDao;
         private readonly EmployeeDao _employeeDao;
         private readonly AccountVerificationDao _accountVerificationDao;
 
-        public UserRepo(MinhXuanDatabaseContext context)
+        public UserRepository(MinhXuanDatabaseContext context)
         {
             _customerDao = new CustomerDao(context);
             _employeeDao = new EmployeeDao(context);
@@ -43,7 +43,7 @@ namespace DataAccessObject.Repository
             var existingCustomer = await _customerDao.GetByEmailAsync(customer.Email);
             if (existingCustomer != null)
             {
-                throw new ArgumentException("Customer with this email already exists.");
+                throw new Exception("Customer with this email already exists.");
             }
             var newCustomer= await _customerDao.CreateAsync(customer);
             if (customer != null && customer.IsEmailVerified == false)

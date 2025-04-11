@@ -4,12 +4,12 @@ using DataAccessObject.Dao;
 
 namespace DataAccessObject.Repository
 {
-    public class BlogPostRepo : IBlogPostRepository
+    public class BlogPostRepository : IBlogPostRepository
     {
         private readonly BlogPostDao _blogPostDao;
         private readonly BlogCategoryDao _blogCategoryDao;
 
-        public BlogPostRepo(MinhXuanDatabaseContext context)
+        public BlogPostRepository(MinhXuanDatabaseContext context)
         {
             _blogPostDao = new BlogPostDao(context);
             _blogCategoryDao = new BlogCategoryDao(context);

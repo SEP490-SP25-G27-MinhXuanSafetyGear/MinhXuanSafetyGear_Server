@@ -7,9 +7,9 @@ namespace BusinessLogicLayer.Validations
     {
         private readonly int _maxFileSizeInBytes;
 
-        public MaxFileSizeAttribute(int maxFileSizeInMB)
+        public MaxFileSizeAttribute(int maxFileSizeInMb)
         {
-            _maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024; 
+            _maxFileSizeInBytes = maxFileSizeInMb * 1024 * 1024; 
         }
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)

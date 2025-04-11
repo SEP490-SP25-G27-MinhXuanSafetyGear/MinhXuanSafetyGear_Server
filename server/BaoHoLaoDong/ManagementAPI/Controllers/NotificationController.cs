@@ -1,11 +1,13 @@
 ﻿using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,Manager")]
 public class NotificationController : ControllerBase
 {
     private readonly INotificationService _notificationService;
@@ -18,12 +20,12 @@ public class NotificationController : ControllerBase
     /// get all admin noti
     /// </summary>
     /// <returns></returns>
-    [HttpGet("getall-admin-noti")]
-    public async Task<IActionResult> GetAllAdminNotiAsync()
+    [HttpGet("getall-noti")]
+    public async Task<IActionResult> GetAllAdminNotiAsync([FromQuery] int recipientId)
     {
         try
         {
-            var notifications = await _notificationService.GetAllAdminNotiAsync();
+            var notifications = await _notificationService.GetAllAdminNotiAsync(recipientId);
             return Ok(notifications);
         }
         catch (Exception ex)

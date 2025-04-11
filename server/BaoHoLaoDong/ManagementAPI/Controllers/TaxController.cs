@@ -1,11 +1,13 @@
 ﻿using BusinessLogicLayer.Mappings.RequestDTO;
 using BusinessLogicLayer.Services.Interface;
 using BusinessObject.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class TaxController : ControllerBase
 {
    private readonly ITaxService _taxService;

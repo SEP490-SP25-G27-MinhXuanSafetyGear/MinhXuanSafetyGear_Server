@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface;
 
-public interface IProductRepo
+public interface IProductRepository
 {
     // categories methods
     Task<ProductCategory?> CreateCategoryAsync(ProductCategory category);
@@ -47,4 +47,5 @@ public interface IProductRepo
     Task<List<Product>> GetProductByIdsAsync(List<int> productIds);
 
     Task<Product?> GetProductBySlugAsync(string slug);
+    Task<List<ProductReview>?> GetTopProductReviewsAsync(int size);
 }

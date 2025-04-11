@@ -21,7 +21,7 @@ public partial class Employee
 
     public bool? Gender { get; set; }
 
-    public string Role { get; set; } = null!;
+    public int RoleId { get; set; }
 
     public DateTime CreateAt { get; set; }
 
@@ -29,5 +29,11 @@ public partial class Employee
 
     public string Status { get; set; } = null!;
 
+    public virtual ICollection<BlogPost> BlogPostCreateByNavigations { get; set; } = new List<BlogPost>();
+
+    public virtual ICollection<BlogPost> BlogPostUpdateByNavigations { get; set; } = new List<BlogPost>();
+
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual Role Role { get; set; } = null!;
 }

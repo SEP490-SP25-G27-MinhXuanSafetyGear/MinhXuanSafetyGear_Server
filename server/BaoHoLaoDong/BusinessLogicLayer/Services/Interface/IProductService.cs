@@ -24,16 +24,18 @@ public interface IProductService
      Task<ProductResponse?> UpdateProductVariantAsync(UpdateProductVariant updateProductVariant);
      Task<List<ProductResponse>?> SearchProductAsync(string title);
      Task<ProductResponse?> GetProductByIdAsync(int id);
-     Task<List<ProductResponse>?> GetTopSaleProduct(int size);
+     Task<List<ProductResponse>?> GetTopSaleProduct(int page,int size);
      Task<ProductResponse?> AddTaxProductAsync(NewProductTax productTax);
      Task<ProductResponse?> DeleteTaxAsync(int productTaxid);
      Task<List<ProductResponse>?> FilterProductsAsync(List<int?> categories);
      Task<ProductCategoryGroupResponse?> CreateNewGroupCategoryAsync(NewGroupCategory groupCategory);
      Task<ProductCategoryGroupResponse?> UpdateGroupCategoryAsync(UpdateGroupCategory groupCategory);
      bool IsProductNameExists(string productName);
-     Task<List<ProductResponse>?> GetTopDealProductAsync(int size,int minDiscountPercent);
+     Task<List<ProductResponse>?> GetTopDealProductAsync(int page,int size);
      Task<List<ProductResponse>?> GetRelatedProducts(int id, int size);
      Task<Review> GetReviewAsync(int id, int size);
      Task<ProductResponse?> GetProductBySlugAsync(string slug);
-     Task<(Product product, ProductVariant variant, bool isStock)> CheckStockAsync(int productId, int variantId);
+     Task<(Product? product, ProductVariant? variant, bool isStock)> CheckStockAsync(int productId, int variantId);
+     Task<ProductReviewResponse> SendFeedBackAsync(NewFeedBack feedBack);
+     Task<List<ProductReviewResponse>?> GetTopFeedBackAsync(int size);
 }
