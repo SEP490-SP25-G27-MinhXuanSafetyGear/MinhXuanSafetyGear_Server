@@ -18,30 +18,34 @@ public class AllowedExtensionsAttribute : ValidationAttribute
         {
             foreach (var file in files)
             {
-                var extension = System.IO.Path.GetExtension(file.FileName).ToLower();
-                if (!_extensions.Contains(extension))
+                if (!IsValidFile(file))
                 {
-                    return new ValidationResult($"File {file.FileName} có định dạng không hợp lệ. Chỉ chấp nhận {string.Join(", ", _extensions)}.");
-                }
-                if (!file.ContentType.StartsWith("image/"))
-                {
-                    return new ValidationResult($"File {file.FileName} không phải là hình ảnh hợp lệ.");
+                    return new ValidationResult($"File {file.FileName} có định dạng hoặc nội dung không hợp lệ.");
                 }
             }
         }
         else if (value is IFormFile file)
         {
-            var extension = System.IO.Path.GetExtension(file.FileName).ToLower();
-            if (!_extensions.Contains(extension))
+            if (!IsValidFile(file))
             {
-                return new ValidationResult($"File {file.FileName} có định dạng không hợp lệ. Chỉ chấp nhận {string.Join(", ", _extensions)}.");
-            }
-            if (!file.ContentType.StartsWith("image/"))
-            {
-                return new ValidationResult($"File {file.FileName} không phải là hình ảnh hợp lệ.");
+                return new ValidationResult($"File {file.FileName} có định dạng hoặc nội dung không hợp lệ.");
             }
         }
         return ValidationResult.Success;
+    }
+
+    private bool IsValidFile(IFormFile file)
+    {
+        var extension = System.IO.Path.GetExtension(file.FileName).ToLower();
+        if (!_extensions.Contains(extension))
+        {
+            return false;
+        }
+        if (!file.ContentType.StartsWith("image/"))
+        {
+            return false;
+        }
+        return true;
     }
     
 }

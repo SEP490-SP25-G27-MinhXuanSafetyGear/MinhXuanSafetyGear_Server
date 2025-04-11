@@ -13,7 +13,9 @@ public class EmployeeDao : IDao<Employee>
 
     public async Task<Employee?> GetByIdAsync(int id)
     {
-        return await _context.Employees.FindAsync(id);
+        return await _context.Employees
+            .Include(e=>e.Role)
+            .FirstOrDefaultAsync(e=>e.EmployeeId == id);
     }
 
     public async Task<Employee?> CreateAsync(Employee entity)
@@ -49,21 +51,28 @@ public class EmployeeDao : IDao<Employee>
 
     public async Task<List<Employee>?> GetAllAsync()
     {
-        return await _context.Employees.ToListAsync();
+        return await _context.Employees
+            .Include(e=>e.Role)
+            .ToListAsync();
     }
 
     public async Task<List<Employee>?> GetPageAsync(int page, int pageSize)
     {
-        return await _context.Employees.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return await _context.Employees
+            .Include(e=>e.Role)
+            .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
     }
 
     public async Task<Employee?> GetEmployeeByEmailAsync(string email)
     {
-        return await _context.Employees.FirstOrDefaultAsync(e => e.Email == email);
+        return await _context.Employees
+            .Include(e=>e.Role)
+            .FirstOrDefaultAsync(e => e.Email == email);
     }
     public async Task<Employee?> GetEmployeeByPhoneAsync(string phone)
     {
         return await _context.Employees
+            .Include(e=>e.Role)
             .FirstOrDefaultAsync(e => e.PhoneNumber == phone); 
     }
 

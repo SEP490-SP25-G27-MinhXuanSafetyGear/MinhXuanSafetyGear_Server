@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessObject.Repository
 {
-    public class ProductRepo : IProductRepo
+    public class ProductRepository : IProductRepository
     {
         private readonly ProductCategoryDao _productCategoryDao;
         private readonly ProductDao _productDao;
@@ -17,7 +17,7 @@ namespace DataAccessObject.Repository
         private readonly ProductTaxDao _productTaxDao;
         private readonly ProductCategoryGroupDao _productCategoryGroupDao;
 
-        public ProductRepo(MinhXuanDatabaseContext context)
+        public ProductRepository(MinhXuanDatabaseContext context)
         {
             _productCategoryDao = new ProductCategoryDao(context);
             _productDao = new ProductDao(context);
@@ -262,9 +262,9 @@ namespace DataAccessObject.Repository
             return await _productDao.GetProductSaleQualityAsync(top);
         }
 
-        public async Task<List<Product>> GetTopDiscountAsync(int size,int minDiscountPercent)
+        public async Task<List<Product>> GetTopDiscountAsync(int page,int size)
         {
-            return await _productDao.GetTopDiscountAsync(size,minDiscountPercent);
+            return await _productDao.GetTopDiscountAsync(page,size);
         }
         public async Task<List<Product>> GetProductByIdsAsync(List<int> productIds)
         {
@@ -275,6 +275,15 @@ namespace DataAccessObject.Repository
         public async Task<Product?> GetProductBySlugAsync(string slug)
         {
             return await _productDao.GetBySlugAsync(slug);
+        }
+        public async Task<List<ProductReview>?> GetTopProductReviewsAsync(int size)
+        {
+            var feedbacks = await _productReviewDao.GetAllAsync()??new List<ProductReview>();
+            feedbacks = feedbacks
+                .Where(f=>f.Rating>2)
+                .OrderBy(f => f.Rating) 
+                .Take(size).ToList();
+            return feedbacks;
         }
 
         #endregion ProductReview

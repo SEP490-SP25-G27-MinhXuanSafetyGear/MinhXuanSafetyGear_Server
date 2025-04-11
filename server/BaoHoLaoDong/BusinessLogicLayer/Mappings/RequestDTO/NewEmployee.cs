@@ -17,5 +17,4 @@ public class NewEmployee
     public string? Address { get; set; }
     public DateOnly? DateOfBirth { get; set; }
     public bool? Gender { get; set; }
-    public string Role { get; set; } = "Manager";
 }

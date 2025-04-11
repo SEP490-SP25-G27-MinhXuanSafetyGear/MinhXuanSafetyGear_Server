@@ -15,9 +15,6 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration["ApplicationSettings:BaseUrl"] ?? "http://localhost:5000";
 var clientUrl = builder.Configuration["ApplicationSettings:ClientUrl"] ?? "http://localhost:3000";
-var urlResetPassword = builder.Configuration["ApplicationSettings:UrlResetPassword"];
-var googleClientId = builder.Configuration["GoogleAuth:ClientId"];
-var imagePathBill = builder.Configuration["ApplicationSettings:FolderBill"];
 
 builder.WebHost.UseUrls(baseUrl);
 #region JWT
@@ -86,13 +83,13 @@ builder.Services.AddAutoMapper(cfg =>
 
 #region repository
 
-builder.Services.AddScoped<IBlogPostRepository,BlogPostRepo>();
-builder.Services.AddScoped<IInvoiceRepo,InvoiceRepo>();
-builder.Services.AddScoped<INotificationRepo,NotificationRepo>();
-builder.Services.AddScoped<IOrderRepository,OrderRepo>();
-builder.Services.AddScoped<IProductRepo,ProductRepo>();
-builder.Services.AddScoped<ITaxRepo,TaxRepo>();
-builder.Services.AddScoped<IUserRepo,UserRepo>();
+builder.Services.AddScoped<IBlogPostRepository,BlogPostRepository>();
+builder.Services.AddScoped<IInvoiceRepository,InvoiceRepository>();
+builder.Services.AddScoped<INotificationRepository,NotificationRepository>();
+builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+builder.Services.AddScoped<IProductRepository,ProductRepository>();
+builder.Services.AddScoped<ITaxRepository,TaxRepository>();
+builder.Services.AddScoped<IUserRepository,UserRepository>();
 
 #endregion
 #region services
@@ -151,7 +148,11 @@ app.UseHttpsRedirection();
 app.UseCors(); // Thêm middleware CORS vào pipeline xử lý HTTP
 app.UseAuthentication(); 
 app.UseAuthorization();
+
+app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.MapFallbackToFile("index.html"); 
 app.MapControllers();
 if (app.Environment.IsDevelopment()!)
 {

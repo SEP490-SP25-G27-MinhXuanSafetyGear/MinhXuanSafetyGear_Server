@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface;
 
-public interface IUserRepo
+public interface IUserRepository
 {
     // customer methods
     Task<Customer?> GetCustomerByIdAsync(int id);

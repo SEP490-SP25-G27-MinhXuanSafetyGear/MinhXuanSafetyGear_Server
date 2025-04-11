@@ -2,7 +2,7 @@
 
 namespace DataAccessObject.Repository.Interface
 {
-    public interface IInvoiceRepo
+    public interface IInvoiceRepository
     {
         Task<Invoice?> GetReceiptByIdAsync(int id);
         Task<Invoice?> CreateReceiptAsync(Invoice receipt);
